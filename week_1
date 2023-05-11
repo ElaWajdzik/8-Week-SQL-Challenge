@@ -1,1 +1,39 @@
+SELECT 
+    sales.customer_id,
+    COUNT(sales.customer_id) AS count_orders,
+    SUM(menu.price) AS spent_amount
+FROM dannys_diner.sales
+LEFT JOIN dannys_diner.menu
+ON dannys_diner.sales.product_id = dannys_diner.menu.product_id
+GROUP BY sales.customer_id;
 
+
+-- 2. How many days has each customer visited the restaurant?
+SELECT 
+    sales.customer_id,
+    COUNT(DISTINCT sales.order_date) AS number_of_visits
+FROM dannys_diner.sales
+GROUP BY sales.customer_id
+
+
+-- 3. What was the first item from the menu purchased by each customer?
+
+SELECT 
+	first_product.customer_id,
+    menu.product_name
+FROM(
+	SELECT
+		first_visit.customer_id,
+		sales.product_id
+	FROM(
+    	SELECT 
+			sales.customer_id,
+			MIN(sales.order_date) AS data_first_visit
+		FROM dannys_diner.sales 
+		GROUP BY sales.customer_id) AS first_visit
+	LEFT JOIN dannys_diner.sales
+	ON (first_visit.customer_id,first_visit.data_first_visit) = (sales.customer_id, sales.order_date)
+	GROUP BY first_visit.customer_id, sales.product_id) AS first_product
+LEFT JOIN dannys_diner.menu
+ON first_product.product_id = menu.product_id
+ORDER BY first_product.customer_id
