@@ -129,9 +129,25 @@ ON sales.product_id = menu.product_id
 GROUP BY sales.product_id
 ORDER BY number_of_orders DESC;
 
-
-
 -- 5. Which item was the most popular for each customer?
+
+SELECT 
+	sales.customer_id,
+    menu.product_name,
+	COUNT(sales.product_id) AS number_of_orders,
+    DENSE_RANK() OVER (
+        PARTITION BY customer_id
+        ORDER BY number_of_orders DESC
+    ) AS popular_rank
+FROM dannys_diner.sales
+LEFT JOIN dannys_diner.menu
+ON sales.product_id = menu.product_id
+GROUP BY 
+    sales.product_id, 
+    sales.customer_id;
+
+
+
 -- 6. Which item was purchased first by the customer after they became a member?
 -- 7. Which item was purchased just before the customer became a member?
 -- 8. What is the total items and amount spent for each member before they became a member?
