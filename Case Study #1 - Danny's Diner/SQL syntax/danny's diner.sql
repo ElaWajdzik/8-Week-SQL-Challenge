@@ -3,7 +3,7 @@
 --------------------------------
 
 --Author: Ela Wajdzik
---Date: 11.05.2023
+--Date: 11.05.2023 (update 13.05.2023)
 --Tool used: Visual Studio Code & xampp
 
 CREATE DATABASE dannys_diner;
