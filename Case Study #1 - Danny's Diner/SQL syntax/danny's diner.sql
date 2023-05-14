@@ -3,7 +3,7 @@
 --------------------------------
 
 --Author: Ela Wajdzik
---Date: 11.05.2023 (update 13.05.2023)
+--Date: 11.05.2023 (update 14.05.2023)
 --Tool used: Visual Studio Code & xampp
 
 CREATE DATABASE dannys_diner;
@@ -241,3 +241,54 @@ JOIN dannys_diner.menu
     ON sales.product_id = menu.product_id
 WHERE order_date < '2021-02-01'
 GROUP BY sales.customer_id;
+
+
+-------------------
+--Bonus Questions--
+-------------------
+
+--1. Join All The Things
+--Recreate the following table output using the available data
+
+--customer_id   order_date  product_name	price	member
+--A             2021-01-01  curry	        15	    N
+
+SELECT
+    sales.customer_id,
+    sales.order_date,
+    menu.product_name,
+    menu.price,
+    IF (members.join_date <= sales.order_date,'Y','N') AS member
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+LEFT JOIN dannys_diner.members
+    ON sales.customer_id = members.customer_id;
+
+--2. Rank All The Things
+
+--customer_id	order_date	product_name	price	member	ranking
+--A	            2021-01-01	curry	        15	    N	    null
+
+WITH temporary_member AS (
+SELECT
+    sales.customer_id,
+    sales.order_date,
+    menu.product_name,
+    menu.price,
+    IF (members.join_date <= sales.order_date,'Y','N') AS member
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+LEFT JOIN dannys_diner.members
+    ON sales.customer_id = members.customer_id
+)
+
+SELECT *,
+    CASE 
+        WHEN member = 'N' THEN  NULL
+        ELSE RANK() OVER(
+        PARTITION BY customer_id, member
+        ORDER BY order_date)
+    END AS ranking
+FROM temporary_member;
