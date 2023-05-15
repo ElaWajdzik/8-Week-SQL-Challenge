@@ -1,8 +1,8 @@
-# 🍜 Case Study #1: Danny's Diner
+# Case Study #1: 🍜 Danny's Diner 
 
 ## Solution
 
-Complete syntax is available here. -> [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20syntax/danny's%20diner.sql)
+Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20syntax/danny's%20diner.sql).
 
 ***
 
@@ -32,6 +32,7 @@ ORDER BY customer_id;
 | A           | 6             | 76           |
 | B           | 6             | 74           |
 | C           | 3             | 36           |
+
 
 - Customer A ordered 6 products and spent $76.
 - Customer B ordered 6 products and spent $74.
