@@ -1,0 +1,113 @@
+------------------------------
+--C. Ingredient Optimisation--
+------------------------------
+
+--Author: Ela Wajdzik
+--Date: 19.05.2023
+--Tool used: Visual Studio Code & xampp
+
+USE pizza_runner;
+
+--1.What are the standard ingredients for each pizza?
+
+SELECT
+    *,
+    (LENGTH(toppings) - LENGTH(REPLACE(toppings,",","")) + 1) AS number_of_ingredions,
+
+    LOCATE(',', toppings),
+    SUBSTRING(toppings,2),
+    SUBSTRING_INDEX(toppings,',',1)
+FROM pizza_recipes;
+
+--using the metod with extra tables contains numbers
+--metoda come from https://www.delftstack.com/howto/mysql/mysql-split-string-into-rows/
+
+SELECT
+    *,
+    (LENGTH(toppings) - LENGTH(REPLACE(toppings,",","")) + 1) AS number_of_ingredions    
+FROM pizza_recipes;
+
+DROP TABLE IF EXISTS numbers;
+CREATE TABLE numbers (
+  n int
+);
+
+INSERT INTO numbers
+    (n)
+VALUES
+    (1),(2),(3),(4),(5),(6),(7),(8);
+
+CREATE TEMPORARY TABLE pizza_recipes_temp AS(
+    SELECT
+        pizza_id,
+        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(pizza_recipes.toppings, ',', numbers.n), ',', -1)) AS topping_id
+    FROM numbers
+    JOIN pizza_recipes
+    ON LENGTH(pizza_recipes.toppings) - LENGTH(REPLACE(pizza_recipes.toppings,',','')) +1 >= numbers.n
+);
+
+
+SELECT
+    pn.pizza_name,
+    pt.topping_name
+FROM pizza_recipes_temp AS pr
+JOIN pizza_toppings AS pt
+    ON pr.topping_id = pt.topping_id
+JOIN pizza_names AS pn
+    ON pr.pizza_id = pn.pizza_id
+ORDER BY pn.pizza_name;
+
+--2.What was the most commonly added extra?
+
+WITH pizza_extras_temp AS(
+SELECT
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1)) AS extras_id,
+    COUNT(TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1))) AS number_of_add
+FROM customer_orders_temp AS co
+JOIN numbers
+    ON LENGTH(co.extras) - LENGTH(REPLACE(co.extras,',','')) +1 >= numbers.n
+WHERE extras != ''
+GROUP BY extras_id
+)
+
+SELECT 
+    pt.topping_name,
+    pe.number_of_add
+FROM pizza_extras_temp AS pe
+JOIN pizza_toppings AS pt
+    ON pe.extras_id = pt.topping_id
+ORDER BY pe.number_of_add DESC;
+
+--3.What was the most common exclusion?
+
+
+WITH pizza_exclusions_temp AS(
+SELECT
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.exclusions,',',numbers.n),',',-1)) AS exclusions_id,
+    COUNT(TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.exclusions,',',numbers.n),',',-1))) AS number_of_excluse
+FROM customer_orders_temp AS co
+JOIN numbers
+    ON LENGTH(co.exclusions) - LENGTH(REPLACE(co.exclusions,',','')) +1 >= numbers.n
+WHERE exclusions != ''
+GROUP BY exclusions_id
+)
+
+SELECT 
+    pt.topping_name,
+    pe.number_of_excluse
+FROM pizza_exclusions_temp AS pe
+JOIN pizza_toppings AS pt
+    ON pe.exclusions_id = pt.topping_id
+ORDER BY pe.number_of_excluse DESC;
+
+--4.Generate an order item for each record in the customers_orders table in the format of one of the following:
+--      Meat Lovers
+--      Meat Lovers - Exclude Beef
+--      Meat Lovers - Extra Bacon
+--      Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+
+
+
+--5.Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
+--      For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
+--6.What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
