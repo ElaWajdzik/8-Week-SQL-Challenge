@@ -24,9 +24,10 @@ Danny has shared with you 3 key datasets for this case study:
 
 You can inspect the entity relationship diagram and example data below.
 
-## Entity Relationship Diagram
+## Relationship Diagram
 
 <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/26794982/240982382-077129c1-5b41-4a22-bfef-b2a37ed8c56d.PNG?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20230525%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230525T201350Z&X-Amz-Expires=300&X-Amz-Signature=53262c310edb0b48d1c60ece9dda25b6316e1554824560f17ac40669e9e34a0b&X-Amz-SignedHeaders=host&actor_id=26794982&key_id=0&repo_id=639147269" alt="relationship diagram of table" height="300">
+
 
 
 ## Case Study Questions
