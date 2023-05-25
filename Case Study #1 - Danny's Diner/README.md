@@ -24,8 +24,9 @@ Danny has shared with you 3 key datasets for this case study:
 
 You can inspect the entity relationship diagram and example data below.
 
-## Entity Relationship Diagram
+## Relationship Diagram
 
+<img width="489" alt="graf_case-study-1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/077129c1-5b41-4a22-bfef-b2a37ed8c56d">
 
 
 ## Case Study Questions
