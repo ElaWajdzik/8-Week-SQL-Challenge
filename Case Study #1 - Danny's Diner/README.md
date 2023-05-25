@@ -26,6 +26,7 @@ You can inspect the entity relationship diagram and example data below.
 
 ## Entity Relationship Diagram
 
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/26794982/240982382-077129c1-5b41-4a22-bfef-b2a37ed8c56d.PNG?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20230525%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230525T201350Z&X-Amz-Expires=300&X-Amz-Signature=53262c310edb0b48d1c60ece9dda25b6316e1554824560f17ac40669e9e34a0b&X-Amz-SignedHeaders=host&actor_id=26794982&key_id=0&repo_id=639147269" alt="relationship diagram of table" height="300">
 
 
 ## Case Study Questions
@@ -64,12 +65,11 @@ ORDER BY customer_id;
 ````
 
 #### Steps:
-- Use **SUM** and **GROUP BY** to find out ```amount_spent``` for each customer.
-- USe **COUNT** and **GROUP BY** to find out ```number_orders``` for each customers.
-- Use **JOIN** to merge two tables ```sales``` and ```menu```. The ```customer_id``` come from ```sales``` table and the ```price``` is from ```menu```.
+- Use **SUM** and **GROUP BY** to find out the ```amount_spent``` for each customer.
+- Use **COUNT** and **GROUP BY** to find out the ```number_orders``` for each customer.
+- Use **JOIN** to merge two tables, ```sales``` and ```menu```. The ```customer_id``` comes from the ```sales``` table and the ```price``` comes from the ```menu```.
 
-
-#### Answer:
+#### Result:
 | customer_id | number_orders | amount_spent |
 | ----------- | ------------- | ------------ |
 | A           | 6             | 76           |
@@ -77,11 +77,151 @@ ORDER BY customer_id;
 | C           | 3             | 36           |
 
 
-- Customer A ordered 6 products and spent $76.
-- Customer B ordered 6 products and spent $74.
-- Customer C ordered 3 products and spent $36.
+- Customer **A** ordered 6 products and spent $76.
+- Customer **B** ordered 6 products and spent $74.
+- Customer **C** ordered 3 products and spent $36.
 
 ***
 
 ### 2. How many days has each customer visited the restaurant?
 
+````sql
+SELECT 
+    sales.customer_id,
+    COUNT(DISTINCT sales.order_date) AS number_of_visits
+FROM dannys_diner.sales AS sales
+GROUP BY sales.customer_id;
+````
+
+#### Steps:
+- Use **COUNT DISTINCT** to count the number of different days of a visit.
+
+#### Result:
+| customer_id | number_of_visits |
+| ----------- | -----------------|
+| A           | 4                |
+| B           | 6                |
+| C           | 2                |
+
+- Customer **A** visited Danny's Diner on 4 different days.
+- Customer **B** visited Danny's Diner on 6 different days.
+- Customer **C** visited Danny's Diner on 2 different days.
+
+***
+
+### 3. What was the first item from the menu purchased by each customer?
+
+````sql
+WITH product_rank AS(
+    SELECT
+        customer_id,
+        order_date,
+        DENSE_RANK() OVER(
+            PARTITION BY customer_id
+            ORDER BY order_date
+        ) AS popular_rank,
+        menu.product_name
+    FROM dannys_diner.sales
+    JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+    GROUP BY sales.product_id, sales.order_date
+)
+
+SELECT
+    customer_id,
+    product_name
+FROM product_rank
+WHERE popular_rank=1;
+````
+
+#### Steps:
+- I created a temporary table to calculate the ranking of orders. Clause **WITH**
+- I created the ranking of orders using the clause **DENSE_RANK**
+
+#### Result:
+| customer_id | product_name |
+| ----------- | -------------|
+| A           | sushi        |
+| A           | curry        |
+| B           | curry        |
+| C           | ramen        |
+
+- Customer **A** in his/her first purchase bought two dishes, sushi and curry.
+- Customer **B** first purchased curry.
+- Customer **C** first purchased ramen.
+
+***
+
+### 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+````sql
+SELECT
+  menu.product_name,
+  COUNT(sales.product_id) AS number_of_orders
+FROM dannys_diner.sales
+LEFT JOIN dannys_diner.menu
+ON sales.product_id = menu.product_id
+GROUP BY sales.product_id
+ORDER BY number_of_orders DESC;
+````
+
+#### Steps:
+- I use **COUNT** to calculate the number of orders for each dish.
+- I ordered the results in descending order using **ORDER BY** with parameter **DESC** to find which item was the most frequently purchased.
+
+#### Result:
+| product_name | number_of_orders |
+|--------------|------------------|
+| ramen        | 8                |
+| curry        | 4                |
+| sushi        | 3                |
+
+- The most frequently purchased item was ramen. The customers at Danny's Dinner bought it 8 times (two times more than curry).
+
+***
+
+### 5. Which item was the most popular for each customer?
+
+````sql
+WITH popular_order AS (
+    SELECT 
+	    sales.customer_id,
+        menu.product_name,
+	    COUNT(sales.product_id) AS number_of_orders,
+        DENSE_RANK() OVER (
+            PARTITION BY customer_id
+            ORDER BY number_of_orders DESC
+        ) AS popular_rank
+    FROM dannys_diner.sales
+    LEFT JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+    GROUP BY 
+        sales.product_id, 
+        sales.customer_id
+)        
+
+SELECT 
+    customer_id,
+    product_name
+FROM popular_order
+WHERE popular_rank=1
+ORDER BY customer_id;
+````
+
+#### Steps:
+- I created a temporary table (using **WITH**) to create a ranking of popularity (using **DENSE_RANK**).
+- Print only part of the temporary table **WHERE** ranking of popularity is equal to 1.
+
+#### Result:
+| customer_id | product_name |
+|-------------|--------------|
+| A           | ramen        |
+| B           | curry        |
+| B           | ramen        |
+| B           | sushi        |
+| C           | ramen        |
+
+- The most popular item for every customer was ramen.
+- In addition, customer **B** liked every item (ramen, sushi and curry).
+
+***
