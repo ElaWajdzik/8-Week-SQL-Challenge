@@ -124,7 +124,7 @@ VALUES
 --clean table customer_orders
 --replace 'null' and NULL in exclusions and extras
 
---DROP TABLE IF EXISTS customer_orders_temp;
+DROP TABLE IF EXISTS customer_orders_temp;
 CREATE TEMPORARY TABLE customer_orders_temp AS(
     SELECT 
         order_id,
@@ -183,4 +183,4 @@ MODIFY COLUMN distance FLOAT NULL;
 ALTER TABLE runner_orders_temp
 MODIFY COLUMN duration INT NULL;
 
-SELECT * FROM runner_orders_temp;
+SELECT * FROM customer_orders_temp;
