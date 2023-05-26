@@ -226,3 +226,126 @@ ORDER BY customer_id;
 - In addition, customer **B** liked every item (ramen, sushi and curry).
 
 ***
+
+### 6. Which item was purchased first by the customer after they became a member?
+
+````sql
+WITH member_orders AS(
+    SELECT 
+        sales.customer_id,
+        sales.product_id,
+        sales.order_date,
+        members.join_date,
+        DENSE_RANK() OVER(
+            PARTITION BY customer_id
+            ORDER BY order_date
+        ) AS rank_after_join
+    FROM dannys_diner.members
+    JOIN dannys_diner.sales
+    ON members.customer_id=sales.customer_id
+    WHERE sales.order_date >= members.join_date
+)
+
+SELECT 
+    customer_id,
+    menu.product_name
+FROM member_orders
+JOIN dannys_diner.menu
+ON member_orders.product_id = menu.product_id
+WHERE member_orders.rank_after_join = 1
+ORDER BY customer_id;
+````
+
+#### Steps:
+- Like in question 5, I created a temporary table (using **WITH**) to create a ranking of orders (using **DENSE_RANK**).
+- Pick the first order for every member after joining, using the ranking of orders, and select only the first value (clause **WHERE**).
+
+
+#### Result:
+| customer_id | product_name |
+|-------------|--------------|
+| A           | curry        |
+| B           | sushi        |
+
+- After customer **A** became a member, he/she purchased first curry.
+- After customer **B** became a member, he/she purchased first sushi.
+
+***
+
+### 7. Which item was purchased just before the customer became a member?
+
+````sql
+WITH member_orders_before AS(
+    SELECT 
+        sales.customer_id,
+        sales.product_id,
+        sales.order_date,
+        members.join_date,
+        DENSE_RANK() OVER(
+            PARTITION BY customer_id
+            ORDER BY order_date DESC
+        ) AS rank_before_join
+    FROM dannys_diner.members
+    JOIN dannys_diner.sales
+    ON members.customer_id=sales.customer_id
+    WHERE sales.order_date < members.join_date
+)
+
+SELECT 
+    customer_id,
+    menu.product_name
+FROM member_orders_before
+JOIN dannys_diner.menu
+ON member_orders_before.product_id = menu.product_id
+WHERE member_orders_before.rank_before_join = 1
+ORDER BY customer_id;
+````
+
+#### Steps:
+- I use a similar function like in question 6. The biggest change is to use **DENSE_RANK** in descending order.
+
+#### Result:
+| customer_id | product_name |
+|-------------|--------------|
+| A           | sushi        |
+| A           | curry        |
+| B           | sushi        |
+
+- Customer **A** in the order before starting to be a member bought two kinds of items - sushi and carry.
+- Customer **B** in the order before starting to be a member bought sushi.
+
+According to results from questions 6 and 7, customers **A** and **B** bought the same product just before becoming members and just after becoming members.
+
+***
+
+### 8. What is the total items and amount spent for each member before they became a member?
+
+````sql
+SELECT 
+    sales.customer_id,
+    COUNT(sales.product_id) AS number_of_item,
+    COUNT(DISTINCT sales.product_id) AS number_of_diffrent_item,
+    SUM(menu.price) AS total_spent
+FROM dannys_diner.members
+JOIN dannys_diner.sales
+    ON members.customer_id=sales.customer_id
+JOIN dannys_diner.menu
+    ON sales.product_id=menu.product_id
+WHERE sales.order_date < members.join_date
+GROUP BY sales.customer_id;
+````
+
+#### Steps:
+- I use calculatet functions **COUNT**, **COUNT DISTINCT** and **SUM**.
+- I need to join all three tables to create a result.
+
+#### Result:
+| customer_id | number_of_item | number_of_diffrent_item | total_spent |
+|-------------|----------------|-------------------------|-------------|
+| A           | 2              | 2                       | 25          |
+| B           | 3              | 2                       | 40          |
+
+- Customer **A** before becoming a member, spent $25 at Danny Diner's and bought 2 items.
+- Customer **B** before becoming a member, spent $40 at Danny Diner's and bought 3 items (2 different items).
+
+***

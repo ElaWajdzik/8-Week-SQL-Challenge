@@ -6,6 +6,8 @@
 --Date: 11.05.2023 (update 14.05.2023)
 --Tool used: Visual Studio Code & xampp
 
+
+--create tables with data
 CREATE DATABASE dannys_diner;
 
 USE dannys_diner;
@@ -60,10 +62,11 @@ VALUES
   ('B', '2021-01-09');
 
 SELECT * FROM dannys_diner.sales;
+
+
 ------------------------
 --CASE STUDY QUESTIONS--
 ------------------------
-
 
 --1. What is the total amount each customer spent at the restaurant?
 
@@ -187,7 +190,7 @@ WITH member_orders_before AS(
         DENSE_RANK() OVER(
             PARTITION BY customer_id
             ORDER BY order_date DESC
-        ) AS rank_after_join
+        ) AS rank_before_join
     FROM dannys_diner.members
     JOIN dannys_diner.sales
     ON members.customer_id=sales.customer_id
@@ -200,7 +203,7 @@ SELECT
 FROM member_orders_before
 JOIN dannys_diner.menu
 ON member_orders_before.product_id = menu.product_id
-WHERE member_orders_before.rank_after_join = 1
+WHERE member_orders_before.rank_before_join = 1
 ORDER BY customer_id;
 
 
@@ -208,7 +211,8 @@ ORDER BY customer_id;
 
 SELECT 
     sales.customer_id,
-    COUNT(DISTINCT sales.product_id) AS number_of_item,
+    COUNT(sales.product_id) AS number_of_item,
+    COUNT(DISTINCT sales.product_id) AS number_of_diffrent_item,
     SUM(menu.price) AS total_spent
 FROM dannys_diner.members
 JOIN dannys_diner.sales
