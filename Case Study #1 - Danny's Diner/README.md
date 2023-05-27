@@ -349,3 +349,146 @@ GROUP BY sales.customer_id;
 - Customer **B** before becoming a member, spent $40 at Danny Diner's and bought 3 items (2 different items).
 
 ***
+
+### 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+
+````sql
+SELECT
+    sales.customer_id,
+    SUM(IF(menu.product_name='sushi',2,1)*menu.price * 10) AS points 
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+GROUP BY customer_id;
+````
+
+#### Steps:
+- I use the function **IF** to act on the 2x points multiplier for sushi. According to the value of ``product_name`` I calculated 1 or 2 (if ``product_name`` is equal to sushi, then 2 in other cases, multiplication doesn't exist, which means it equals 1).
+
+#### Result:
+| customer_id | points |
+|-------------|--------|
+| A           | 860    |
+| B           | 940    |
+| C           | 360    |
+
+- Customer **A** colected 860 points, customer **B** colected 940 points and customer **C** colected 360 points.
+
+It is interesting how they can get for these points.
+
+
+***
+
+### 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+
+````sql
+SELECT
+    sales.customer_id,
+    SUM(IF((sales.order_date>= members.join_date AND sales.order_date< members.join_date +7) OR sales.product_id=1,2,1) *
+    menu.price * 10) AS points
+FROM dannys_diner.sales
+JOIN dannys_diner.members
+    ON sales.customer_id = members.customer_id
+JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+WHERE order_date < '2021-02-01'
+GROUP BY sales.customer_id;
+````
+
+#### Steps:
+- It is important not to increase the multiplier for sushi during the first week of membership to 4.
+- I use the functions **SUM** and **IF** to calculate the number of points. Function **IF** has two conditions. (1) orders come from the first week of becoming a member, or (2) the order product was sushi. If it was one of those two conditions the multiplayer was equal to 2, in the other case it was 1.
+- I limited the data on orders to the end of January.
+
+
+#### Result:
+
+| customer_id | points |
+|-------------|--------|
+| A           | 1370   |
+| B           | 820    |
+
+- Customer **A** collected 1370 points.
+- Customer **B** collected 820 points. If we look closer at the data, we can find out that this customer didn't collect any extra points because she/he became a member.
+
+
+***
+
+***
+
+
+
+## Bonus Questions
+
+### Join All The Things
+
+Recreate the following table output using the available data
+
+| customer_id | order_date | product_name | price | member |
+|-------------|------------|--------------|-------|--------|
+| A           | 2021-01-01 | curry	      | 15	  | N      |
+
+
+````sql
+SELECT
+    sales.customer_id,
+    sales.order_date,
+    menu.product_name,
+    menu.price,
+    IF (members.join_date <= sales.order_date,'Y','N') AS member
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+LEFT JOIN dannys_diner.members
+    ON sales.customer_id = members.customer_id;
+````
+
+#### Steps:
+- I need to join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
+
+#### Result:
+
+***
+
+### Rank All The Things
+Create a table like before in **Join All The Things** but add the ``ranking``. The ``ranking`` of customer products is only for member purchases, and the ``ranking`` value is **null** when customers are not yet part of the loyalty program.
+
+
+````sql
+WITH temporary_member AS (
+SELECT
+    sales.customer_id,
+    sales.order_date,
+    menu.product_name,
+    menu.price,
+    IF (members.join_date <= sales.order_date,'Y','N') AS member
+FROM dannys_diner.sales
+JOIN dannys_diner.menu
+    ON sales.product_id = menu.product_id
+LEFT JOIN dannys_diner.members
+    ON sales.customer_id = members.customer_id
+)
+
+SELECT *,
+    CASE 
+        WHEN member = 'N' THEN  NULL
+        ELSE RANK() OVER(
+        PARTITION BY customer_id, member
+        ORDER BY order_date)
+    END AS ranking
+FROM temporary_member;
+````
+
+#### Steps:
+- I created the table like before but using the clause **WITH**.
+- In the second step, I add the ``ranking`` only for the data that involves the member's purchase.
+
+#### Result:
+
+
+***
+
+**Thanks for reading.** If you have some comments have I can improve my work, please let me know. I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information. My emali address is ela.wajdzik@gmail.com
+
+
+**Have a nice day!**
