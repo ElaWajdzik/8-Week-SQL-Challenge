@@ -26,7 +26,7 @@ You can inspect the entity relationship diagram and example data below.
 
 ## Relationship Diagram
 
-<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/26794982/240982382-077129c1-5b41-4a22-bfef-b2a37ed8c56d.PNG?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20230525%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230525T201350Z&X-Amz-Expires=300&X-Amz-Signature=53262c310edb0b48d1c60ece9dda25b6316e1554824560f17ac40669e9e34a0b&X-Amz-SignedHeaders=host&actor_id=26794982&key_id=0&repo_id=639147269" alt="relationship diagram of table" height="300">
+<img width="489" alt="graf_case-study-1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/49b6c3fa-e7c6-4478-907c-b952eb0ce480">
 
 
 
@@ -447,6 +447,9 @@ LEFT JOIN dannys_diner.members
 - I need to join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
 
 #### Result:
+<img width="406" alt="CaseStudy#1 - Join All The Things" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/0a538c49-1e9c-466b-b9c9-d7b869aaa1eb">
+
+
 
 ***
 
@@ -484,6 +487,7 @@ FROM temporary_member;
 - In the second step, I add the ``ranking`` only for the data that involves the member's purchase.
 
 #### Result:
+<img width="463" alt="CaseStudy#1 - Rank All The Things" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/be758897-0cc2-4a95-a953-2465fa0d33ae">
 
 
 ***
