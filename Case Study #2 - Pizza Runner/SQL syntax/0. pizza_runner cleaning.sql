@@ -6,6 +6,8 @@
 --Date: 15.05.2023
 --Tool used: Visual Studio Code & xampp
 
+
+--create input 
 CREATE DATABASE pizza_runner;
 USE pizza_runner;
 
@@ -51,6 +53,10 @@ VALUES
   ('10', '104', '1', 'null', 'null', '2020-01-11 18:34:49'),
   ('10', '104', '1', '2, 6', '1, 4', '2020-01-11 18:34:49');
 
+--I added column id because I need to have a unique identifier for each pizza in each order
+--I use it in the section about ingredients (syntax SQL 'C. Ingredient Optimisation')
+ALTER TABLE customer_orders
+ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY;
 
 DROP TABLE IF EXISTS runner_orders;
 CREATE TABLE runner_orders (
@@ -121,12 +127,17 @@ VALUES
   (11, 'Tomatoes'),
   (12, 'Tomato Sauce');
 
+--the end of input
+
+
 --clean table customer_orders
 --replace 'null' and NULL in exclusions and extras
+--I don't want to change the origin input, that why I created a temporary table with changes. In the next part, I will use the table customer_orders_temp instead of customer_orders.
 
 DROP TABLE IF EXISTS customer_orders_temp;
 CREATE TEMPORARY TABLE customer_orders_temp AS(
     SELECT 
+        id,
         order_id,
         customer_id,
         pizza_id,
@@ -145,6 +156,8 @@ CREATE TEMPORARY TABLE customer_orders_temp AS(
 --clean table runner_orders
 --remove 'null' and NULL from cancellation and pickup_time
 --remove text from distance and duration and change the type of data
+--I don't want to change the origin input, that why I created a temporary table with changes. In the next part, I will use the table runner_orders_temp instead of runner_orders.
+
 DROP TABLE IF EXISTS runner_orders_temp;
 
 CREATE TEMPORARY TABLE runner_orders_temp AS(
@@ -183,4 +196,4 @@ MODIFY COLUMN distance FLOAT NULL;
 ALTER TABLE runner_orders_temp
 MODIFY COLUMN duration INT NULL;
 
-SELECT * FROM customer_orders_temp;
+--SELECT * FROM customer_orders_temp;
