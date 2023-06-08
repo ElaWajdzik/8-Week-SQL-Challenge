@@ -123,7 +123,7 @@ GROUP BY runner_id;
 
 In the data were 10 orders, but only 8 of them were successfully delivered. Orders that were not delivered have ```pickup_time``` = NULL, which is why I use clause ```WHERE pickup_time IS NOT NULL```. Deliveries were made by three runners, and runner 1 delivered 4 orders, runner 2 delivered 3 orders, runner 4 delivered 1 order.
 
-....
+<img width="202" alt="CS2 - A3" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/291518dd-20f9-4abe-8396-06ae25afbeb6">
 
 ### 4. How many of each type of pizza was delivered?
 
@@ -147,8 +147,7 @@ To answer this question, I need to join three tables:
 
 Pizza Meatlovers (9 orders) is more likely to be ordered than Pizza Vegetarian (3 orders).
 
-...
-
+<img width="262" alt="CS2 - A4" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d61803c7-53cf-400f-a5f1-25e9f656dbc4">
 
 ### 5. How many Vegetarian and Meatlovers were ordered by each customer?
 
@@ -165,7 +164,7 @@ GROUP BY customer_id, pizza_name;
 
 This code counts data from every order, not only those that were successfully delivered.
 
-....
+<img width="388" alt="CS2 - A5" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/291a21f3-6365-4d34-8e49-8a237b6f1ecb">
 
 ### 6. What was the maximum number of pizzas delivered in a single order?
 
@@ -184,7 +183,7 @@ ORDER BY number_of_pizza_in_order DESC LIMIT 1;
 In order 4 (```order_id``` = 4) customer ordered 3 pizzas, this was the biggest order that would be successfully delivered.
 To create this solution, I need to use clause **ORDER BY** (to order orders using the number of pizzas in order) with parameters **DESC** (in descending order) and **LIMIT** (to show only the first row after ordering).
 
-...
+<img width="256" alt="CS2 - A6" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e062f5c6-ca25-4ced-9d6e-1ae6d15361f3">
 
 ### 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
@@ -207,7 +206,7 @@ e.g. ```SUM(IF(TRIM(CONCAT(extras,exclusions))='',0,1)) AS pizza_with_change```
 
 Customers **101** and **102** ordered only pizzas without change. Customers **103** and **105** ordered only pizzas with changes.
 
-...
+<img width="404" alt="CS2 - A7" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a1a7eb43-2dc9-42bc-8c5a-e3c6b6e90f61">
 
 ### 8. How many pizzas were delivered that had both exclusions and extras?
 
@@ -234,6 +233,8 @@ GROUP BY order_hour;
 
 The most orders are made after 12 and before 00 (but maybe the Pizza Runner is open only in these hours).
 
+<img width="200" alt="CS2 - A9" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/f88c4207-4066-49cc-a61a-8eaa191d0e1e">
+
 
 ### 10. What was the volume of orders for each day of the week?
 
@@ -247,6 +248,7 @@ GROUP BY order_day_of_week;
 
 I use clause **DAYOFWEEK()** which returns a number from 1 to 7, starting from Sunday (1=Sunday). The most orders were made on Wednesday (5 orders) and Saturday (5 orders).
 
+<img width="251" alt="CS2 - A10" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6a9e6bf3-8b0a-453d-8626-bbc29fd527b9">
 
 
 ***  
