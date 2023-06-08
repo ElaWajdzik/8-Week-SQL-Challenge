@@ -196,4 +196,4 @@ MODIFY COLUMN distance FLOAT NULL;
 ALTER TABLE runner_orders_temp
 MODIFY COLUMN duration INT NULL;
 
---SELECT * FROM customer_orders_temp;
+SELECT * FROM runner_orders_temp;
