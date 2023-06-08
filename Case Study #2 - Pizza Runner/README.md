@@ -87,6 +87,7 @@ I don't want to change the origin input, that why I created a temporary tables w
 
 ## A. Pizza Metrics
 
+This section contains basic questions and answers about orders.
 Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
 
 
@@ -252,8 +253,81 @@ I use clause **DAYOFWEEK()** which returns a number from 1 to 7, starting from S
 
 
 ***  
-B. Runner and Customer Experience
- 
+
+## B. Runner and Customer Experience
+
+This section contains questions and answers about the details of delivery and runners. 
+Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
+
+### 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
+
+````sql
+--week started on 1.01.2021 (on Friday)
+WITH runners_temp AS (
+    SELECT
+       *,
+       DATE(registration_date - (registration_date - DATE('2021-01-01')) %7) AS day_of_start_week
+    FROM runners)
+    
+SELECT
+    day_of_start_week,
+    COUNT(runner_id) AS number_of_runners_signe_up
+FROM runners_temp
+GROUP BY day_of_start_week;
+````
+
+This question was tricky because we (and standard function) usually assume that the week starts on Monday or Sunday. 1.01.2021 was Friday, which is why I can't use the function **WEEK()**. 
+
+To calculate the result, I created a temporary table with an additional column, which was the date of last Friday.
+
+```DATE(registration_date - (registration_date - DATE('2021-01-01')) %7)```
+
+...
+
+### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+
+````sql
+WITH order_time_diff AS (
+SELECT
+    runner_id,
+    customer_orders_temp.order_id,
+    TIMESTAMPDIFF(MINUTE, order_time, pickup_time) AS minutes_difference
+FROM customer_orders_temp
+JOIN runner_orders_temp
+    ON customer_orders_temp.order_id = runner_orders_temp.order_id
+WHERE pickup_time IS NOT NULL
+GROUP BY customer_orders_temp.order_id
+)
+
+SELECT
+    runner_id,
+    ROUND(AVG(minutes_difference),0) AS avg_minutes_to_pickup
+FROM order_time_diff
+GROUP BY runner_id;
+````
+
+I thought that besic arithmetic operations would work in two **TIMESTAMP** values, but they don't. To count the difference in time between pickup and ordering, I use the function **TIMESTAMPDIFF()** (with parameter **MINUTE**).
+
+
+...
+
+### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
+
+
+### 4. What was the average distance travelled for each customer?
+
+
+### 5. What was the difference between the longest and shortest delivery times for all orders?
+
+
+### 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+
+### 7. What is the successful delivery percentage for each runner?
+
+
+***
+
 C. Ingredient Optimisation
 
 D. Pricing and Ratings

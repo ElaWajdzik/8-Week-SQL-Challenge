@@ -58,13 +58,13 @@ GROUP BY customer_id, pizza_name;
 
 SELECT
     customer_orders_temp.order_id,
-    COUNT(customer_orders_temp.order_id) AS max_number_of_pizza_in_order
+    COUNT(customer_orders_temp.order_id) AS number_of_pizza_in_order
 FROM customer_orders_temp
 JOIN runner_orders_temp
     ON customer_orders_temp.order_id = runner_orders_temp.order_id
 WHERE pickup_time IS NOT NULL
 GROUP BY customer_orders_temp.order_id
-ORDER BY max_number_of_pizza_in_order DESC LIMIT 1;
+ORDER BY number_of_pizza_in_order DESC LIMIT 1;
 
 --7.For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
@@ -91,7 +91,7 @@ WHERE runner_orders_temp.pickup_time IS NOT NULL;
 
 SELECT
     HOUR(order_time) AS order_hour,
-    COUNT(pizza_id)
+    COUNT(pizza_id) AS number_of_pizza
 FROM customer_orders_temp
 GROUP BY order_hour;
 
@@ -99,7 +99,7 @@ GROUP BY order_hour;
 
 SELECT
     DAYOFWEEK(order_time) AS order_day_of_week,
-    COUNT(pizza_id)
+    COUNT(pizza_id) AS number_of_pizza
 FROM customer_orders_temp
 GROUP BY order_day_of_week;
 
