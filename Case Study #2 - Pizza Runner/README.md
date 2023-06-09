@@ -282,7 +282,8 @@ To calculate the result, I created a temporary table with an additional column, 
 
 ```DATE(registration_date - (registration_date - DATE('2021-01-01')) %7)```
 
-...
+<img width="271" alt="CS2 - B1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/548a0f9a-d024-4362-b068-c2ffcd4c67f0">
+
 
 ### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
@@ -308,8 +309,8 @@ GROUP BY runner_id;
 
 I thought that besic arithmetic operations would work in two **TIMESTAMP** values, but they don't. To count the difference in time between pickup and ordering, I use the function **TIMESTAMPDIFF()** (with parameter **MINUTE**).
 
+<img width="218" alt="CS2 - B2" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/72c2642e-4d58-4059-b773-f86898a56ac8">
 
-...
 
 ### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
@@ -340,7 +341,7 @@ First of all, the data contains information about only eight successful delivere
 
 In this calculation, I assume that the differences between time of pickup and order only come from the time of preparation, but in the real world, this can come from many factors (e.g. a lot of different orders, not enough runners).
 
-...
+<img width="479" alt="CS2 - B3" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/02dbc5d0-acc3-46f6-a615-65f86cdffdfc">
 
 ### 4. What was the average distance travelled for each customer?
 
@@ -357,7 +358,7 @@ GROUP BY customer_id;
 
 The distances for customers range from 10 to 25 kilometers. The distance is huge for delivering food, and I don't think that the pizza is still hot after delivery. I think that Danny should consider the advertisement in the closer neighborhood.
 
-...
+<img width="190" alt="CS2 - B4" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e4a0199b-ff91-4f9a-ba3f-ca60114d979b">
 
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
@@ -385,7 +386,8 @@ WHERE pickup_time IS NOT NULL;
 
 It looks like the runner 2 is using a faster vehicle than the rest of the runners. We can assume that the average speed of delivery will be around 40 kilometers per hour.
 
-...
+<img width="354" alt="CS2 - B6" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/319d0e66-03ad-4656-8b1f-6de19a7e29b7">
+
 
 ### 7. What is the successful delivery percentage for each runner?
 
@@ -412,7 +414,8 @@ GROUP BY runner_orders_temp.runner_id;
 
 The first runner (runner_id = 1) is the most successful in delivering food.
 
-...
+<img width="487" alt="CS2 - B7" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/96dd169a-9d0f-4209-b692-76ebe4cfdbb2">
+
 
 ***
 
