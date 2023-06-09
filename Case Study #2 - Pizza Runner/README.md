@@ -313,18 +313,106 @@ I thought that besic arithmetic operations would work in two **TIMESTAMP** value
 
 ### 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
+````sql
+WITH pizza_orders_with_time_temp AS (
+SELECT
+    customer_orders_temp.order_id,
+    COUNT(pizza_id) AS number_of_pizza,
+    TIMESTAMPDIFF(MINUTE, order_time, pickup_time) AS minutes_difference
+FROM customer_orders_temp
+JOIN runner_orders_temp
+    ON runner_orders_temp.order_id = customer_orders_temp.order_id
+WHERE pickup_time IS NOT NULL
+GROUP BY customer_orders_temp.order_id
+)
+
+SELECT
+    number_of_pizza,
+    ROUND(AVG(minutes_difference),1) AS avg_time_prepare,
+    MIN(minutes_difference) AS min_time_prepare,
+    MAX(minutes_difference) AS max_time_prepare
+FROM pizza_orders_with_time_temp
+GROUP BY number_of_pizza;
+````
+
+
+First of all, the data contains information about only eight successful delivered orders, and only one of them is the order with three pizzas. Using this data, we can say that the average prep time is growing with the number of pizzas in order, but in my opinion, we don't have enough data to deduce the true conclusion.
+
+In this calculation, I assume that the differences between time of pickup and order only come from the time of preparation, but in the real world, this can come from many factors (e.g. a lot of different orders, not enough runners).
+
+...
 
 ### 4. What was the average distance travelled for each customer?
+
+````sql
+SELECT
+    customer_id,
+    ROUND(AVG(distance),1) As avg_distance
+FROM runner_orders_temp
+JOIN customer_orders_temp
+    ON runner_orders_temp.order_id = customer_orders_temp.order_id
+WHERE distance IS NOT NULL
+GROUP BY customer_id;
+````
+
+The distances for customers range from 10 to 25 kilometers. The distance is huge for delivering food, and I don't think that the pizza is still hot after delivery. I think that Danny should consider the advertisement in the closer neighborhood.
+
+...
 
 
 ### 5. What was the difference between the longest and shortest delivery times for all orders?
 
+````sql
+SELECT 
+    MAX(duration) - MIN(duration) AS max_diff_time_delivery
+FROM runner_orders_temp;
+````
+
+The differences amount to 30 minutes. The shortest delivery took 10 minutes, and the longest took 40 minutes.
 
 ### 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 
+````sql
+SELECT 
+    runner_id,
+    order_id,
+    distance,
+    duration,
+    ROUND(distance/(duration/60),0) AS avg_speed
+FROM runner_orders_temp
+WHERE pickup_time IS NOT NULL;
+````
+
+It looks like the runner 2 is using a faster vehicle than the rest of the runners. We can assume that the average speed of delivery will be around 40 kilometers per hour.
+
+...
 
 ### 7. What is the successful delivery percentage for each runner?
 
+````sql
+WITH runner_successful_order_temp AS(
+SELECT 
+    runner_id,
+    COUNT(order_id) AS number_of_successful_delivery
+FROM runner_orders_temp
+WHERE pickup_time IS NOT NULL
+GROUP BY runner_id
+)
+
+SELECT 
+    runner_orders_temp.runner_id,
+    COUNT(order_id) AS number_of_delivery,
+    number_of_successful_delivery,
+    ROUND(number_of_successful_delivery/COUNT(order_id) *100,0) AS perc_of_successful
+FROM runner_orders_temp
+JOIN runner_successful_order_temp
+    ON runner_orders_temp.runner_id = runner_successful_order_temp.runner_id
+GROUP BY runner_orders_temp.runner_id;
+````
+
+The first runner (runner_id = 1) is the most successful in delivering food.
+
+...
 
 ***
 
