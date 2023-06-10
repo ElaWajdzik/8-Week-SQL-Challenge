@@ -483,11 +483,10 @@ GROUP BY pn.pizza_name;
 
 <img width="450" alt="CS2 - C1c" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/3b90bb2e-f13f-41da-ba40-a9ad1de96ff5">
 
-The method of this solution comes from https://www.delftstack.com/howto/mysql/mysql-split-string-into-rows/
-
-P.S. Unfortunately, in MySQL there is no reverse function for **GRUP_CONCAT**.
-
-P.S. In PSQL should be a function **UNNEST** which separates data about toppings into rows and doesn't need the auxiliary table with numbers.
+Final thought:
+* The method of this solution comes from https://www.delftstack.com/howto/mysql/mysql-split-string-into-rows/
+* Unfortunately, in MySQL there is no reverse function for **GRUP_CONCAT**.
+* In PSQL should be a function **UNNEST** which separates data about toppings into rows and doesn't need the auxiliary table with numbers.
 
 
 ### 2. What was the most commonly added extra?
