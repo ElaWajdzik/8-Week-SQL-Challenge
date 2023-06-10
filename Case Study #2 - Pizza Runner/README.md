@@ -465,6 +465,7 @@ CREATE TEMPORARY TABLE pizza_recipes_temp AS(
 ```
 ...
 
+After these steps, I calculated the final result using **GRUP_CONCAT**.
 ```sql
 SELECT
     pn.pizza_name,
@@ -476,17 +477,68 @@ JOIN pizza_names AS pn
     ON pr.pizza_id = pn.pizza_id
 GROUP BY pn.pizza_name;
 ```
+...
 
+The method of this solution comes from https://www.delftstack.com/howto/mysql/mysql-split-string-into-rows/
 
+P.S. Unfortunately, in MySQL there is no reverse function for **GRUP_CONCAT**.
 
 P.S. In PSQL should be a function **UNNEST** which separates data about toppings into rows and doesn't need the auxiliary table with numbers.
 
 
-
 ### 2. What was the most commonly added extra?
 
+```sql
+WITH pizza_extras_temp AS(
+SELECT
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1)) AS extras_id,
+    COUNT(TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1))) AS number_of_add
+FROM customer_orders_temp AS co
+JOIN numbers
+    ON LENGTH(co.extras) - LENGTH(REPLACE(co.extras,',','')) +1 >= numbers.n
+WHERE extras != ''
+GROUP BY extras_id
+)
+
+SELECT 
+    pt.topping_name,
+    pe.number_of_add
+FROM pizza_extras_temp AS pe
+JOIN pizza_toppings AS pt
+    ON pe.extras_id = pt.topping_id
+ORDER BY pe.number_of_add DESC;
+```
+
+Customers Pizza Runner, like adding becon to the pizza, maybe create a new kind of pizza with beckon, which will be a good move for the Bisnes.
+
+...
 
 ### 3. What was the most common exclusion?
+
+```sql
+WITH pizza_exclusions_temp AS(
+SELECT
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.exclusions,',',numbers.n),',',-1)) AS exclusions_id,
+    COUNT(TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.exclusions,',',numbers.n),',',-1))) AS number_of_excluse
+FROM customer_orders_temp AS co
+JOIN numbers
+    ON LENGTH(co.exclusions) - LENGTH(REPLACE(co.exclusions,',','')) +1 >= numbers.n
+WHERE exclusions != ''
+GROUP BY exclusions_id
+)
+
+SELECT 
+    pt.topping_name,
+    pe.number_of_excluse
+FROM pizza_exclusions_temp AS pe
+JOIN pizza_toppings AS pt
+    ON pe.exclusions_id = pt.topping_id
+ORDER BY pe.number_of_excluse DESC;
+```
+
+The most common excluded ingredient was cheese. It can suggest that customers are vegan, and adding vegan options to the menu will be good.
+
+...
 
 
 ### 4. Generate an order item for each record in the ``customers_orders`` table in the format of one of the following:
@@ -494,6 +546,58 @@ P.S. In PSQL should be a function **UNNEST** which separates data about toppings
 * ``Meat Lovers - Exclude Beef``
 * ``Meat Lovers - Extra Bacon``
 * ``Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers``
+
+```sql
+WITH table_extras_temp AS(
+SELECT
+    co.id,
+    REPLACE(GROUP_CONCAT(pt.topping_name),',',', ') AS extra_toppings,
+    'extra' AS type
+FROM customer_orders_temp AS co
+JOIN numbers
+    ON LENGTH(co.extras) - LENGTH(REPLACE(co.extras,',','')) +1>= numbers.n
+JOIN pizza_toppings AS pt
+    ON pt.topping_id = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1))
+WHERE extras != ''
+GROUP BY id
+),
+table_exclusions_temp AS(
+SELECT
+    co.id,
+    REPLACE(GROUP_CONCAT(pt.topping_name),',',', ') AS exclusion_toppings,
+    'exclusion' AS type
+FROM customer_orders_temp AS co
+JOIN numbers
+    ON LENGTH(co.exclusions) - LENGTH(REPLACE(co.exclusions,',','')) +1>= numbers.n
+JOIN pizza_toppings AS pt
+    ON pt.topping_id = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.exclusions,',',numbers.n),',',-1))
+WHERE exclusions != ''
+GROUP BY id
+)
+
+SELECT
+    co.id,    
+    CASE 
+        WHEN co.exclusions != '' AND co.extras = '' THEN CONCAT(pn.pizza_name,' - Exclude ',table_exclusions.exclusion_toppings)
+        WHEN co.exclusions = '' AND co.extras != '' THEN CONCAT(pn.pizza_name,' - Extra ',table_extras.extra_toppings)
+        WHEN co.exclusions != '' AND co.extras != '' THEN CONCAT(pn.pizza_name,' - Exclude ',table_exclusions.exclusion_toppings,' - Extra ',table_extras.extra_toppings)
+        ELSE pn.pizza_name
+    END AS order_item
+
+FROM customer_orders_temp AS co
+JOIN pizza_names AS pn
+    ON co.pizza_id = pn.pizza_id
+LEFT JOIN  table_extras_temp AS table_extras 
+    ON co.id = table_extras.id
+LEFT JOIN table_exclusions_temp AS table_exclusions
+    ON co.id = table_exclusions.id
+GROUP BY co.id;
+```
+
+In the solution, I created two temporary tables with the extras and excludions. Then using **CASE** I considered four cases to write down orders in good format.
+
+....
+
 
 ### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the ``customer_orders`` table and add a ``2x`` in front of any relevant ingredients
 * For example: ``"Meat Lovers: 2xBacon, Beef, ... , Salami"``
