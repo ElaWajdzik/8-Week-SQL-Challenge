@@ -428,7 +428,9 @@ Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Cha
 In the data, information about the ingredients is in table ``pizza_recipes``, which contains information about toppings in a list separated by commas. This kind of table is not exactly perfect for the data in the database because one file contains multiple values.
 
 Origin table with the ingredients
-...
+
+<img width="293" alt="CS2 - C1a" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/19af91a1-5d26-4f32-909f-ee47d10aabab">
+
 
 To solve this problem, I need to split the data about toppings from table ``pizza_recipes``, and write down the names of ingredients using the data from table ``pizza_toppings``. And at the end, concatenate this information into one string. 
 
@@ -463,7 +465,8 @@ CREATE TEMPORARY TABLE pizza_recipes_temp AS(
     ON LENGTH(pizza_recipes.toppings) - LENGTH(REPLACE(pizza_recipes.toppings,',','')) +1 >= numbers.n
 );
 ```
-...
+<img width="151" alt="CS2 - C1b" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/f2975633-9326-4a1a-8349-b0d4c29b608a">
+
 
 After these steps, I calculated the final result using **GRUP_CONCAT**.
 ```sql
@@ -477,7 +480,8 @@ JOIN pizza_names AS pn
     ON pr.pizza_id = pn.pizza_id
 GROUP BY pn.pizza_name;
 ```
-...
+
+<img width="450" alt="CS2 - C1c" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/3b90bb2e-f13f-41da-ba40-a9ad1de96ff5">
 
 The method of this solution comes from https://www.delftstack.com/howto/mysql/mysql-split-string-into-rows/
 
@@ -511,7 +515,8 @@ ORDER BY pe.number_of_add DESC;
 
 Customers Pizza Runner, like adding becon to the pizza, maybe create a new kind of pizza with beckon, which will be a good move for the Bisnes.
 
-...
+<img width="196" alt="CS2 - C2" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/324b0ee6-e602-4eb6-9f24-d416068bdc5b">
+
 
 ### 3. What was the most common exclusion?
 
@@ -538,7 +543,8 @@ ORDER BY pe.number_of_excluse DESC;
 
 The most common excluded ingredient was cheese. It can suggest that customers are vegan, and adding vegan options to the menu will be good.
 
-...
+
+<img width="228" alt="CS2 - C3" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d050a9ab-b0d1-471e-adfe-af92d9770737">
 
 
 ### 4. Generate an order item for each record in the ``customers_orders`` table in the format of one of the following:
@@ -596,7 +602,7 @@ GROUP BY co.id;
 
 In the solution, I created two temporary tables with the extras and excludions. Then using **CASE** I considered four cases to write down orders in good format.
 
-....
+<img width="434" alt="CS2 - C4" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/ee544546-d5d0-46f9-809a-805c9b2c21b9">
 
 
 ### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the ``customer_orders`` table and add a ``2x`` in front of any relevant ingredients
