@@ -201,3 +201,4 @@ SELECT
 FROM pizza_profit;
 
 --The Pizza Runner can earn $94,5 if they pay runners $0,3 per kilometer. It means that the runners earn together $43,5.
+

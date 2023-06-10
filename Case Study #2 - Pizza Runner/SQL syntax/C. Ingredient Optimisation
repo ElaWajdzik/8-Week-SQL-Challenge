@@ -32,6 +32,8 @@ VALUES
     (1),(2),(3),(4),(5),(6),(7),(8);
 
 --Temporary tables with pizza ingredients, each one in a separate row
+
+DROP TABLE IF EXISTS pizza_recipes_temp;
 CREATE TEMPORARY TABLE pizza_recipes_temp AS(
     SELECT
         pizza_id,
@@ -41,8 +43,9 @@ CREATE TEMPORARY TABLE pizza_recipes_temp AS(
     ON LENGTH(pizza_recipes.toppings) - LENGTH(REPLACE(pizza_recipes.toppings,',','')) +1 >= numbers.n
 );
 
---Table of ingredients 
+SELECT * FROM pizza_recipes_temp;
 
+--Table of ingredients 
 /*
 SELECT
     pn.pizza_name,
@@ -146,11 +149,10 @@ GROUP BY id
 SELECT
     co.id,    
     CASE 
-        WHEN co.exclusions = '' AND co.extras = '' THEN pn.pizza_name
         WHEN co.exclusions != '' AND co.extras = '' THEN CONCAT(pn.pizza_name,' - Exclude ',table_exclusions.exclusion_toppings)
         WHEN co.exclusions = '' AND co.extras != '' THEN CONCAT(pn.pizza_name,' - Extra ',table_extras.extra_toppings)
         WHEN co.exclusions != '' AND co.extras != '' THEN CONCAT(pn.pizza_name,' - Exclude ',table_exclusions.exclusion_toppings,' - Extra ',table_extras.extra_toppings)
-        ELSE CONCAT(pn.pizza_name,' - ')
+        ELSE pn.pizza_name
     END AS order_item
 
 FROM customer_orders_temp AS co
@@ -162,44 +164,13 @@ LEFT JOIN table_exclusions_temp AS table_exclusions
     ON co.id = table_exclusions.id
 GROUP BY co.id;
 
-SELECT
-    co.id,
-    REPLACE(GROUP_CONCAT(pt.topping_name),',',', ') AS extra_toppings,
-    'extra' AS type
-FROM customer_orders_temp AS co
-JOIN numbers
-    ON LENGTH(co.extras) - LENGTH(REPLACE(co.extras,',','')) +1>= numbers.n
-JOIN pizza_toppings AS pt
-    ON pt.topping_id = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1))
-WHERE extras != ''
-GROUP BY id;
-)
-
-SELECT
-    co.id,
-    pt.topping_name,
-    'extra' AS type
-FROM customer_orders_temp AS co
-JOIN numbers
-    ON LENGTH(co.extras) - LENGTH(REPLACE(co.extras,',','')) +1>= numbers.n
-JOIN pizza_toppings AS pt
-    ON pt.topping_id = TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(co.extras,',',numbers.n),',',-1))
-WHERE extras != '';
 
 
 
 
 
-SELECT
-    id,
-    pizza_id,
-    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(extras,',',numbers.n),',',-1)) AS topping_id,
-    'extra' AS type,
-    1 AS number
-FROM customer_orders_temp
-JOIN numbers
-    ON LENGTH(extras) - LENGTH(REPLACE(extras,',','')) +1>= numbers.n
-WHERE extras != '';
+
+
 
 --5.Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 --      For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"

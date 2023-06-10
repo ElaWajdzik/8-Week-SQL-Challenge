@@ -416,9 +416,113 @@ The first runner (runner_id = 1) is the most successful in delivering food.
 
 <img width="487" alt="CS2 - B7" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/96dd169a-9d0f-4209-b692-76ebe4cfdbb2">
 
+***
+
+## C. Ingredient Optimisation
+
+This section contains questions and answers about the ingredient in pizzas and changes in orders. 
+Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
+
+### 1. What are the standard ingredients for each pizza?
+
+In the data, information about the ingredients is in table ``pizza_recipes``, which contains information about toppings in a list separated by commas. This kind of table is not exactly perfect for the data in the database because one file contains multiple values.
+
+Origin table with the ingredients
+...
+
+To solve this problem, I need to split the data about toppings from table ``pizza_recipes``, and write down the names of ingredients using the data from table ``pizza_toppings``. And at the end, concatenate this information into one string. 
+
+Check how many ingredients are in every kind of pizza
+```sql
+SELECT
+    *,
+    (LENGTH(toppings) - LENGTH(REPLACE(toppings,",","")) + 1) AS number_of_ingredients    
+FROM pizza_recipes;
+```
+
+Create an additional table with numbers, where ``n`` is the maximum number of toppings (in this case is 8).
+```sql
+CREATE TABLE numbers (
+  n int
+);
+
+INSERT INTO numbers
+    (n)
+VALUES
+    (1),(2),(3),(4),(5),(6),(7),(8);
+```
+
+Temporary tables with pizza ingredients, each one in a separate row.
+```sql
+CREATE TEMPORARY TABLE pizza_recipes_temp AS(
+    SELECT
+        pizza_id,
+        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(pizza_recipes.toppings, ',', numbers.n), ',', -1)) AS topping_id
+    FROM numbers
+    JOIN pizza_recipes
+    ON LENGTH(pizza_recipes.toppings) - LENGTH(REPLACE(pizza_recipes.toppings,',','')) +1 >= numbers.n
+);
+```
+...
+
+```sql
+SELECT
+    pn.pizza_name,
+    REPLACE(GROUP_CONCAT(pt.topping_name),',',', ') AS all_ingredients
+FROM pizza_recipes_temp AS pr
+JOIN pizza_toppings AS pt
+    ON pr.topping_id = pt.topping_id
+JOIN pizza_names AS pn
+    ON pr.pizza_id = pn.pizza_id
+GROUP BY pn.pizza_name;
+```
+
+
+
+P.S. In PSQL should be a function **UNNEST** which separates data about toppings into rows and doesn't need the auxiliary table with numbers.
+
+
+
+### 2. What was the most commonly added extra?
+
+
+### 3. What was the most common exclusion?
+
+
+### 4. Generate an order item for each record in the ``customers_orders`` table in the format of one of the following:
+* ``Meat Lovers``
+* ``Meat Lovers - Exclude Beef``
+* ``Meat Lovers - Extra Bacon``
+* ``Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers``
+
+### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the ``customer_orders`` table and add a ``2x`` in front of any relevant ingredients
+* For example: ``"Meat Lovers: 2xBacon, Beef, ... , Salami"``
+
+### 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
 ***
 
-C. Ingredient Optimisation
+## D. Pricing and Ratings
 
-D. Pricing and Ratings
+### 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
+### 2. What if there was an additional $1 charge for any pizza extras?
+* Add cheese is $1 extra
+### 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
+### 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
+* ``customer_id``
+* ``order_id``
+* ``runner_id``
+* ``rating``
+* ``order_time``
+* ``pickup_time``
+* Time between order and pickup
+* Delivery duration
+* Average speed
+* Total number of pizzas
+
+### 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+
+*** 
+## E. Bonus Questions
+
+### If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an ``INSERT`` statement to demonstrate what would happen if a new ``Supreme`` pizza with all the toppings was added to the Pizza Runner menu?

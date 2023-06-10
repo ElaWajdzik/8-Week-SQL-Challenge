@@ -9,13 +9,12 @@
 
 USE pizza_runner;
 
-
 --1.How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
 --week started on Sunday (3.01.2021) (mode 0 -> start week on Sunday, value range 0-53, first week is with a first Sunday in this year)
 SELECT
     WEEK(registration_date) AS week_of_a_year,
-    COUNT(DISTINCT runner_id)
+    COUNT(DISTINCT runner_id) AS number_of_runners_signe_up
 FROM runners
 GROUP BY week_of_a_year;
 
@@ -28,7 +27,7 @@ WITH runners_temp AS (
     
 SELECT
     day_of_start_week,
-    COUNT(runner_id)
+    COUNT(runner_id) AS number_of_runners_signe_up
 FROM runners_temp
 GROUP BY day_of_start_week;
 
@@ -51,7 +50,6 @@ SELECT
     ROUND(AVG(minutes_difference),0) AS avg_minutes_to_pickup
 FROM order_time_diff
 GROUP BY runner_id;
-
 
 --3.Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
@@ -80,7 +78,7 @@ GROUP BY number_of_pizza;
 
 SELECT
     customer_id,
-    ROUND(AVG(distance),1)
+    ROUND(AVG(distance),1) As avg_distance
 FROM runner_orders_temp
 JOIN customer_orders_temp
     ON runner_orders_temp.order_id = customer_orders_temp.order_id
