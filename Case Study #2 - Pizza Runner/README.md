@@ -24,7 +24,6 @@ All datasets exist within the ```pizza_runner``` database schema - be sure to in
 
 <img width="430" alt="graf2" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/b8c108d2-0bf9-40af-867a-ae307acbf921">
 
-***
 
 ## Case Study Questions
 This case study includes questions about:
@@ -33,6 +32,11 @@ This case study includes questions about:
 - Ingredient Optimisation
 - Pricing and Ratings
 - Bonus DML Challenges (DML = Data Manipulation Language)
+
+## Solution
+Complete sql code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax).
+
+***
 
 ### Cleaning data 
 Sytax SQL is in the file "0. pizza_runner cleaning".
@@ -59,7 +63,7 @@ In the table ```runner_orders``` there were some problems:
 To fix this problem, first I use clauses **CASE** and **TRIM** to change some wrong data. Second, I use the clause **MODIFY COLUMN** to change the type of data in some columns.
 
 
-Part of the syntax with clauses **CASE**mand **TRIM**:
+Part of the syntax with clauses **CASE** and **TRIM**:
 
 ````sql
 CASE 
@@ -89,7 +93,7 @@ I don't want to change the origin input, that why I created a temporary tables w
 ## A. Pizza Metrics
 
 This section contains basic questions and answers about orders.
-Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
+Complete sql code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
 
 
 ### 1. How many pizzas were ordered?
@@ -100,7 +104,17 @@ SELECT
 FROM customer_orders_temp;
 ````
 
-The customers ordered 14 pizzas, this is the number of rows in table ```customer_orders_temp```.
+#### Steps:
+- I used **COUNT** to count the number of rows in table ```customer_orders_temp```.
+
+#### Result:
+| number_of_orders | 
+| ---------------- | 
+| 14               | 
+
+- The customers ordered 14 pizzas, this is the number of rows in table ```customer_orders_temp```.
+
+***
 
 ### 2. How many unique customer orders were made?
 
