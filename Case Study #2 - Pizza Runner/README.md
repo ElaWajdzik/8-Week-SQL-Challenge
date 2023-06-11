@@ -34,7 +34,8 @@ This case study includes questions about:
 - Bonus DML Challenges (DML = Data Manipulation Language)
 
 ## Solution
-Complete sql code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax).
+Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code).
+
 
 ***
 
@@ -46,7 +47,7 @@ First of all, I cleaned and fixed the data in tables ```customer_orders``` and `
 In the table ```customer_orders``` was a problem only with the values **null** and **NULL**. Using the clause **CASE** I replace these two problematic values. I do this operation for the columns ```exclusions``` and ```extras```.
 
 
-Part of the syntax with the clause **CASE**:
+Part of the code with the clause **CASE**:
 
 ````sql
 CASE
@@ -63,7 +64,7 @@ In the table ```runner_orders``` there were some problems:
 To fix this problem, first I use clauses **CASE** and **TRIM** to change some wrong data. Second, I use the clause **MODIFY COLUMN** to change the type of data in some columns.
 
 
-Part of the syntax with clauses **CASE** and **TRIM**:
+Part of the code with clauses **CASE** and **TRIM**:
 
 ````sql
 CASE 
@@ -75,7 +76,7 @@ CASE
 END AS duration,
 ````
 
-Part of the syntax with the clause **MODIFY COLUMN**:
+Part of the code with the clause **MODIFY COLUMN**:
 
 ````sql
 ALTER TABLE runner_orders_temp
@@ -93,7 +94,7 @@ I don't want to change the origin input, that why I created a temporary tables w
 ## A. Pizza Metrics
 
 This section contains basic questions and answers about orders.
-Complete sql code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
+Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code)
 
 
 ### 1. How many pizzas were ordered?
@@ -104,8 +105,8 @@ SELECT
 FROM customer_orders_temp;
 ````
 
-#### Steps:
-- I used **COUNT** to count the number of rows in table ```customer_orders_temp```.
+#### Step:
+- I used **COUNT** to count the number of rows in table ```customer_orders_temp```, because one row is one ordered pizza.
 
 #### Result:
 | number_of_orders | 
@@ -272,7 +273,7 @@ I use clause **DAYOFWEEK()** which returns a number from 1 to 7, starting from S
 ## B. Runner and Customer Experience
 
 This section contains questions and answers about the details of delivery and runners. 
-Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
+Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code)
 
 ### 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 
@@ -436,7 +437,7 @@ The first runner (runner_id = 1) is the most successful in delivering food.
 ## C. Ingredient Optimisation
 
 This section contains questions and answers about the ingredient in pizzas and changes in orders. 
-Complete syntax is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20syntax)
+Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code)
 
 ### 1. What are the standard ingredients for each pizza?
 

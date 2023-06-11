@@ -46,7 +46,7 @@ Each of the following case study questions can be answered using a single SQL st
 
 ## Solution
 
-Complete sql code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20syntax/danny's%20diner.sql).
+Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20code).
 
 ***
 
