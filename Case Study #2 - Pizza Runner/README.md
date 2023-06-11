@@ -22,6 +22,7 @@ All datasets exist within the ```pizza_runner``` database schema - be sure to in
 
 ## Relationship Diagram
 
+<img width="430" alt="graf2" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/b8c108d2-0bf9-40af-867a-ae307acbf921">
 
 ***
 
