@@ -483,6 +483,7 @@ GROUP BY pn.pizza_name;
 
 <img width="450" alt="CS2 - C1c" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/3b90bb2e-f13f-41da-ba40-a9ad1de96ff5">
 
+
 Final thought:
 * The method of this solution comes from https://www.delftstack.com/howto/mysql/mysql-split-string-into-rows/
 * Unfortunately, in MySQL there is no reverse function for **GRUP_CONCAT**.
@@ -606,6 +607,78 @@ In the solution, I created two temporary tables with the extras and excludions. 
 
 ### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the ``customer_orders`` table and add a ``2x`` in front of any relevant ingredients
 * For example: ``"Meat Lovers: 2xBacon, Beef, ... , Salami"``
+
+```sql
+WITH table_extras_temp AS(
+SELECT
+    id,
+    pizza_id,
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(extras,',',numbers.n),',',-1)) AS topping_id,
+    'extra' AS type,
+    1 AS number
+FROM customer_orders
+JOIN numbers
+    ON LENGTH(extras) - LENGTH(REPLACE(extras,',','')) +1>= numbers.n
+WHERE extras != ''
+),
+table_excludions_temp AS(
+SELECT
+    id,
+    pizza_id,
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(exclusions,',',numbers.n),',',-1)) AS topping_id,
+    'exclusion' AS type,
+    -1 AS number
+FROM customer_orders
+JOIN numbers
+    ON LENGTH(exclusions) - LENGTH(REPLACE(exclusions,',','')) +1>= numbers.n
+WHERE exclusions != ''
+),
+table_pizza_toppings_temp AS(
+SELECT
+    id,
+    co.pizza_id,
+    topping_id,
+    'pizza' AS type,
+    1 AS number
+FROM customer_orders AS co
+JOIN pizza_recipes_temp
+    ON co.pizza_id = pizza_recipes_temp.pizza_id
+),
+table_pizza_ingredions_temp AS(
+SELECT 
+    id,
+    pizza_id,
+    topping_name,
+    SUM(number) AS number_of_use
+FROM 
+    (SELECT * FROM table_excludions_temp
+    UNION ALL
+    SELECT * FROM table_extras_temp
+    UNION ALL
+    SELECT * FROM table_pizza_toppings_temp
+    )AS table_toppings_order
+JOIN pizza_toppings
+    ON table_toppings_order.topping_id = pizza_toppings.topping_id
+GROUP BY id, topping_name
+ORDER BY id
+)
+
+SELECT 
+    pi.id,
+    CONCAT(
+        pizza_name,': ',
+        REPLACE(GROUP_CONCAT(
+            CASE 
+                WHEN number_of_use > 1 THEN CONCAT(number_of_use,'x',topping_name)
+                ELSE topping_name
+            END),',',', ')) AS all_ingredions
+FROM table_pizza_ingredions_temp AS pi
+JOIN pizza_names
+    ON pi.pizza_id = pizza_names.pizza_id
+WHERE pi.number_of_use >0
+GROUP BY pi.id;
+```
+To solve this problem, I use a table ``pizza_recipes_temp`` which was created in question 1 in section C.
 
 ### 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 
