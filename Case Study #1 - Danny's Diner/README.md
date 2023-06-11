@@ -26,8 +26,7 @@ You can inspect the entity relationship diagram and example data below.
 
 ## Relationship Diagram
 
-<img width="489" alt="graf_case-study-1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/49b6c3fa-e7c6-4478-907c-b952eb0ce480">
-
+<img width="404" alt="graf1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/f8120a7a-13d9-49e9-92f4-2077ec3041a9">
 
 
 ## Case Study Questions
