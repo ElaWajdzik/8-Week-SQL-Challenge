@@ -94,7 +94,8 @@ GROUP BY sales.customer_id;
 ````
 
 #### Steps:
-- Use **COUNT DISTINCT** to count the number of different days of a visit.
+- Use **COUNT DISTINCT** to count the number of different days of a visit. The function **COUNT(DISTINCT)** returns the number of rows with different non-NULL values. In this case, it will be the number of days visited for each customer.
+
 
 #### Result:
 | customer_id | number_of_visits |
@@ -136,7 +137,7 @@ WHERE popular_rank=1;
 
 #### Steps:
 - I created a temporary table to calculate the ranking of orders. Clause **WITH**
-- I created the ranking of orders using the clause **DENSE_RANK**
+- I created the ranking of orders using the clause **DENSE_RANK**. The function **DENSE_RANK()** is used to find the rank of a row in a set (which we can specify in the parameter **PARTITION BY**). This function displays the numbers from one, and in the case of identical values, it receives the same result and doesn't skip the values in the results. e.g. If in the set we have two values whose rank is equal to 2, then the next value will have rank equal to 3.
 
 #### Result:
 | customer_id | product_name |
