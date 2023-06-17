@@ -62,6 +62,30 @@ FROM subscriptions;
 
 - Foodie-Fi had 1000 customers.
 
+### 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
+
+```sql
+SELECT 
+    MONTH(start_date) AS month_start,
+    COUNT(customer_id) AS number_of_customers
+FROM subscriptions
+WHERE plan_id=0
+GROUP BY month_start;
+```
+
+#### Steps:
+- I extracted the month from the ``start_date`` using the function **MONTH**.
+- I used **COUNT** to aggregate the number of customers in months.
+- I used clause **WHERE** to take only data about the castomers in ``trial`` plan.
+
+#### Result:
+
+...tab
+...plot
+
+- The average number of new customers in a month is around 80. The number of new customers on a trial plan is similar every month. The biggest difference between two months was 26 (mar - 94 and feb - 68), but the rest of the month's data is close to each other (between 75 and 89).
+
+
 ***
 
 
