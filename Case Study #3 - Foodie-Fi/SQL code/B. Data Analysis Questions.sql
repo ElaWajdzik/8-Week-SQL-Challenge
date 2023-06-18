@@ -38,9 +38,81 @@ WHERE YEAR(start_date) > 2020
 GROUP BY year_start, plan_name;
 
 -- 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
+
+SELECT
+    COUNT(DISTINCT customer_id) AS number_of_churned,
+    ROUND(COUNT(DISTINCT customer_id)/10,1) AS perc_of_charned
+FROM subscriptions
+WHERE plan_id=4;
+
 -- 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
+
+WITH churn_customers AS(
+SELECT 
+    customer_id,
+    start_date AS churn_date
+FROM subscriptions
+WHERE plan_id =4),
+start_trial AS(
+SELECT 
+    customer_id,
+    start_date AS trial_date
+FROM subscriptions
+WHERE plan_id =0)
+
+SELECT 
+    COUNT(cc.customer_id) AS number_of_customers,
+    ROUND(COUNT(cc.customer_id)/10,1) AS perc_of_charned
+FROM churn_customers AS cc
+JOIN start_trial AS st
+    ON cc.customer_id = st.customer_id   
+WHERE DATEDIFF(cc.churn_date,st.trial_date) <8;
+
 -- 6. What is the number and percentage of customer plans after their initial free trial?
+
+WITH plan_after_trial AS(
+SELECT
+    *,
+    MIN(start_date) AS start_plan_after_trial
+FROM subscriptions
+WHERE plan_id!=0
+GROUP BY customer_id
+)
+
+SELECT 
+    plan_name,
+    COUNT(customer_id) AS number_of_customers,
+    ROUND(COUNT(customer_id)/10,1) AS perc_of_customers
+FROM plan_after_trial 
+JOIN plans
+    ON plan_after_trial.plan_id = plans.plan_id
+GROUP BY plan_name
+ORDER BY COUNT(customer_id) DESC;
+
 -- 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+
+WITH plan_before_2021 AS (
+SELECT 
+    customer_id,
+    MAX(start_date) AS start_last_plan_before_2021
+FROM subscriptions
+WHERE YEAR(start_date) < 2021
+GROUP BY customer_id)
+
+
+SELECT
+    plan_name,
+    COUNT(pb21.customer_id) AS number_of_customers,
+    ROUND(COUNT(pb21.customer_id)/10,1) AS proc_of_customers
+FROM plan_before_2021 AS pb21
+JOIN subscriptions AS sub
+    ON sub.customer_id = pb21.customer_id AND sub.start_date = pb21.start_last_plan_before_2021
+JOIN plans
+    ON sub.plan_id = plans.plan_id
+GROUP BY plan_name
+ORDER BY COUNT(pb21.customer_id) DESC
+; 
+
 -- 8. How many customers have upgraded to an annual plan in 2020?
 -- 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 -- 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
