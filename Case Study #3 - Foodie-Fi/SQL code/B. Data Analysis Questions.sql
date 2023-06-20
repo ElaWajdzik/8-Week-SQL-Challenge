@@ -3,7 +3,7 @@
 ------------------------------
 
 --Author: Ela Wajdzik
---Date: 14.06.2023
+--Date: 14.06.2023 (update 20.06.2023)
 --Tool used: Visual Studio Code & xampp
 
 USE foodie_fi;
@@ -45,7 +45,7 @@ SELECT
         SELECT
             COUNT(DISTINCT customer_id)
         FROM subscriptions
-    )*100,1) AS pct_of_charned
+    )*100,1) AS pct_of_churned
 FROM subscriptions
 WHERE plan_id=4;
 
@@ -144,5 +144,98 @@ JOIN customers_start_date AS csd
 
 -- 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
+WITH customer_in_plan_3 AS (
+SELECT
+    customer_id,
+    start_date AS upgrade_to_3
+FROM subscriptions
+WHERE plan_id = 3),
+customers_start_date AS(
+SELECT 
+    customer_id,
+    MIN(start_date) AS start_date
+FROM subscriptions
+GROUP BY customer_id),
+customers_in_category AS (
+SELECT 
+    c3.customer_id,
+    TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0) AS category_id,
+    CASE 
+        WHEN TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30 != 0 THEN TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30+1
+        ELSE TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30 
+    END AS start_category,
+    TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30+30 AS end_category
+FROM customer_in_plan_3 AS c3
+JOIN customers_start_date AS csd
+    ON c3.customer_id = csd.customer_id
+GROUP BY c3.customer_id)
+
+SELECT
+    CONCAT(start_category,'-',end_category,' days') AS bucket,
+    COUNT(customer_id) AS number_of_customers
+FROM customers_in_category
+GROUP BY category_id
+ORDER BY category_id;
+
+
+-- try how to work the function TRUNCATE()
+-- SELECT TRUNCATE(((10-1)/3),0)
+
+-- the function WIDTH_BUCKET() will be perfect to solve this problem, but it doesn't work in MySQL
+-- WIDTH_BUCKET( expression, min, max, buckets)
+
+-- try how the function NTILE() works, and if they can replace the function WIDTH_BUCKET()
+-- NTILE(3) over (ORDER BY customer_id)
+
+-- the first way of solving with the function CASE() to set up category. I don't think that is the best option.
+/*
+WITH customer_in_plan_3 AS (
+SELECT
+    customer_id,
+    start_date AS upgrade_to_3
+FROM subscriptions
+WHERE plan_id = 3),
+customers_start_date AS(
+SELECT 
+    customer_id,
+    MIN(start_date) AS start_date
+FROM subscriptions
+GROUP BY customer_id),
+customers_in_category AS (
+SELECT 
+    c3.customer_id,
+    CASE 
+        WHEN DATEDIFF(c3.upgrade_to_3,csd.start_date) < 31 THEN '0-30'
+        WHEN DATEDIFF(c3.upgrade_to_3,csd.start_date) < 61 THEN '31-60'
+        WHEN DATEDIFF(c3.upgrade_to_3,csd.start_date) < 91 THEN '61-90'
+        WHEN DATEDIFF(c3.upgrade_to_3,csd.start_date) < 121 THEN '91-120'
+        WHEN DATEDIFF(c3.upgrade_to_3,csd.start_date) < 151 THEN '121-150'
+        WHEN DATEDIFF(c3.upgrade_to_3,csd.start_date) < 181 THEN '151-180'
+        ELSE 'more than 180'
+    END AS category_number_of_days
+FROM customer_in_plan_3 AS c3
+JOIN customers_start_date AS csd
+    ON c3.customer_id = csd.customer_id
+GROUP BY c3.customer_id)
+
+SELECT
+    category_number_of_days,
+    COUNT(customer_id)
+FROM customers_in_category
+GROUP BY category_number_of_days;
+*/
 
 -- 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+
+WITH customers_plan AS (
+SELECT
+    customer_id,
+    GROUP_CONCAT(plan_id ORDER BY start_date) AS plan_path
+FROM subscriptions
+WHERE YEAR(start_date) <2021
+GROUP BY customer_id)
+
+SELECT *
+FROM customers_plan
+WHERE plan_path LIKE '%2%1%';
+

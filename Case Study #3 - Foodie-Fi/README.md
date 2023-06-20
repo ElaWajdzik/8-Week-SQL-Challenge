@@ -85,7 +85,75 @@ GROUP BY month_start;
 
 - The average number of new customers in a month is around 80. The number of new customers on a trial plan is similar every month. The biggest difference between two months was 26 (mar - 94 and feb - 68), but the rest of the month's data is close to each other (between 75 and 89).
 
+***
+
+### 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
+
+```sql
+SELECT 
+    YEAR(start_date) AS year_start,
+    plan_name,
+    COUNT(customer_id) AS number_of_customers
+FROM subscriptions AS sub
+JOIN plans
+    ON plans.plan_id = sub.plan_id
+WHERE YEAR(start_date) > 2020
+GROUP BY year_start, plan_name;
+```
+
+#### Steps:
+- I used the function **YEAR()** to limit the data that came after 2020.
+- I aggregated the data using **GROUP BY** in two data ``year_start`` and ``plan_name``.
+
+
+#### Result:
+- After 2020, no one starts the ``trial`` (``plan_id`` = 0). More than 1/3 of events in 2021 were churned (71 events ``churn``). In data are 8 events of the starting plan ``basic monthly``, 60 events of the starting plan ``pro monthly`` and 63 events of the starting plan ``pro annual``.
+
+....
+***
+
+### 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
+
+```sql
+SELECT
+    COUNT(DISTINCT customer_id) AS number_of_churned,
+    ROUND(COUNT(DISTINCT customer_id)/(
+        SELECT
+            COUNT(DISTINCT customer_id)
+        FROM subscriptions
+    )*100,1) AS pct_of_churned
+FROM subscriptions
+WHERE plan_id=4;
+```
+
+#### Steps:
+- I used **COUNT DISTINCT** to count how many customers churned. In the data didn't exist case that someone after churned back to the subscription, it is not necessary to use **COUNT DISTINCT** the function **COUNT** will be enough.
+- I calculated the percent of churned customers using the number of customers who churned and the total number of customers. Because the data are close, I know that the total number of customers is 1000, but in solving, I used a formula to count how many customers we have.
+
+
+#### Result:
+- In the data 307 customers churned, which means that churn is 30,7%.
+
+| number_of_churned | pct_of_churned |
+| ------------------|----------------|
+| 307               | 30.7           |
+
 
 ***
 
 
+
+
+
+### 
+
+```sql
+```
+
+#### Steps:
+-
+
+#### Result:
+-
+
+***
