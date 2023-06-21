@@ -140,14 +140,204 @@ WHERE plan_id=4;
 
 
 ***
+### 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 
-
-
-
-
-### 
 
 ```sql
+WITH customers_plan AS (
+SELECT 
+    customer_id,
+    GROUP_CONCAT(plan_id ORDER BY start_date) AS plan_path
+FROM subscriptions
+GROUP BY customer_id)
+
+SELECT 
+    COUNT(customer_id) AS number_of_customers_churn_after_trial,
+    ROUND(COUNT(customer_id)/(
+        SELECT
+            COUNT(DISTINCT customer_id)
+        FROM subscriptions
+    )*100,0) AS pct_of_customers_churn_after_trial
+FROM customers_plan
+WHERE plan_path LIKE '%0,4%';
+```
+
+#### Steps:
+- I created a temoraty table to create a column ``plan_path``, which includes the list of changed ``plan_id`` for each customer.
+- I used clause **WHERE** and **LIKE** with **%** to calculate only the customers witch have in there ``plan_path`` 4 after 0 (``plan_id``= 4 it is churn, ``plan_id`` = 0 it is traial).
+
+#### Result:
+- In the data, there are **92** customers who churn straight after trial, which is **9%** of all customers.
+
+| number_of_customers_churn_after_trial | pct_of_customers_churn_after_trial |
+| --------------------------------------|------------------------------------|
+| 92                                    | 9                                  |
+
+***
+
+### 6. What is the number and percentage of customer plans after their initial free trial?
+
+```sql
+WITH plan_after_trial AS(
+SELECT
+    *,
+    MIN(start_date) AS start_plan_after_trial
+FROM subscriptions
+WHERE plan_id!=0
+GROUP BY customer_id
+)
+
+SELECT 
+    plan_name,
+    COUNT(customer_id) AS number_of_customers,
+    ROUND(COUNT(customer_id)/10,1) AS pct_of_customers
+FROM plan_after_trial 
+JOIN plans
+    ON plan_after_trial.plan_id = plans.plan_id
+GROUP BY plan_name
+ORDER BY COUNT(customer_id) DESC;
+```
+
+#### Steps:
+- First, I created a temporary table that includes the data about the first change of plan (**MIN(start_date)**). Every customer starts a subscription from the trial, and they can't go back to the trial.
+- Then I aggregated the data about ``plan_name`` every customer.
+
+#### Result:
+- The biggest group of customers go to the monthly plan (basic monthly 54,6% and pro monthly 32,5%). Only 14% of customers choose a different plan (churn 9,2% and pro annual 3,7%). More customers churn that go to the pro annual plan.
+- Maybe in the future, it will be good to add ``basic annual`` plan.
+
+....
+
+***
+
+### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+
+```sql
+WITH plan_before_2021 AS (
+SELECT 
+    customer_id,
+    MAX(start_date) AS start_last_plan_before_2021
+FROM subscriptions
+WHERE YEAR(start_date) < 2021
+GROUP BY customer_id)
+
+SELECT
+    plan_name,
+    COUNT(pb21.customer_id) AS number_of_customers,
+    ROUND(COUNT(pb21.customer_id)/10,1) AS pct_of_customers
+FROM plan_before_2021 AS pb21
+JOIN subscriptions AS sub
+    ON sub.customer_id = pb21.customer_id AND sub.start_date = pb21.start_last_plan_before_2021
+JOIN plans
+    ON sub.plan_id = plans.plan_id
+GROUP BY plan_name
+ORDER BY COUNT(pb21.customer_id) DESC; 
+```
+
+#### Steps:
+- First, I created a temporary table with the last change of plan in 2020 (**WHERE YEAR(start_date) < 2021**) for every customer (**MAX(start_date)**).
+- I joined the temporary tables with the information about the date of the last change plan with the ``subscriptions`` to know which plan they had.
+
+#### Result:
+- At 31.12.2020 almost 75% of all customers of Foodi-Fi were on a paid plan (exactly 74,5%). The more clients were ``pro monthly`` plan (32,6% of all customers). Almost one in four customers churned (23,6%).
+
+...
+
+***
+
+### 8. How many customers have upgraded to an annual plan in 2020?
+
+```sql
+SELECT
+    COUNT(customer_id) AS number_of_customers
+FROM subscriptions
+WHERE plan_id = 3 AND YEAR(start_date) = 2020;
+```
+
+#### Steps:
+- I used function **WHERE** with two conditionals to select the customers who upgrade to an annual plan in 2020.
+
+#### Result:
+- In 2020 **195** customers upgraded to an annual plan (that is 19,5% of customers).
+
+| number_of_customers |
+|---------------------|
+| 195                 |
+
+***
+
+### 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+
+```sql
+WITH customer_in_plan_3 AS (
+SELECT
+    customer_id,
+    start_date AS upgrade_to_3
+FROM subscriptions
+WHERE plan_id = 3),
+customers_start_date AS(
+SELECT 
+    customer_id,
+    MIN(start_date) AS start_date
+FROM subscriptions
+GROUP BY customer_id)
+
+SELECT 
+    ROUND(AVG(DATEDIFF(c3.upgrade_to_3,csd.start_date)),0) AS avg_number_of_days_to_upgrade_to_3
+FROM customer_in_plan_3 AS c3
+JOIN customers_start_date AS csd
+    ON c3.customer_id = csd.customer_id;
+```
+
+#### Steps:
+-
+
+#### Result:
+-
+
+| avg_number_of_days_to_upgrade_to_3 |
+|------------------------------------|
+| 105                                |
+
+***
+
+
+
+### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+
+```sql
+WITH customer_in_plan_3 AS (
+SELECT
+    customer_id,
+    start_date AS upgrade_to_3
+FROM subscriptions
+WHERE plan_id = 3),
+customers_start_date AS(
+SELECT 
+    customer_id,
+    MIN(start_date) AS start_date
+FROM subscriptions
+GROUP BY customer_id),
+customers_in_category AS (
+SELECT 
+    c3.customer_id,
+    TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0) AS category_id,
+    CASE 
+        WHEN TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30 != 0 THEN TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30+1
+        ELSE TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30 
+    END AS start_category,
+    TRUNCATE((DATEDIFF(c3.upgrade_to_3,csd.start_date)-1)/30,0)*30+30 AS end_category
+FROM customer_in_plan_3 AS c3
+JOIN customers_start_date AS csd
+    ON c3.customer_id = csd.customer_id
+GROUP BY c3.customer_id)
+
+SELECT
+    CONCAT(start_category,'-',end_category,' days') AS bucket,
+    COUNT(customer_id) AS number_of_customers
+FROM customers_in_category
+GROUP BY category_id
+ORDER BY category_id;
 ```
 
 #### Steps:
