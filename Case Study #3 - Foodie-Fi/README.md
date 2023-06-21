@@ -80,8 +80,10 @@ GROUP BY month_start;
 
 #### Result:
 
-...tab
-...plot
+![CS3 - B2](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/05840a7f-567b-4a96-8d33-e484d391c148)
+
+![plotCS3B02](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/487f890d-8366-457a-88ec-cc7781e73c2e)
+
 
 - The average number of new customers in a month is around 80. The number of new customers on a trial plan is similar every month. The biggest difference between two months was 26 (mar - 94 and feb - 68), but the rest of the month's data is close to each other (between 75 and 89).
 
@@ -109,7 +111,8 @@ GROUP BY year_start, plan_name;
 #### Result:
 - After 2020, no one starts the ``trial`` (``plan_id`` = 0). More than 1/3 of events in 2021 were churned (71 events ``churn``). In data are 8 events of the starting plan ``basic monthly``, 60 events of the starting plan ``pro monthly`` and 63 events of the starting plan ``pro annual``.
 
-....
+![CS3 - B3](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/beebc2a8-6a6f-46a6-a014-195bc3572d70)
+
 ***
 
 ### 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
@@ -206,7 +209,8 @@ ORDER BY COUNT(customer_id) DESC;
 - The biggest group of customers go to the monthly plan (basic monthly 54,6% and pro monthly 32,5%). Only 14% of customers choose a different plan (churn 9,2% and pro annual 3,7%). More customers churn that go to the pro annual plan.
 - Maybe in the future, it will be good to add ``basic annual`` plan.
 
-....
+![CS3 - B6](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/00d6ff22-68e5-43c1-8a97-c50b8fbdaf5d)
+
 
 ***
 
@@ -241,7 +245,8 @@ ORDER BY COUNT(pb21.customer_id) DESC;
 #### Result:
 - At 31.12.2020 almost 75% of all customers of Foodi-Fi were on a paid plan (exactly 74,5%). The more clients were ``pro monthly`` plan (32,6% of all customers). Almost one in four customers churned (23,6%).
 
-...
+![CS3 - B7](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/db4920c4-104c-4ac8-93c7-981b387b4c7f)
+
 
 ***
 
@@ -345,5 +350,7 @@ ORDER BY category_id;
 
 #### Result:
 -
+
+![CS3 - B10](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d9a395a7-cac2-4bb8-8e0d-93491321ed0e)
 
 ***
