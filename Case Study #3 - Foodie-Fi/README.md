@@ -16,7 +16,11 @@ Danny has shared the data design for Foodie-Fi and also short descriptions on ea
 
 All datasets exist within the ``foodie_fi`` database schema - be sure to include this reference within your SQL scripts as you start exploring the data and answering the case study questions.
 
+
 ## Relationship Diagram
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6cdd34d8-1c23-4294-a4ad-95e45605ecb4" width="500">
+
 
 ## Case Study Questions
 
@@ -51,25 +55,26 @@ JOIN plans
 WHERE customer_id IN ('2','13','21','432','431','660','890','901');
 ```
 
-....
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/ae0967f7-749a-4780-a2df-2162a1143d75" width="450">
 
 First, I chose randomly 8 ``curtomers_id`` (2,13,21,432,431,600, 890 and 901).
-I think that showing the onboarding journey of only four of these customers will be enough to show the whole spectrum of how the customers can act.
+I think that showing the onboarding journey of only four of these customers will be enough to show the whole spectrum of how the customers can act.\
 
+Customer 2: (``customer_id``= 2) starts the trial on Foodie-Fi on September 20, and after that (on September 27) goes to the pro annual subscription and pays $199 once a year.\
 
-Customer 2: (``customer_id``= 2) starts the trial on Foodie-Fi on September 20, and after that (on September 27) goes to the pro annual subscription and pays $199 once a year.
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/dfc9ea40-c6c8-401e-8ef8-abfc61bbf319" width="500">
 
-...
+Customer 21: (``customer_id``= 21) starts the trial on Foodie-Fi on February 4, and after that (on February 11) goes to the basic monthly subscription and pays $9.9 for every month. But he/she changed the plan again on June 3 to the pro monthly, which means that this customer has had the basic monthly plan for almost 4 months and after that has had the pro monthly plan for another 4 months because he/she stopped subscribing to Foodie-Fi on September 27. Basically, this client has access to Foodie-Fi until October 3 (the end date of the current buildings).\
 
-Customer 21: (``customer_id``= 21) starts the trial on Foodie-Fi on February 4, and after that (on February 11) goes to the basic monthly subscription and pays $9.9 for every month. But he/she changed the plan again on June 3 to the pro monthly, which means that this customer has had the basic monthly plan for almost 4 months and after that has had the pro monthly plan for another 4 months because he/she stopped subscribing to Foodie-Fi on September 27. Basically, this client has access to Foodie-Fi until October 3 (the end date of the current buildings).
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/5c3ff40c-4ce0-429f-84c6-4baf5cb4632d" width="500">
 
+Customer 660: (``customer_id``= 660) starts the trial on Foodie-Fi on May 2, and after that (on May 9) ends the subscription. This client didn't have any paid plans on Foodie-Fi, he/she only has 7 days of free access to Danny's platform.\
 
-Customer 660:
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/4289be93-d3cc-4f5a-aca5-3d7fc1bb65fc" width="500">
 
+Customer 901: (``customer_id``= 901) starts the trial on Foodie-Fi on April 21, and after that (on April 28) goes to the basic monthly subscription and pays $9.9 for every month. But on May 22 he/she again changed the plan to pro monthly. This customer is still on the pro monthly plan (he/she didn't churn like customer 21).\
 
-Customer 901:
-
-
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/2482645e-d7fb-402f-be86-f7b1bad12e73" width="500">
 
 ## B. Data Analysis Questions
 
@@ -110,10 +115,10 @@ GROUP BY month_start;
 
 #### Result:
 
-![CS3 - B2](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/05840a7f-567b-4a96-8d33-e484d391c148)
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/05840a7f-567b-4a96-8d33-e484d391c148" width="300">
 
-![plotCS3B02](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/487f890d-8366-457a-88ec-cc7781e73c2e)
 
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/487f890d-8366-457a-88ec-cc7781e73c2e" width="700">
 
 - The average number of new customers in a month is around 80. The number of new customers on a trial plan is similar every month. The biggest difference between two months was 26 (mar - 94 and feb - 68), but the rest of the month's data is close to each other (between 75 and 89).
 
@@ -141,7 +146,7 @@ GROUP BY year_start, plan_name;
 #### Result:
 - After 2020, no one starts the ``trial`` (``plan_id`` = 0). More than 1/3 of events in 2021 were churned (71 events ``churn``). In data are 8 events of the starting plan ``basic monthly``, 60 events of the starting plan ``pro monthly`` and 63 events of the starting plan ``pro annual``.
 
-![CS3 - B3](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/beebc2a8-6a6f-46a6-a014-195bc3572d70)
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/beebc2a8-6a6f-46a6-a014-195bc3572d70" width="500">
 
 ***
 
@@ -239,8 +244,7 @@ ORDER BY COUNT(customer_id) DESC;
 - The biggest group of customers go to the monthly plan (basic monthly 54,6% and pro monthly 32,5%). Only 14% of customers choose a different plan (churn 9,2% and pro annual 3,7%). More customers churn that go to the pro annual plan.
 - Maybe in the future, it will be good to add ``basic annual`` plan.
 
-![CS3 - B6](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/00d6ff22-68e5-43c1-8a97-c50b8fbdaf5d)
-
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/00d6ff22-68e5-43c1-8a97-c50b8fbdaf5d" width="500">
 
 ***
 
@@ -275,8 +279,7 @@ ORDER BY COUNT(pb21.customer_id) DESC;
 #### Result:
 - At 31.12.2020 almost 75% of all customers of Foodi-Fi were on a paid plan (exactly 74,5%). The more clients were ``pro monthly`` plan (32,6% of all customers). Almost one in four customers churned (23,6%).
 
-![CS3 - B7](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/db4920c4-104c-4ac8-93c7-981b387b4c7f)
-
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/db4920c4-104c-4ac8-93c7-981b387b4c7f" width="500">
 
 ***
 
@@ -381,7 +384,8 @@ ORDER BY category_id;
 #### Result:
 -
 
-![CS3 - B10](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d9a395a7-cac2-4bb8-8e0d-93491321ed0e)
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d9a395a7-cac2-4bb8-8e0d-93491321ed0e" width="300">
+
 
 ***
 
