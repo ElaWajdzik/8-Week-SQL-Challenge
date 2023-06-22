@@ -20,28 +20,58 @@ All datasets exist within the ``foodie_fi`` database schema - be sure to include
 
 ## Case Study Questions
 
-### Data Analysis Questions
-1. How many customers has Foodie-Fi ever had?
-2. What is the monthly distribution of ``trial`` plan ``start_date`` values for our dataset - use the start of the month as the group by value
-3. What plan ``start_date`` values occur after the year 2020 for our dataset? Show the breakdown by count of events for each ``plan_name``
-4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
-5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
-6. What is the number and percentage of customer plans after their initial free trial?
-7. What is the customer count and percentage breakdown of all 5 ``plan_name`` values at ``2020-12-31``?
-8. How many customers have upgraded to an annual plan in 2020?
-9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
-10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
-11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+- A. Customer Journey
 
-### Challenge Payment Question
+- B. Data Analysis Questions
 
-### Outside The Box Questions
+- Challenge Payment Question
 
+- Outside The Box Questions
+
+***
 
 ## Solution
 Complete SQL code is available [here]()
 
 ***
+## A. Customer Journey
+
+Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey.
+
+```sql
+SELECT
+    subscriptions.customer_id,
+    subscriptions.plan_id,
+    plans.plan_name,
+    subscriptions.start_date,
+    plans.price
+FROM subscriptions
+JOIN plans
+    ON subscriptions.plan_id = plans.plan_id
+WHERE customer_id IN ('2','13','21','432','431','660','890','901');
+```
+
+....
+
+First, I chose randomly 8 ``curtomers_id`` (2,13,21,432,431,600, 890 and 901).
+I think that showing the onboarding journey of only four of these customers will be enough to show the whole spectrum of how the customers can act.
+
+
+Customer 2: (``customer_id``= 2) starts the trial on Foodie-Fi on September 20, and after that (on September 27) goes to the pro annual subscription and pays $199 once a year.
+
+...
+
+Customer 21: (``customer_id``= 21) starts the trial on Foodie-Fi on February 4, and after that (on February 11) goes to the basic monthly subscription and pays $9.9 for every month. But he/she changed the plan again on June 3 to the pro monthly, which means that this customer has had the basic monthly plan for almost 4 months and after that has had the pro monthly plan for another 4 months because he/she stopped subscribing to Foodie-Fi on September 27. Basically, this client has access to Foodie-Fi until October 3 (the end date of the current buildings).
+
+
+Customer 660:
+
+
+Customer 901:
+
+
+
+## B. Data Analysis Questions
 
 ### 1. How many customers has Foodie-Fi ever had?
 
@@ -354,3 +384,26 @@ ORDER BY category_id;
 ![CS3 - B10](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d9a395a7-cac2-4bb8-8e0d-93491321ed0e)
 
 ***
+
+### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+
+```sql
+WITH customers_plan AS (
+SELECT
+    customer_id,
+    GROUP_CONCAT(plan_id ORDER BY start_date) AS plan_path
+FROM subscriptions
+WHERE YEAR(start_date) <2021
+GROUP BY customer_id)
+
+SELECT *
+FROM customers_plan
+WHERE plan_path LIKE '%2%1%';
+```
+
+
+#### Steps:
+-
+
+#### Result:
+-

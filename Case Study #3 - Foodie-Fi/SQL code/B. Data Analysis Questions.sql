@@ -239,3 +239,28 @@ SELECT *
 FROM customers_plan
 WHERE plan_path LIKE '%2%1%';
 
+
+
+-----------------------
+--A. Customer Journey--
+-----------------------
+
+/*
+Based off the 8 sample customers provided in the sample from the subscriptions table, 
+write a brief description about each customer’s onboarding journey.
+
+Try to keep it as short as possible - you may also want to run some sort of join 
+to make your explanations a bit easier!
+*/
+-- I chose randomly 8 curtomers_id (2,13,21,432,431,600, 890 and 901)
+
+SELECT
+    subscriptions.customer_id,
+    subscriptions.plan_id,
+    plans.plan_name,
+    subscriptions.start_date
+FROM subscriptions
+JOIN plans
+    ON subscriptions.plan_id = plans.plan_id
+WHERE customer_id IN ('2','13','21','432','431','660','890','901');
+
