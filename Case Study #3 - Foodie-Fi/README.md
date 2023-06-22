@@ -340,7 +340,6 @@ JOIN customers_start_date AS csd
 ***
 
 
-
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
 ```sql
@@ -379,10 +378,13 @@ ORDER BY category_id;
 ```
 
 #### Steps:
--
+- First, I created two temporary tables to calculate a date when customers upgraded to plan 3 and a date when customers started a free trial.
+- Next, I created a temporary table with a bucket. In MySQL, unfortunately, the function **WIDTH_BUCKET()** doesn't exist, but if it does, I don't need to do this step.
+- I calculated the number of clients in every bucket.
 
 #### Result:
--
+- From the data, we can say that after 210 days, the probability of uprade strongly decrease.
+- The biggest probability of upgrading is during the first 30 days on the platform.
 
 <img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d9a395a7-cac2-4bb8-8e0d-93491321ed0e" width="300">
 
@@ -405,9 +407,9 @@ FROM customers_plan
 WHERE plan_path LIKE '%2%1%';
 ```
 
-
 #### Steps:
--
+- I created a temporary table with ``plan_path`` (list of changed ``plan_id``) before 2021.
+- I calculated the number of customers who have in their ``plan_path`` '2' before '1'.
 
 #### Result:
--
+- None of the clients Foodie-Fi won't downgrade from a pro monthly to a basic monthly plan in 2020.
