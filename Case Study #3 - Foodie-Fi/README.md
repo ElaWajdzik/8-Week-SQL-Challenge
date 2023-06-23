@@ -78,6 +78,8 @@ Customer 901: (``customer_id``= 901) starts the trial on Foodie-Fi on April 21, 
 
 ## B. Data Analysis Questions
 
+***
+
 ### 1. How many customers has Foodie-Fi ever had?
 
 ```sql
@@ -96,6 +98,8 @@ FROM subscriptions;
 
 
 - Foodie-Fi had 1000 customers.
+
+***
 
 ### 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
 
@@ -328,17 +332,16 @@ JOIN customers_start_date AS csd
 ```
 
 #### Steps:
--
+- First, I created two temporary tables to calculate a date when customers upgraded to plan 3 and a date when customers started a free trial.
+- I calculated the average number of days between starting a trial and upgrading to a yearly plan using the function **DATEDIFF**.
 
 #### Result:
--
 
 | avg_number_of_days_to_upgrade_to_3 |
 |------------------------------------|
 | 105                                |
 
 ***
-
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
@@ -413,3 +416,5 @@ WHERE plan_path LIKE '%2%1%';
 
 #### Result:
 - None of the clients Foodie-Fi won't downgrade from a pro monthly to a basic monthly plan in 2020.
+
+***
