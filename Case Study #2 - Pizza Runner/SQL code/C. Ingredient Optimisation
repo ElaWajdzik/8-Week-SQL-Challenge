@@ -166,12 +166,6 @@ GROUP BY co.id;
 
 
 
-
-
-
-
-
-
 --5.Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 --      For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 
@@ -182,7 +176,7 @@ SELECT
     TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(extras,',',numbers.n),',',-1)) AS topping_id,
     'extra' AS type,
     1 AS number
-FROM customer_orders_1
+FROM customer_orders
 JOIN numbers
     ON LENGTH(extras) - LENGTH(REPLACE(extras,',','')) +1>= numbers.n
 WHERE extras != ''
@@ -194,7 +188,7 @@ SELECT
     TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(exclusions,',',numbers.n),',',-1)) AS topping_id,
     'exclusion' AS type,
     -1 AS number
-FROM customer_orders_1
+FROM customer_orders
 JOIN numbers
     ON LENGTH(exclusions) - LENGTH(REPLACE(exclusions,',','')) +1>= numbers.n
 WHERE exclusions != ''
@@ -206,7 +200,7 @@ SELECT
     topping_id,
     'pizza' AS type,
     1 AS number
-FROM customer_orders_1 AS co
+FROM customer_orders AS co
 JOIN pizza_recipes_temp
     ON co.pizza_id = pizza_recipes_temp.pizza_id
 ),

@@ -96,6 +96,7 @@ I don't want to change the origin input, that why I created a temporary tables w
 This section contains basic questions and answers about orders.
 Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code)
 
+***
 
 ### 1. How many pizzas were ordered?
 

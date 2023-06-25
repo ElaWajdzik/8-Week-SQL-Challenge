@@ -418,3 +418,34 @@ WHERE plan_path LIKE '%2%1%';
 - None of the clients Foodie-Fi won't downgrade from a pro monthly to a basic monthly plan in 2020.
 
 ***
+
+## C. Challenge Payment Question
+
+The Foodie-Fi team wants you to create a new ``payments`` table for the year 2020 that includes amounts paid by each customer in the ``subscriptions`` table with the following requirements:
+
+- monthly payments always occur on the same day of month as the original start_date of any monthly paid plan
+- upgrades from basic to monthly or pro plans are reduced by the current paid amount in that month and start immediately
+- upgrades from pro monthly to pro annual are paid at the end of the current billing period and also starts at the end of the month period
+- once a customer churns they will no longer make payments
+
+```sql
+
+```
+
+#### Step:
+- I created a table ``n_month`` which contains the numbers from 1 to 12 (because it is the 12th month in a year). I will use this table to create monthly payments.
+- I created a lot of temporary tables (using the function **WITH**) to go to the expected output. I want to go to the table ``change_plan_payments`` where I should include the data about ``customer_id``, ``plan_id``, ``start_plan_date`` (exactly the date when this plan started), ``end_plan_date`` (date when the plan ended, for example because a customer churned or the year 2020 ends). And also, I am interested in only the data that comes from paid plans (without ``plan_id`` 0 i 4). But to extract the exact date when every plan started and ended, I need a few more steps. First, I created a table ``change_plan_id`` which includes data about ``change_plane`` (e.g. customer_id=19, change_plan=0,2,3) and ``change_date`` (e.g. customer_id=19, change_date=2020-06-22,2020-6-29,2020-08-29). Next, using the table ``change_plan_id`` I created table ``change_plan_date`` which contain the data about ``start_plan_date`` (e.g. ``customer_id``=19, ``plan_id``=2, ``start_plan_date``=2020-06-29) and ``end_plan_date`` (e.g. ``customer_id``=19, ``plan_id``=2, ``start_plan_date``=2020-08-29).
+
+
+
+
+
+#### Result:
+| number_of_customers |
+| ------------------- |
+| 1000                |
+
+
+- 
+
+***
