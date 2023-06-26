@@ -48,6 +48,10 @@ Each of the following case study questions can be answered using a single SQL st
 
 Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20code).
 
+**In advance, thank you for reading.** If you have any comments on my work, please let me know. My emali address is ela.wajdzik@gmail.com.
+
+Also, I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information.
+
 ***
 
 ### 1. What is the total amount each customer spent at the restaurant?
@@ -136,8 +140,8 @@ WHERE popular_rank=1;
 ````
 
 #### Steps:
-- I created a temporary table to calculate the ranking of orders. Clause **WITH**
-- I created the ranking of orders using the clause **DENSE_RANK**. 
+- Create a temporary table to calculate the ranking of orders. Clause **WITH**
+- Create the ranking of orders using the clause **DENSE_RANK**. 
 
 #### Result:
 | customer_id | product_name |
@@ -167,8 +171,8 @@ ORDER BY number_of_orders DESC;
 ````
 
 #### Steps:
-- I use **COUNT** to calculate the number of orders for each dish.
-- I ordered the results in descending order using **ORDER BY** with parameter **DESC** to find which item was the most frequently purchased.
+- Use **COUNT** to calculate the number of orders for each dish.
+- Order the results in descending order using **ORDER BY** with parameter **DESC** to find which item was the most frequently purchased.
 
 #### Result:
 | product_name | number_of_orders |
@@ -210,7 +214,7 @@ ORDER BY customer_id;
 ````
 
 #### Steps:
-- I created a temporary table (using **WITH**) to create a ranking of popularity (using **DENSE_RANK**).
+- Create a temporary table (using **WITH**) to create a ranking of popularity (using **DENSE_RANK**).
 - Print only part of the temporary table **WHERE** ranking of popularity is equal to 1.
 
 #### Result:
@@ -257,7 +261,7 @@ ORDER BY customer_id;
 ````
 
 #### Steps:
-- Like in question 5, I created a temporary table (using **WITH**) to create a ranking of orders (using **DENSE_RANK**).
+- Like in question 5, create a temporary table (using **WITH**) to create a ranking of orders (using **DENSE_RANK**).
 - Pick the first order for every member after joining, using the ranking of orders, and select only the first value (clause **WHERE**).
 
 
@@ -302,7 +306,7 @@ ORDER BY customer_id;
 ````
 
 #### Steps:
-- I use a similar function like in question 6. The biggest change is to use **DENSE_RANK** in descending order.
+- Use a similar function like in question 6. the biggest change is to use **DENSE_RANK** in descending order.
 
 #### Result:
 | customer_id | product_name |
@@ -336,8 +340,8 @@ GROUP BY sales.customer_id;
 ````
 
 #### Steps:
-- I use calculatet functions **COUNT**, **COUNT DISTINCT** and **SUM**.
-- I need to join all three tables to create a result.
+- Use calculatet functions **COUNT**, **COUNT DISTINCT** and **SUM**.
+- Join all three tables to create a result.
 
 #### Result:
 | customer_id | number_of_item | number_of_diffrent_item | total_spent |
@@ -363,7 +367,7 @@ GROUP BY customer_id;
 ````
 
 #### Steps:
-- I use the function **IF** to act on the 2x points multiplier for sushi. According to the value of ``product_name`` I calculated 1 or 2 (if ``product_name`` is equal to sushi, then 2 in other cases, multiplication doesn't exist, which means it equals 1).
+- Use the function **IF** to act on the 2x points multiplier for sushi. According to the value of ``product_name`` I calculated 1 or 2 (if ``product_name`` is equal to sushi, then 2 in other cases, multiplication doesn't exist, which means it equals 1).
 
 #### Result:
 | customer_id | points |
@@ -397,8 +401,8 @@ GROUP BY sales.customer_id;
 
 #### Steps:
 - It is important not to increase the multiplier for sushi during the first week of membership to 4.
-- I use the functions **SUM** and **IF** to calculate the number of points. Function **IF** has two conditions. (1) orders come from the first week of becoming a member, or (2) the order product was sushi. If it was one of those two conditions the multiplayer was equal to 2, in the other case it was 1.
-- I limited the data on orders to the end of January.
+- Use the functions **SUM** and **IF** to calculate the number of points. Function **IF** has two conditions. (1) orders come from the first week of becoming a member, or (2) the order product was sushi. If it was one of those two conditions the multiplayer was equal to 2, in the other case it was 1.
+- Limit the data on orders to the end of January.
 
 
 #### Result:
@@ -444,11 +448,10 @@ LEFT JOIN dannys_diner.members
 ````
 
 #### Steps:
-- I need to join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
+- Join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
 
 #### Result:
 <img width="406" alt="CaseStudy#1 - Join All The Things" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/0a538c49-1e9c-466b-b9c9-d7b869aaa1eb">
-
 
 
 ***
@@ -483,8 +486,8 @@ FROM temporary_member;
 ````
 
 #### Steps:
-- I created the table like before but using the clause **WITH**.
-- In the second step, I add the ``ranking`` only for the data that involves the member's purchase.
+- Create the table like before but using the clause **WITH**.
+- In the second step, add the ``ranking`` only for the data that involves the member's purchase.
 
 #### Result:
 <img width="463" alt="CaseStudy#1 - Rank All The Things" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/be758897-0cc2-4a95-a953-2465fa0d33ae">
@@ -492,7 +495,9 @@ FROM temporary_member;
 
 ***
 
-**Thanks for reading.** If you have some comments have I can improve my work, please let me know. I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information. My emali address is ela.wajdzik@gmail.com
+**Thanks for reading.** Please let me know what you think about my work. My emali address is ela.wajdzik@gmail.com
+
+I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information. 
 
 
 **Have a nice day!**
