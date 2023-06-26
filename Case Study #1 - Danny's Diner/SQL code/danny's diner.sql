@@ -296,3 +296,4 @@ SELECT *,
         ORDER BY order_date)
     END AS ranking
 FROM temporary_member;
+
