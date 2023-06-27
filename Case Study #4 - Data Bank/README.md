@@ -18,3 +18,5 @@ The Data Bank team have prepared a data model for this case study as well as a f
 
 ## Relationship Diagram
 
+<img width="600" alt="graf1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d2a49141-8636-4c35-a3f8-fdb765201af9">
+
