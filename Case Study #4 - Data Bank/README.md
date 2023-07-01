@@ -22,7 +22,7 @@ The Data Bank team have prepared a data model for this case study as well as a f
 
 ## Question and Solution
 
-I was using MySQL to solve the problem, if you are interested, the complete SQL code is available [here]().
+I was using MySQL to solve the problem, if you are interested, the complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/8e02234c7889c6df67b043b60a833934f4257bd5/Case%20Study%20%234%20-%20Data%20Bank/SQL%20code).
 
 **In advance, thank you for reading.** If you have any comments on my work, please let me know. My emali address is ela.wajdzik@gmail.com.
 
@@ -64,7 +64,9 @@ GROUP BY region_name;
 #### Result:
 - Every region has five different nodes.
 
-/jpeg/
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/c70d6bb7-90d8-4794-9df8-43ba6a4f0bb4" width="300">
+
 
 ***
 
@@ -86,7 +88,7 @@ GROUP BY region_name;
 #### Result:
 - Every region has around 100 customers. The most customers were in Australia (110 customers), and the least in Europe (88 customers).
 
-/jpeg/
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/1747b947-4738-4eea-a773-74eed18a40b2" width="300">
 
 ***
 
@@ -178,6 +180,7 @@ JOIN 95th_percentile AS 95th
 #### Result:
 - The 50th, 80th, and 95th percentiles for every region are almost the same.
 
-/jpeg/
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/b17528f7-fae0-4b08-ac51-31e5a4bbc077" width="400">
 
 ***
