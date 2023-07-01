@@ -11,7 +11,7 @@ USE data_bank;
 
 -- 1. How many unique nodes are there on the Data Bank system?
 SELECT 
-    COUNT(DISTINCT node_id)
+    COUNT(DISTINCT node_id) AS number_of_nodes
 FROM customer_nodes;
 
 -- 2. What is the number of nodes per region?
@@ -37,9 +37,9 @@ GROUP BY region_name;
 -- 4. How many days on average are customers reallocated to a different node?
 
 SELECT 
-    ROUND(AVG(DATEDIFF(end_date,start_date)),2) AS avg_number_of_days
+    ROUND(AVG(DATEDIFF(end_date,start_date)),1) AS avg_number_of_days
 FROM customer_nodes
-WHERE YEAR(end_date) <2021;
+WHERE YEAR(end_date) < 9999;
 
 -- step 1 - max end_date
 -- step 2 - number of end_date 9999 -500 na 3500 czyli 14%
