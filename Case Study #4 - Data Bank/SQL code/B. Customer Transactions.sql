@@ -65,6 +65,8 @@ GROUP BY date_month;
 
 -- 4. What is the closing balance for each customer at the end of the month?
 
+
+WITH month_data AS (
 SELECT
     customer_id,
     MONTH(txn_date) AS date_month,
@@ -72,9 +74,32 @@ SELECT
         CASE 
             WHEN txn_type='deposit' THEN txn_amount 
             ELSE txn_amount * -1
-        END) AS balance
+        END) AS month_change
 FROM customer_transactions
-WHERE customer_id IN (1,2,3)
-GROUP BY customer_id, date_month;
+WHERE customer_id IN (1,3)
+GROUP BY customer_id, date_month
+)
+
+SELECT 
+    *,
+    SUM(month_change) OVER (PARTITION BY customer_id ORDER BY date_month)
+FROM month_data;
+
+
+DROP TABLE IF EXISTS all_month;
+
+CREATE TABLE all_month (
+   month_id int
+);
+
+INSERT INTO all_month
+  (month_id)
+VALUES
+  ('1'),
+  ('2'),
+  ('3'),
+  ('4');
+
+
 
 -- 5. What is the percentage of customers who increase their closing balance by more than 5%?
