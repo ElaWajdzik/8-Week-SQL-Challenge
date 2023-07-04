@@ -66,40 +66,78 @@ GROUP BY date_month;
 -- 4. What is the closing balance for each customer at the end of the month?
 
 
-WITH month_data AS (
+DROP TABLE IF EXISTS t4;
+
+CREATE TABLE t4 (
+    month_date int,
+    txn_type varchar(10),
+    txn_amount int
+);
+
+INSERT INTO t4
+  (month_date, txn_type, txn_amount)
+VALUES
+  ('1', 'balance', '0'),
+  ('2', 'balance', '0'),
+  ('3', 'balance', '0'),
+  ('4',  'balance', '0');
+
+
+WITH customer_transaction_with_balance AS (
+    SELECT DISTINCT 
+        ct.customer_id, 
+        t4.month_date, 
+        t4.txn_type, 
+        t4.txn_amount
+    FROM customer_transactions AS ct, t4
+    UNION
+    SELECT 
+        customer_id, 
+        MONTH(txn_date) AS month_date, 
+        txn_type, 
+        txn_amount
+    FROM customer_transactions
+),
+month_aggregation_data AS (
+    SELECT
+        customer_id,
+        month_date,
+        SUM(
+            CASE 
+                WHEN txn_type='deposit' THEN txn_amount 
+                ELSE txn_amount * -1
+            END) AS month_change
+    FROM customer_transaction_with_balance
+    GROUP BY customer_id, month_date
+)
+
+SELECT 
+    *,
+    SUM(month_change) OVER (PARTITION BY customer_id ORDER BY month_date) AS end_month_balance
+FROM month_aggregation_data
+WHERE customer_id IN (1,2,3,4,5);
+
+
+-- solution without a month when the customer didn't do any transactions
+/*
+WITH month_aggregation_data AS (
 SELECT
     customer_id,
-    MONTH(txn_date) AS date_month,
+    MONTH(txn_date) AS month_date,
     SUM(
         CASE 
             WHEN txn_type='deposit' THEN txn_amount 
             ELSE txn_amount * -1
         END) AS month_change
 FROM customer_transactions
-WHERE customer_id IN (1,3)
-GROUP BY customer_id, date_month
+GROUP BY customer_id, month_date
 )
 
 SELECT 
     *,
-    SUM(month_change) OVER (PARTITION BY customer_id ORDER BY date_month)
-FROM month_data;
-
-
-DROP TABLE IF EXISTS all_month;
-
-CREATE TABLE all_month (
-   month_id int
-);
-
-INSERT INTO all_month
-  (month_id)
-VALUES
-  ('1'),
-  ('2'),
-  ('3'),
-  ('4');
-
-
+    SUM(month_change) OVER (PARTITION BY customer_id ORDER BY month_date)
+FROM month_aggregation_data
+WHERE customer_id IN (1,2,3,4,5);
+*/
 
 -- 5. What is the percentage of customers who increase their closing balance by more than 5%?
