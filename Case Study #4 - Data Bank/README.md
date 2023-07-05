@@ -184,3 +184,186 @@ JOIN 95th_percentile AS 95th
 <img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/b17528f7-fae0-4b08-ac51-31e5a4bbc077" width="400">
 
 ***
+
+***
+
+## B. Customer Nodes Exploration
+***
+
+### 1. What is the unique count and total amount for each transaction type?
+
+```sql
+SELECT 
+    txn_type,
+    COUNT(txn_amount) AS number_of_transactions,
+    SUM(txn_amount) AS sum_of_amount
+FROM customer_transactions
+GROUP BY txn_type;
+```
+#### Steps:
+- I counted the numbers and the values of ``txn_amount`` grouped by ``txn_type``. 
+
+#### Result:
+
+...
+
+***
+
+### 2. What is the average total historical deposit counts and amounts for all customers?
+
+```sql
+SELECT
+    ROUND(COUNT(txn_amount)/COUNT(DISTINCT customer_id),1) AS avg_number_of_deposite,
+    ROUND(AVG(txn_amount),0) AS avg_amount_of_deposite
+FROM customer_transactions
+WHERE txn_type = 'deposit';
+```
+#### Steps:
+- I used the filter (**WHERE txn_type = 'deposit'** ) to include only the data about ``deposite`` in the calculation.
+- I counted the average count of depisite using clauses **COUNT** (to calculate the number of all depisite) and **COUNT DISTINCT** (to calculate the number of all customers).
+- I calculated the average deposit amount using clause **AVG**.
+
+
+#### Result:
+
+| avg_number_of_deposite | avg_amount_of_deposite |
+| ---------------------- | ---------------------- |
+| 5.3                    | 509                    | 
+
+***
+
+
+### 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+ 
+
+```sql
+WITH pivot_transactions AS (
+    SELECT
+        customer_id,
+        MONTH(txn_date) AS date_month,
+        SUM(
+            CASE 
+                WHEN txn_type = 'deposit' THEN 1 
+                ELSE 0
+            END) AS number_of_deposits,
+        SUM(
+            CASE 
+                WHEN txn_type = 'purchase' THEN 1 
+                ELSE 0
+            END) AS number_of_purchases,   
+        SUM(
+            CASE 
+                WHEN txn_type = 'withdrawal' THEN 1 
+                ELSE 0
+            END) AS number_of_withdrawals
+    FROM customer_transactions
+    GROUP BY customer_id, date_month
+)
+
+
+SELECT
+    date_month,
+    COUNT(customer_id) AS number_of_customers
+FROM  pivot_transactions
+WHERE 
+    number_of_deposits > 1 AND 
+    (number_of_purchases >= 1 OR number_of_withdrawals >= 1)
+GROUP BY date_month;
+```
+#### Steps:
+- I created a temporary table ``pivot_transactions`` where I calculated for each customer and month the number of deposits, purchases, and withdrawals. I calculated the number of each type of transaction ``txn_type`` using the clauses **SUM** and **CASE**.
+Next, using the temporary table ``pivot_transactions`` I calculated the number of customers who made more than 1 deposit and either 1 purchase or 1 withdrawal (using clause **WHERE** with a few conditions) in each month.
+
+#### Result:
+...
+
+***
+
+
+### 4. What is the closing balance for each customer at the end of the month? 
+
+```sql
+
+DROP TABLE IF EXISTS t4;
+
+CREATE TABLE t4 (
+    month_date int,
+    txn_type varchar(10),
+    txn_amount int
+);
+
+INSERT INTO t4
+  (month_date, txn_type, txn_amount)
+VALUES
+  ('1', 'balance', '0'),
+  ('2', 'balance', '0'),
+  ('3', 'balance', '0'),
+  ('4',  'balance', '0');
+
+
+WITH customer_transaction_with_balance AS (
+    SELECT DISTINCT 
+        ct.customer_id, 
+        t4.month_date, 
+        t4.txn_type, 
+        t4.txn_amount
+    FROM customer_transactions AS ct, t4
+    UNION
+    SELECT 
+        customer_id, 
+        MONTH(txn_date) AS month_date, 
+        txn_type, 
+        txn_amount
+    FROM customer_transactions
+),
+month_aggregation_data AS (
+    SELECT
+        customer_id,
+        month_date,
+        SUM(
+            CASE 
+                WHEN txn_type='deposit' THEN txn_amount 
+                ELSE txn_amount * -1
+            END) AS month_change
+    FROM customer_transaction_with_balance
+    GROUP BY customer_id, month_date
+)
+
+SELECT 
+    *,
+    SUM(month_change) OVER (PARTITION BY customer_id ORDER BY month_date) AS end_month_balance
+FROM month_aggregation_data
+WHERE customer_id IN (1,2,3,4,5); -- this filetr is only to limit the result
+```
+
+#### Steps:
+- I created the extra table ``t4`` with four rows (include ``month_date`` a number from 1 to 4, ``txn_type`` it's eqal ``balance``, ``txn_amount`` it's eqal ``0``) which I added to the calculated data to have for every customer at least one record in each month.
+- I created a temporary table ``customer_transaction_with_balance`` where I **UNION** the original data from tables ``customer_transactions`` and ``t4``.
+- I aggregated the monthly amount of transactions for each customer in table ``month_aggregation_data``.
+- In the final result, add a column with the ``end_month_balance``. I calculated the balance using the function **SUM() OVER (PARTITION BY customer_id ORDER BY month_date)**.
+- In the result, I showed data only for 5 to simplify. 
+
+#### Result:
+
+...
+
+***
+
+### 2. 
+
+```sql
+SELECT 
+
+
+GROUP BY txn_type;
+```
+#### Steps:
+- I counted 
+
+#### Result:
+
+| number_of_nodes |
+| --------------- |
+| 5               |  
+
+***
