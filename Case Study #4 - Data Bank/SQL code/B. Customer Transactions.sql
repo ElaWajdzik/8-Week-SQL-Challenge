@@ -3,7 +3,7 @@
 ---------------------------------
 
 --Author: Ela Wajdzik
---Date: 2.07.2023 (update 5.07.2023)
+--Date: 2.07.2023 (update 6.07.2023)
 --Tool used: Visual Studio Code & xampp
 
 
@@ -115,7 +115,7 @@ SELECT
     *,
     SUM(month_change) OVER (PARTITION BY customer_id ORDER BY month_date) AS end_month_balance
 FROM month_aggregation_data
-WHERE customer_id IN (1,2,3,4,5);
+WHERE customer_id IN (1,2,3,4,5); -- this filetr is only to limit the result
 
 
 -- solution without a month when the customer didn't do any transactions
@@ -187,5 +187,50 @@ SELECT
     COUNT(*) AS number_of_customer_increase_up_to_5_proc,
     ROUND((COUNT(*)/ct.num_all_customers) *100,1) AS proc_of_all_customers
 FROM customer_percent_of_change As cp, customer_total AS ct
-WHERE percent_of_change >= '0.05';
+WHERE percent_of_change > '0.05';
 
+------
+
+-- Second way I interpreted this problem
+-- I compared the value of the first deposit to the ending balance in April 2020, and checked if the balance increased by more than 5% over the value of the first deposit.
+
+WITH first_deposit AS (
+SELECT 
+    customer_id,
+    MIN(txn_date) AS deposit_date,
+    txn_amount AS deposit_amount
+FROM customer_transactions
+WHERE txn_type = 'deposit'
+GROUP BY customer_id
+),
+apr_balance AS (
+SELECT 
+    customer_id,
+    SUM(
+        CASE 
+            WHEN txn_type = 'deposit' THEN txn_amount 
+            ELSE txn_amount * -1
+        END
+    ) AS apr_end_month_balance
+FROM customer_transactions
+GROUP BY customer_id
+),
+customer_percent_of_change AS (
+SELECT
+    fd.customer_id,
+    fd.deposit_amount,
+    a.apr_end_month_balance,
+    a.apr_end_month_balance/fd.deposit_amount - 1 AS percent_of_change
+FROM first_deposit AS fd, apr_balance AS a
+WHERE fd.customer_id = a.customer_id
+),
+customer_total AS (
+SELECT COUNT(DISTINCT customer_id) AS num_all_customers
+FROM customer_transactions
+)
+
+SELECT
+    COUNT(*) AS number_of_customer_increase_up_to_5_proc,
+    ROUND((COUNT(*)/ct.num_all_customers) *100,1) AS proc_of_all_customers
+FROM customer_percent_of_change As cp, customer_total AS ct
+WHERE percent_of_change > '0.05';

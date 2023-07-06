@@ -349,21 +349,67 @@ WHERE customer_id IN (1,2,3,4,5); -- this filetr is only to limit the result
 
 ***
 
-### 2. 
+### 5. What is the percentage of customers who increase their closing balance by more than 5%?
+
+This question isn't clear for me. I compered the closing balances from January 2020 to April 2020, and checked if the balance increased by more than 5%. I interpret it that way because, IMO I think it makes sense.
+
 
 ```sql
+WITH jan_balance AS (
 SELECT 
+    customer_id,
+    SUM(
+        CASE 
+            WHEN txn_type = 'deposit' THEN txn_amount 
+            ELSE txn_amount * -1
+        END
+    ) AS jan_end_month_balance
+FROM customer_transactions
+WHERE MONTH(txn_date)=1
+GROUP BY customer_id
+),
+apr_balance AS (
+SELECT 
+    customer_id,
+    SUM(
+        CASE 
+            WHEN txn_type = 'deposit' THEN txn_amount 
+            ELSE txn_amount * -1
+        END
+    ) AS apr_end_month_balance
+FROM customer_transactions
+GROUP BY customer_id
+),
+customer_percent_of_change AS (
+SELECT
+    j.customer_id,
+    j.jan_end_month_balance,
+    a.apr_end_month_balance,
+    a.apr_end_month_balance/j.jan_end_month_balance - 1 AS percent_of_change
+FROM jan_balance AS j, apr_balance AS a
+WHERE j.customer_id = a.customer_id
+),
+customer_total AS (
+SELECT COUNT(DISTINCT customer_id) AS num_all_customers
+FROM customer_transactions
+)
 
-
-GROUP BY txn_type;
+SELECT
+    COUNT(*) AS number_of_customer_increase_up_to_5_proc,
+    ROUND((COUNT(*)/ct.num_all_customers) *100,1) AS proc_of_all_customers
+FROM customer_percent_of_change As cp, customer_total AS ct
+WHERE percent_of_change > '0.05';
 ```
+
 #### Steps:
-- I counted 
+- First, I calculated the ending balance for January 2020 and April 2020 in tables ``jan_balance`` and ``apr_balance``.
+- I joined data from tables ``jan_balance`` and ``apr_balance`` and calculated the percent change in the closing balance.
+- I printed the number of customers whose ending balance increased by 5%, and what percent of all customers it was.
 
 #### Result:
 
-| number_of_nodes |
-| --------------- |
-| 5               |  
+| number_of_customer_increase_up_to_5_proc | proc_of_all_customers |
+| ---------------------------------------- | --------------------- |
+| 221                                      | 44.2                  |
 
 ***
