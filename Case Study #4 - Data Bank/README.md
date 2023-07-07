@@ -205,7 +205,9 @@ GROUP BY txn_type;
 
 #### Result:
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/97f48a83-c294-4477-a338-23bf9d0ae945" width="400">
+
+
 
 ***
 
@@ -275,7 +277,9 @@ GROUP BY date_month;
 Next, using the temporary table ``pivot_transactions`` I calculated the number of customers who made more than 1 deposit and either 1 purchase or 1 withdrawal (using clause **WHERE** with a few conditions) in each month.
 
 #### Result:
-...
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/008b735f-8a2c-48b7-a7c1-117a0e68989e" width="350">
+
 
 ***
 
@@ -345,7 +349,7 @@ WHERE customer_id IN (1,2,3,4,5); -- this filetr is only to limit the result
 
 #### Result:
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/5d76bdda-53ae-4021-8224-19ada380e863" width="400">
 
 ***
 
