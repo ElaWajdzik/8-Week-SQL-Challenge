@@ -353,6 +353,9 @@ WHERE customer_id IN (1,2,3,4,5); -- this filetr is only to limit the result
 
 This question isn't clear for me. I compered the closing balances from January 2020 to April 2020, and checked if the balance increased by more than 5%. I interpret it that way because, IMO I think it makes sense.
 
+Note, I also calculated the second way, the code is in file ``B. Customer Transactions.sql``
+In this addition solution, I compared the value of the first deposit to the ending balance in April 2020, and checked if the balance increased by more than 5% over the value of the first deposit.
+
 
 ```sql
 WITH jan_balance AS (
