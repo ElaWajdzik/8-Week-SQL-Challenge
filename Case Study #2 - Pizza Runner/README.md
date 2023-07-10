@@ -33,6 +33,10 @@ This case study includes questions about:
 - Pricing and Ratings
 - Bonus DML Challenges (DML = Data Manipulation Language)
 
+***
+
+***
+
 ## Solution
 Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code).
 
@@ -93,7 +97,7 @@ I don't want to change the origin input, that why I created a temporary tables w
 
 ## A. Pizza Metrics
 
-This section contains basic questions and answers about orders.
+This section contains basic questions and answers about orders.\
 Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code)
 
 ***
@@ -102,7 +106,7 @@ Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-C
 
 ````sql
 SELECT 
-    COUNT(pizza_id) AS number_of_orders
+    COUNT(pizza_id) AS number_of_pizzas
 FROM customer_orders_temp;
 ````
 
@@ -110,7 +114,7 @@ FROM customer_orders_temp;
 - I used **COUNT** to count the number of rows in table ```customer_orders_temp```, because one row is one ordered pizza.
 
 #### Result:
-| number_of_orders | 
+| number_of_pizzas | 
 | ---------------- | 
 | 14               | 
 
@@ -122,11 +126,21 @@ FROM customer_orders_temp;
 
 ````sql
 SELECT 
-    COUNT(DISTINCT order_id) AS number_of_customers
+    COUNT(DISTINCT order_id) AS number_of_orders
 FROM customer_orders_temp;
 ````
 
-The customers made 10 orders, this is the number of unique ```order_id``` in table ```customer_orders_temp```.
+#### Step:
+- I used **COUNT DISTINCT** to count the number of unique orders in the table ```customer_orders_temp```.
+
+#### Result:
+| number_of_orders | 
+| ---------------- | 
+| 10               | 
+
+- The customers made 10 orders, this is the number of unique ```order_id``` in table ```customer_orders_temp```.
+
+***
 
 ### 3. How many successful orders were delivered by each runner?
 
@@ -139,9 +153,17 @@ WHERE pickup_time IS NOT NULL
 GROUP BY runner_id;
 ````
 
-In the data were 10 orders, but only 8 of them were successfully delivered. Orders that were not delivered have ```pickup_time``` = NULL, which is why I use clause ```WHERE pickup_time IS NOT NULL```. Deliveries were made by three runners, and runner 1 delivered 4 orders, runner 2 delivered 3 orders, runner 4 delivered 1 order.
+#### Step:
+- I used **COUNT DISTINCT** to count the number of orders, and I used the clause **WHERE pickup_time IS NOT NULL** to limit the data to only delivered orders.
+- I grouped (using **GROUP BY**) the data by every runner.
 
-<img width="202" alt="CS2 - A3" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/291518dd-20f9-4abe-8396-06ae25afbeb6">
+#### Result:
+
+<img width="300" alt="CS2 - A3" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/291518dd-20f9-4abe-8396-06ae25afbeb6">
+
+- Deliveries were made by three runners, and runner 1 delivered 4 orders, runner 2 delivered 3 orders, runner 4 delivered 1 order.
+
+***
 
 ### 4. How many of each type of pizza was delivered?
 
@@ -158,14 +180,19 @@ WHERE pickup_time IS NOT NULL
 GROUP BY customer_orders_temp.pizza_id;
 ````
 
-To answer this question, I need to join three tables:
-* ```customer_orders_temp``` - data about ``pizza_id`` in orders,
-* ```runner_orders_temp``` - data about successful delivery
-* ```pizza_names``` - data about the names of pizzas.
 
-Pizza Meatlovers (9 orders) is more likely to be ordered than Pizza Vegetarian (3 orders).
+#### Step:
+- I joined three tables. ```customer_orders_temp``` - data about ``pizza_id`` in orders, ```runner_orders_temp``` - data about successful delivery and ```pizza_names``` - data about the names of pizzas.
+- I selected the data about delivered orders using **WHERE pickup_time IS NOT NULL**.
+- I counted the number of occurring each ```pizza_id``` and grouped data by ``pizza_name``.
 
-<img width="262" alt="CS2 - A4" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d61803c7-53cf-400f-a5f1-25e9f656dbc4">
+#### Result:
+
+<img width="300" alt="CS2 - A4" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d61803c7-53cf-400f-a5f1-25e9f656dbc4">
+
+- Pizza Meatlovers (9 orders) is more likely to be ordered than Pizza Vegetarian (3 orders).
+
+***
 
 ### 5. How many Vegetarian and Meatlovers were ordered by each customer?
 
