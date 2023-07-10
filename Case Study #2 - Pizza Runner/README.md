@@ -207,9 +207,16 @@ JOIN pizza_names
 GROUP BY customer_id, pizza_name;
 ````
 
-This code counts data from every order, not only those that were successfully delivered.
+#### Step:
+- I joined tables ```customer_orders_temp``` and ```pizza_names``` to find the names of products.
+- I counted the number of orders for every type of pizza clause **COUNT** and grouped them by ``customer_id`` and ``pizza_name``.
+- In the query, I used only the data about successfully delivered.
 
-<img width="388" alt="CS2 - A5" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/291a21f3-6365-4d34-8e49-8a237b6f1ecb">
+#### Result:
+
+<img width="300" alt="CS2 - A5" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/291a21f3-6365-4d34-8e49-8a237b6f1ecb">
+
+***
 
 ### 6. What was the maximum number of pizzas delivered in a single order?
 
@@ -225,10 +232,20 @@ GROUP BY customer_orders_temp.order_id
 ORDER BY number_of_pizza_in_order DESC LIMIT 1;
 ````
 
-In order 4 (```order_id``` = 4) customer ordered 3 pizzas, this was the biggest order that would be successfully delivered.
-To create this solution, I need to use clause **ORDER BY** (to order orders using the number of pizzas in order) with parameters **DESC** (in descending order) and **LIMIT** (to show only the first row after ordering).
 
-<img width="256" alt="CS2 - A6" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e062f5c6-ca25-4ced-9d6e-1ae6d15361f3">
+#### Step:
+- I counted the number of pizzas in the orders.
+- I joined tables ``customer_orders_temp`` with ``runner_orders_temp`` to select only the successfully delivered orders.
+- I used clause **ORDER BY** (to order orders using the number of pizzas in order) with parameters **DESC** (in descending order) and **LIMIT** (to show only the first row after ordering).
+
+#### Result:
+
+<img width="300" alt="CS2 - A6" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e062f5c6-ca25-4ced-9d6e-1ae6d15361f3">
+
+- In order 4 (```order_id``` = 4) customer ordered 3 pizzas, this was the biggest order that would be successfully delivered.
+
+***
+
 
 ### 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
@@ -244,14 +261,18 @@ WHERE runner_orders_temp.pickup_time IS NOT NULL
 GROUP BY customer_orders_temp.customer_id;
 ````
 
+#### Step:
+- I concatenated data from columns ```extras``` and ```exclusions``` to detect if pizza had any changes.
+- I calculated the number of pizzas with and without changes for every customer. I used clause **CONCAT** to merge the data about changes, **TRIM** to delete unnecessary signs. If this string is equal '' it means that pizza doesn't have any changes, otherwise, it has some changes.
+- I joined tables ``customer_orders_temp`` with ``runner_orders_temp`` to select only the successfully delivered orders.
 
-To check if the ordered pizza has some changes, first I concatenate data from columns ```extras``` and ```exclusions``` and second I check if this text is empty. When text is empty, it means that pizza has made no changes.
+#### Result:
 
-e.g. ```SUM(IF(TRIM(CONCAT(extras,exclusions))='',0,1)) AS pizza_with_change```
+<img width="500" alt="CS2 - A7" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a1a7eb43-2dc9-42bc-8c5a-e3c6b6e90f61">
 
-Customers **101** and **102** ordered only pizzas without change. Customers **103** and **105** ordered only pizzas with changes.
+- Customers **101** and **102** ordered only pizzas without change. Customers **103** and **105** ordered only pizzas with changes.
 
-<img width="404" alt="CS2 - A7" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a1a7eb43-2dc9-42bc-8c5a-e3c6b6e90f61">
+***
 
 ### 8. How many pizzas were delivered that had both exclusions and extras?
 
@@ -264,7 +285,21 @@ JOIN runner_orders_temp
 WHERE runner_orders_temp.pickup_time IS NOT NULL;
 ````
 
-Only 1 of delivered pizza has ```extras``` and ```exclusions```.
+
+
+#### Step:
+- I counted the number of pizzas with exclusions and extras. I checked if the ``extras`` and ``exclusions`` contained something for the same pizza order (**SUM(IF(TRIM(extras)!='' AND TRIM(exclusions)!='',1,0))**).
+- I joined tables ``customer_orders_temp`` with ``runner_orders_temp`` to select only the successfully delivered orders.
+
+#### Result:
+| pizza_with_extras_and_exclusions | 
+| -------------------------------- | 
+| 1                                | 
+
+- Only 1 of delivered pizza has ```extras``` and ```exclusions```.
+
+***
+
 
 ### 9. What was the total volume of pizzas ordered for each hour of the day?
 
@@ -276,10 +311,17 @@ FROM customer_orders_temp
 GROUP BY order_hour;
 ````
 
-The most orders are made after 12 and before 00 (but maybe the Pizza Runner is open only in these hours).
 
-<img width="200" alt="CS2 - A9" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/f88c4207-4066-49cc-a61a-8eaa191d0e1e">
+#### Step:
+- I grouped data by houer of ``order_time`` (**HOUR(order_time)**) and I counted the number of pizzas for each houer.
 
+#### Result:
+
+<img width="300" alt="CS2 - A9" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/f88c4207-4066-49cc-a61a-8eaa191d0e1e">
+
+- The most orders are made after 12 and before 00 (but maybe the Pizza Runner is open only in these hours).
+
+***
 
 ### 10. What was the volume of orders for each day of the week?
 
@@ -291,16 +333,23 @@ FROM customer_orders_temp
 GROUP BY order_day_of_week;
 ````
 
-I use clause **DAYOFWEEK()** which returns a number from 1 to 7, starting from Sunday (1=Sunday). The most orders were made on Wednesday (5 orders) and Saturday (5 orders).
 
-<img width="251" alt="CS2 - A10" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6a9e6bf3-8b0a-453d-8626-bbc29fd527b9">
+#### Step:
+- I extracted the day of the week from ``order_time`` (**DAYOFWEEK(order_time)**) and I counted the number of pizzas for every day of the week. I used the clause **DAYOFWEEK()** which returns a number from 1 to 7, starting from Sunday (1=Sunday).
 
+#### Result:
+
+<img width="400" alt="CS2 - A10" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6a9e6bf3-8b0a-453d-8626-bbc29fd527b9">
+
+- The most orders were made on Wednesday (5 orders) and Saturday (5 orders).
+
+***
 
 ***  
 
 ## B. Runner and Customer Experience
 
-This section contains questions and answers about the details of delivery and runners. 
+This section contains questions and answers about the details of delivery and runners.\
 Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code)
 
 ### 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
@@ -320,13 +369,16 @@ FROM runners_temp
 GROUP BY day_of_start_week;
 ````
 
-This question was tricky because we (and standard function) usually assume that the week starts on Monday or Sunday. 1.01.2021 was Friday, which is why I can't use the function **WEEK()**. 
+#### Step:
+- The standard function usually assumes that the week starts on Monday or Sunday. But 1.01.2021 was Friday, which is why I can't use the function **WEEK()**.
+- I created a temporary table with an additional column, which was the date of last Friday (**DATE(registration_date - (registration_date - DATE('2021-01-01')) %7)**).
+- I counted the number of people who signed up and grouped the data by the calculated date of last Friday.
 
-To calculate the result, I created a temporary table with an additional column, which was the date of last Friday.
+#### Result:
 
-```DATE(registration_date - (registration_date - DATE('2021-01-01')) %7)```
+<img width="300" alt="CS2 - B1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/548a0f9a-d024-4362-b068-c2ffcd4c67f0">
 
-<img width="271" alt="CS2 - B1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/548a0f9a-d024-4362-b068-c2ffcd4c67f0">
+***
 
 
 ### 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?

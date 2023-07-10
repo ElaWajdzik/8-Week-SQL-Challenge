@@ -12,13 +12,13 @@ USE pizza_runner;
 --1.How many pizzas were ordered?
 
 SELECT 
-    COUNT(pizza_id) AS number_of_orders
+    COUNT(pizza_id) AS number_of_pizzas
 FROM customer_orders_temp;
 
 --2.How many unique customer orders were made?
 
 SELECT 
-    COUNT(DISTINCT order_id) AS number_of_customers
+    COUNT(DISTINCT order_id) AS number_of_orders
 FROM customer_orders_temp;
 
 --3.How many successful orders were delivered by each runner?
