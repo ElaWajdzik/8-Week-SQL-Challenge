@@ -452,7 +452,8 @@ LEFT JOIN dannys_diner.members
 - Join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
 
 #### Result:
-...
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/5f1ac300-4778-440c-a4bc-9237252f7d6f" height="450">
 
 ***
 
@@ -490,7 +491,9 @@ FROM temporary_member;
 - In the second step, add the ``ranking`` only for the data that involves the member's purchase.
 
 #### Result:
-...
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/46c9153c-ebca-4753-9b59-4ae71db0b9de" height="450">
+
 
 ***
 
