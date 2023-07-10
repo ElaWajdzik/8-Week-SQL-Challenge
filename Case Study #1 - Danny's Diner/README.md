@@ -43,7 +43,8 @@ Each of the following case study questions can be answered using a single SQL st
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
-
+***
+***
 ## Solution
 
 Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20code).
@@ -141,7 +142,7 @@ WHERE popular_rank=1;
 
 #### Steps:
 - Create a temporary table to calculate the ranking of orders. Clause **WITH**
-- Create the ranking of orders using the clause **DENSE_RANK**. 
+- Create the ranking of orders using the clause **DENSE_RANK**. 
 
 #### Result:
 | customer_id | product_name |
@@ -315,7 +316,7 @@ ORDER BY customer_id;
 | A           | curry        |
 | B           | sushi        |
 
-- Customer **A** in the order before starting to be a member bought two kinds of items - sushi and carry.
+- Customer **A** in the order before starting to be a member bought two kinds of items - sushi and carry.
 - Customer **B** in the order before starting to be a member bought sushi.
 
 According to results from questions 6 and 7, customers **A** and **B** bought the same product just before becoming members and just after becoming members.
@@ -451,8 +452,7 @@ LEFT JOIN dannys_diner.members
 - Join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
 
 #### Result:
-<img width="406" alt="CaseStudy#1 - Join All The Things" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/0a538c49-1e9c-466b-b9c9-d7b869aaa1eb">
-
+...
 
 ***
 
@@ -490,8 +490,7 @@ FROM temporary_member;
 - In the second step, add the ``ranking`` only for the data that involves the member's purchase.
 
 #### Result:
-<img width="463" alt="CaseStudy#1 - Rank All The Things" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/be758897-0cc2-4a95-a953-2465fa0d33ae">
-
+...
 
 ***
 
