@@ -420,3 +420,12 @@ WHERE percent_of_change > '0.05';
 | 221                                      | 44.2                  |
 
 ***
+
+***
+
+**Thanks for reading.** Please let me know what you think about my work. My emali address is ela.wajdzik@gmail.com
+
+I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information. 
+
+
+**Have a nice day!**
