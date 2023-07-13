@@ -20,6 +20,9 @@ The key business question he wants you to help him answer are the following:
 ## Available Data
 For this case study there is only a single table: ``weekly_sales``.
 
+<img width="300" alt="graf1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/2bc51de5-d45b-48d9-9e31-b1af2280ecd9">
+
+
 ## Column Dictionary
 The columns are pretty self-explanatory based on the column names but here are some further details about the dataset:
 1. Data Mart has international operations using a multi-``region`` strategy
