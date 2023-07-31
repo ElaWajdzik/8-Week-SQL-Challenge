@@ -117,9 +117,11 @@ CREATE TABLE clean_weekly_sales AS(
 - Using the data ``segment`` I created ``demographic`` like in the description. e.g. If ``segment`` contains ``C`` then ``demographic`` is equal to ``Couples``. Function **CASE** with conditional **WHEN segment LIKE '%C%' THEN 'Couples'**.
 - I created ``avg_transaction`` divided ``sales`` by ``transactions``.
 
+ 
 #### Result
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/2e1d4995-68bd-4648-9bd8-1452f1bae7ee" width="800">
+
 
 ***
 
