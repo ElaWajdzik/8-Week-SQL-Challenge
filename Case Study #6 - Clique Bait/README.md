@@ -97,22 +97,155 @@ GROUP BY MONTH(event_time);
 
 ...
 
-
 #### 4. What is the number of events for each event type?
-#### 5. What is the percentage of visits which have a purchase event?
-#### 6. What is the percentage of visits which view the checkout page but do not have a purchase event?
-#### 7. What are the top 3 pages by number of views?
-#### 8. What is the number of views and cart adds for each product category?
-#### 9. What are the top 3 products by purchases?
-
-
 
 ```sql
+SELECT
+    e.event_type,
+    ei.event_name,
+    COUNT(e.event_type) AS number_of_events
+FROM events AS e, event_identifier AS ei
+WHERE e.event_type = ei.event_type
+GROUP BY event_type;
+```
 
+##### Step:
+- 
+
+##### Result:
+
+...
+
+#### 5. What is the percentage of visits which have a purchase event?
+
+```sql
+SELECT 
+    ROUND((COUNT(DISTINCT e.visit_id)/n_visit.number_of_visit)*100,1) AS proc_of_visits_with_purchase
+FROM events AS e, 
+    (SELECT 
+        COUNT(DISTINCT visit_id) AS number_of_visit
+    FROM events) AS n_visit
+WHERE event_type = 3;
 ```
 
 ##### Step:
 - I used the functi
 
 ##### Result:
-All 17 .
+
+| proc_of_visits_with_purchase |
+|------------------------------|
+| 49.9                         |
+
+
+#### 6. What is the percentage of visits which view the checkout page but do not have a purchase event?
+
+
+```sql
+WITH visit_checkout_purchase AS (
+SELECT
+    visit_id,
+    MAX(CASE 
+        WHEN event_type = 3 THEN 1  
+        ELSE 0 
+    END) AS visit_with_purchase,
+    MAX(CASE 
+        WHEN page_id = 12 THEN 1 
+        ELSE 0
+    END) AS visit_with_checkout_page
+FROM events
+GROUP BY visit_id
+)
+
+SELECT
+    SUM(visit_with_checkout_page)-SUM(visit_with_purchase) AS number_of_visit_with_checkout_without_purchase,
+    ROUND(((SUM(visit_with_checkout_page)-SUM(visit_with_purchase))/COUNT(*))*100,1) AS proc_of_visit_with_checkout_without_purchase
+FROM visit_checkout_purchase AS vcp;
+```
+
+##### Step:
+- 
+
+czy % ze wszystkich 
+czy % z tych co zobaczyły koszyk
+
+##### Result:
+...
+
+#### 7. What are the top 3 pages by number of views?
+
+```sql
+SELECT 
+    e.page_id,
+    ph.page_name,
+    COUNT(e.page_id) AS number_of_viewes
+FROM events AS e, page_hierarchy AS ph
+WHERE e.page_id = ph.page_id
+GROUP BY e.page_id
+ORDER BY COUNT(e.page_id) DESC
+LIMIT 3;
+```
+
+##### Step:
+- 
+
+##### Result:
+
+...
+
+#### 8. What is the number of views and cart adds for each product category?
+
+```sql
+SELECT 
+    ph.product_category,
+    COUNT(e.page_id) AS number_of_viewes,
+        SUM(CASE 
+        WHEN e.event_type = 2 THEN 1
+        ELSE 0
+    END) AS number_of_cart_adds
+FROM events AS e, page_hierarchy AS ph
+WHERE e.page_id = ph.page_id AND ph.product_category IS NOT NULL
+GROUP BY ph.product_category
+ORDER BY COUNT(e.page_id) DESC;
+```
+
+##### Step:
+- 
+
+##### Result:
+...
+
+#### 9. What are the top 3 products by purchases?
+
+```sql
+WITH events_with_purchase AS (
+    SELECT 
+        *
+    FROM events
+    WHERE visit_id IN (
+        SELECT
+            visit_id
+        FROM events
+        WHERE event_type = 3)
+)
+
+SELECT 
+    ph.page_name AS product_name,
+    ph.product_category,
+    SUM(CASE 
+        WHEN e.event_type = 2 THEN 1
+        ELSE 0
+    END) AS number_of_buy
+FROM events_with_purchase AS e, page_hierarchy AS ph
+WHERE e.page_id = ph.page_id AND ph.product_category IS NOT NULL
+GROUP BY ph.page_name
+ORDER BY number_of_buy DESC
+LIMIT 3;
+```
+
+##### Step:
+- 
+
+##### Result:
+
+...

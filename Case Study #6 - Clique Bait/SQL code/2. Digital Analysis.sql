@@ -24,10 +24,11 @@ FROM users;
 -- 3. What is the unique number of visits by all users per month?
 
 SELECT 
-    MONTH(event_time),
-    COUNT(DISTINCT visit_id)
+    MONTH(event_time) AS month,
+    COUNT(DISTINCT visit_id) AS unique_number_of_visit
 FROM events
 GROUP BY MONTH(event_time);
+
 
 SELECT 
     ROUND(COUNT(DISTINCT visit_id)/5,0) AS avg_number_of_visits_per_month
