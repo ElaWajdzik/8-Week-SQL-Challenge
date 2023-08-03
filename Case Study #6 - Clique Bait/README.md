@@ -37,8 +37,7 @@ Using the following [DDL](https://dbdiagram.io/home) schema details to create an
 
 Relationship diagram for the Clique Bait dataset that I created in DDL:
 
-...
-
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/0453a89f-4e70-4f63-aa90-849818475013" width="600">
 
 ***
 
@@ -95,7 +94,8 @@ GROUP BY MONTH(event_time);
 
 ##### Result:
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e996a9da-3354-4b32-a5bf-8587c039efe1" width="300">
+
 
 #### 4. What is the number of events for each event type?
 
@@ -114,7 +114,8 @@ GROUP BY event_type;
 
 ##### Result:
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/4322a19c-c6e3-457e-9945-63afa7467f4a" width="400">
+
 
 #### 5. What is the percentage of visits which have a purchase event?
 
@@ -170,7 +171,9 @@ czy % ze wszystkich
 czy % z tych co zobaczyły koszyk
 
 ##### Result:
-...
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/46b3308d-7231-4571-9e7f-764c010ce8fd" width="300">
+
 
 #### 7. What are the top 3 pages by number of views?
 
@@ -191,7 +194,7 @@ LIMIT 3;
 
 ##### Result:
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/8abc506b-822d-47fe-b8b4-1c0868ed9f7f" width="400">
 
 #### 8. What is the number of views and cart adds for each product category?
 
@@ -213,7 +216,9 @@ ORDER BY COUNT(e.page_id) DESC;
 - 
 
 ##### Result:
-...
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/4e5fb1c0-1515-44da-9205-74251601f493" width="500">
+
 
 #### 9. What are the top 3 products by purchases?
 
@@ -248,4 +253,4 @@ LIMIT 3;
 
 ##### Result:
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/3ff6286f-c3e2-4548-a2eb-6cc4a5e0c03b" width="500">
