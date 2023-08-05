@@ -51,9 +51,6 @@ SELECT
 FROM users;
 ```
 
-##### Step:
-- 
-
 ##### Result:
 
 | number_of_users |
@@ -69,8 +66,6 @@ SELECT
 FROM users;
 ```
 
-##### Step:
-- 
 ##### Result:
 
 | avg_number_of_cookis_per_user |
@@ -89,9 +84,6 @@ FROM events
 GROUP BY MONTH(event_time);
 ```
 
-##### Step:
-- 
-
 ##### Result:
 
 <img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e996a9da-3354-4b32-a5bf-8587c039efe1" width="300">
@@ -108,9 +100,6 @@ FROM events AS e, event_identifier AS ei
 WHERE e.event_type = ei.event_type
 GROUP BY event_type;
 ```
-
-##### Step:
-- 
 
 ##### Result:
 
@@ -130,7 +119,8 @@ WHERE event_type = 3;
 ```
 
 ##### Step:
-- I used the functi
+- I created a subquery where I calculated the number of all visits.
+- I counted the percent of visits with purchases using a query with the clause **WHERE event_type  = 3**.
 
 ##### Result:
 
@@ -165,10 +155,11 @@ FROM visit_checkout_purchase AS vcp;
 ```
 
 ##### Step:
-- 
-
-czy % ze wszystkich 
-czy % z tych co zobaczyły koszyk
+- I created a temporary table with the three data ``visit_id``, ``visit_with_purchase`` which was 1 or 0 (1 if in this visit was a purchase and 0 if not), and ``visit_with_checkout_page`` which was 1 or 0 (1 if in this visit had visited the checkout page and 0 if not).
+- I calculated the number of visits that include visits on the checkout page but do not include purchases, like a differential between the sum of ``visit_with_purchase``.  NOTE: Every purchase requires a visit to the checkout page.
+- In my opinion the main question has two interpretations. For me, the **1** interpretation makes more sense, which is why I calculated the answer to this question.
+    1. What is the percentage of visits which view the checkout page but do not have a purchase event? **And 100% is all visits in service Clique Bait**
+    2. What is the percentage of visits which view the checkout page but do not have a purchase event? **And 100% is only visits in service Clique Bait which include visits on the checkout page**
 
 ##### Result:
 
@@ -187,10 +178,7 @@ WHERE e.page_id = ph.page_id
 GROUP BY e.page_id
 ORDER BY COUNT(e.page_id) DESC
 LIMIT 3;
-```
-
-##### Step:
-- 
+``` 
 
 ##### Result:
 
@@ -202,7 +190,7 @@ LIMIT 3;
 SELECT 
     ph.product_category,
     COUNT(e.page_id) AS number_of_viewes,
-        SUM(CASE 
+    SUM(CASE 
         WHEN e.event_type = 2 THEN 1
         ELSE 0
     END) AS number_of_cart_adds
@@ -213,7 +201,9 @@ ORDER BY COUNT(e.page_id) DESC;
 ```
 
 ##### Step:
-- 
+- I counted every visit for each ``page_id``. And selected only the pages that have ``product_category``.
+- I calculated the number of adds to the cart using clause **CASE** to count every event **Add to Cart** (``event_type`` = 2).
+- And ordered the results in descending order.
 
 ##### Result:
 
@@ -249,7 +239,8 @@ LIMIT 3;
 ```
 
 ##### Step:
-- 
+- I created a temporary table where every visit includes the purchase. A query with a subquery included only ``visit_id`` with the purchase.
+- I counted the number of events **Add to Cart** ()``event_type`` = 2) for every page.
 
 ##### Result:
 
