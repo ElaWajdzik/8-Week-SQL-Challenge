@@ -245,3 +245,77 @@ LIMIT 3;
 ##### Result:
 
 <img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/3ff6286f-c3e2-4548-a2eb-6cc4a5e0c03b" width="500">
+
+***
+
+### 3. Product Funnel Analysis
+
+Using a single SQL query - create a new output table which has the following details:
+- How many times was each product viewed?
+- How many times was each product added to cart?
+- How many times was each product added to a cart but not purchased (abandoned)?
+- How many times was each product purchased?
+
+Additionally, create another table which further aggregates the data for the above points but this time for each product category instead of individual products.
+
+#### New table ``product_number``
+
+First I created a concept of how the new table will look and how I want to calculate the data.
+
+The new table ``product_number`` will include columns
+
+1. ``product_name`` - it is ``page_name`` from the table ``page_hierarchy``,
+2. ``product_view`` - it is the number of views on specific pages (``event_type`` = 1),
+3. ``product_add_to_cart`` - it is the number of items added to the cart on specific pages (``event_type`` = 2),
+4. ``product_abandoned`` - it is the difference between ``product_add_to_cart`` and ``product_purchase``,
+5. ``product_purchase`` - it is the number of items added to the cart on specific pages in the visit including purchase
+
+
+NOTE If some visits include a purchase, it means that visits end (the max sequence_numnber) on a purchase (page_id = 13 and event_type = 3).
+
+
+```sql
+CREATE TABLE product_number (
+WITH product_1 AS (
+SELECT 
+    e.page_id,
+    ph.page_name AS product_name,
+    SUM(CASE WHEN e.event_type = 1 THEN 1 ELSE 0 END) AS product_view,
+    SUM(CASE WHEN e.event_type = 2 THEN 1 ELSE 0 END) AS product_add_to_cart
+FROM events AS e, page_hierarchy AS ph
+WHERE e.page_id = ph.page_id
+GROUP BY e.page_id
+),
+product_2 AS (
+SELECT
+    page_id,
+    SUM(CASE WHEN event_type = 2 THEN 1 ELSE 0 END) AS product_purchase
+FROM (
+    SELECT 
+        *
+    FROM events
+    WHERE visit_id IN (
+        SELECT
+            visit_id
+        FROM events
+        WHERE event_type = 3)) AS events_with_purchase
+GROUP BY page_id
+)
+
+SELECT 
+    p1.product_name,
+    p1.product_view,
+    p1.product_add_to_cart,
+    p1.product_add_to_cart - p2.product_purchase AS product_abandoned,
+    p2.product_purchase
+FROM product_1 AS p1, product_2 As p2
+WHERE p1.page_id = p2.page_id AND p1.page_id NOT IN ('1','2','12','13')
+);
+```
+
+...
+
+#### New table ``category_number``
+
+
+
