@@ -312,8 +312,7 @@ FROM product_1 AS p1, product_2 As p2
 WHERE p1.page_id = p2.page_id AND p1.page_id NOT IN ('1','2','12','13')
 );
 ```
-
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/55a0cdac-7c8a-4921-9d77-ce8176ff9f4a" width="600">
 
 #### New table ``category_number``
 
@@ -358,13 +357,14 @@ FROM category_1 AS c1, category_2 As c2
 WHERE c1.category_name = c2.category_name AND c1.category_name IS NOT NULL);
 ```
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/07fe875b-2c80-4956-8af3-297eee498934" width="600">
 
 #### Questions 
 
 ##### 1. Which product had the most views, cart adds and purchases?
 ##### 2. Which product was most likely to be abandoned?
 
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/fc29abf4-f430-49eb-9853-764ffacc738d" width="600">
 
 ##### 3. Which product had the highest view to purchase percentage?
 
@@ -378,7 +378,7 @@ ORDER BY purchase_conversion DESC;
 
 Lobster has the highest conversion rate (48.7%). In the data conversion rate all products were similar, the smallest was 44.6% and the biggest was 48.7%.
 
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d6ac9921-2c63-4330-a4bf-b16d97803f0b" width="350">
 
 ##### 4. What is the average conversion rate from view to cart add?
 
@@ -397,9 +397,9 @@ FROM product_number;
 The average conversion rate from view to cart add was 60.9%, which means that 3 of 5 views end with adding to the cart.
 Looking at the data about products, we can see that the CR for every product was close (the smallest CR was 59.0% and the biggest CR was 62.9%).
 
-
-...
-...
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/ec3ac951-4df9-41ec-ad1c-e7a15cdd0311" width="250"> 
+<br>
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/7295464e-148b-4b0c-a657-aba42e2d4f69" width="350">
 
 ##### 5. What is the average conversion rate from cart add to purchase?
 
@@ -418,7 +418,9 @@ FROM product_number;
 The average conversion rate from cart add to purchase was 75.9%, which means that 3 of 4 adds to the cart ended with a purchase. 75% is not a small number, but I think it needs to be checked why 1 of 4 clients abandoned the cart.
 The data about products also show small differences (the biggest CR was 77.9% and the smallest was 73.7%).
 
-...
-...
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6c96e05a-ba2c-4b3e-b61b-8d1a19b616c4" width="250">
+<br>
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d25e224a-4829-4c4a-8222-1386548b4d5b" width="350">
 
 ***
