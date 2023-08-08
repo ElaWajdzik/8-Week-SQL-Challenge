@@ -317,5 +317,108 @@ WHERE p1.page_id = p2.page_id AND p1.page_id NOT IN ('1','2','12','13')
 
 #### New table ``category_number``
 
+To prepare the table ``category_number`` I used the tampate like in the table ``product_number``. And the biggest change was to use ``product_category`` instead of ``page_name` to name the categories.
 
 
+```sql
+CREATE TABLE category_number (
+WITH category_1 AS (
+SELECT 
+    ph.product_category AS category_name,
+    SUM(CASE WHEN e.event_type = 1 THEN 1 ELSE 0 END) AS category_view,
+    SUM(CASE WHEN e.event_type = 2 THEN 1 ELSE 0 END) AS category_add_to_cart
+FROM events AS e, page_hierarchy AS ph
+WHERE e.page_id = ph.page_id
+GROUP BY ph.product_category
+),
+category_2 AS (
+SELECT
+    ph.product_category AS category_name,
+    SUM(CASE WHEN ep.event_type = 2 THEN 1 ELSE 0 END) AS category_purchase
+FROM (
+    SELECT 
+        *
+    FROM events
+    WHERE visit_id IN (
+        SELECT
+            visit_id
+        FROM events
+        WHERE event_type = 3)) AS ep, page_hierarchy AS ph
+WHERE ep.page_id = ph.page_id
+GROUP BY ph.product_category
+)
+
+SELECT 
+    c1.category_name,
+    c1.category_view,
+    c1.category_add_to_cart,
+    c1.category_add_to_cart - c2.category_purchase AS category_abandoned,
+    c2.category_purchase
+FROM category_1 AS c1, category_2 As c2
+WHERE c1.category_name = c2.category_name AND c1.category_name IS NOT NULL);
+```
+
+...
+
+#### Questions 
+
+##### 1. Which product had the most views, cart adds and purchases?
+##### 2. Which product was most likely to be abandoned?
+
+
+##### 3. Which product had the highest view to purchase percentage?
+
+```sql
+SELECT 
+    product_name,
+    ROUND((product_purchase/product_view)*100,1) AS purchase_conversion
+FROM product_number
+ORDER BY purchase_conversion DESC;
+```
+
+Lobster has the highest conversion rate (48.7%). In the data conversion rate all products were similar, the smallest was 44.6% and the biggest was 48.7%.
+
+...
+
+##### 4. What is the average conversion rate from view to cart add?
+
+```sql
+SELECT 
+    product_name,
+    ROUND((product_add_to_cart/product_view)*100,1) AS add_to_cart_conversion
+FROM product_number
+ORDER BY add_to_cart_conversion DESC;
+
+SELECT 
+    ROUND((SUM(product_add_to_cart)/SUM(product_view))*100,1) AS add_to_cart_conversion
+FROM product_number;
+```
+
+The average conversion rate from view to cart add was 60.9%, which means that 3 of 5 views end with adding to the cart.
+Looking at the data about products, we can see that the CR for every product was close (the smallest CR was 59.0% and the biggest CR was 62.9%).
+
+
+...
+...
+
+##### 5. What is the average conversion rate from cart add to purchase?
+
+```sql
+SELECT 
+    product_name,
+    ROUND((product_purchase/product_add_to_cart)*100,1) AS cart_to_purchase_conversion
+FROM product_number
+ORDER BY cart_to_purchase_conversion DESC;
+
+SELECT 
+    ROUND((SUM(product_purchase)/SUM(product_add_to_cart))*100,1) AS cart_to_purchase_conversion
+FROM product_number;
+```
+
+The average conversion rate from cart add to purchase was 75.9%, which means that 3 of 4 adds to the cart ended with a purchase. 75% is not a small number, but I think it needs to be checked why 1 of 4 clients abandoned the cart.
+The data about products also show small differences (the biggest CR was 77.9% and the smallest was 73.7%).
+
+...
+...
+
+***
