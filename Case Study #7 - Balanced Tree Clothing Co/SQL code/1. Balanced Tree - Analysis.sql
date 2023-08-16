@@ -63,15 +63,53 @@ SELECT
 FROM (
     SELECT
         txn_id,
-        SUM(discount) AS discount
+        SUM(qty*price*discount/100) AS discount
     FROM sales
     GROUP BY txn_id) AS txn_sales;
 
-
 -- 5. What is the percentage split of all transactions for members vs non-members?
+
+WITH txn_sales AS (
+    SELECT
+        member,
+        COUNT(DISTINCT txn_id) AS number_of_transactions
+    FROM sales
+    GROUP BY member
+)
+
+SELECT 
+    CASE 
+        WHEN member = 1 THEN 'members'
+        ELSE 'non-members'
+    END AS member,
+    number_of_transactions,
+    ROUND(number_of_transactions/
+    (
+        SELECT SUM(number_of_transactions)
+        FROM txn_sales
+    )*100,1) AS proc_of_transactions
+FROM txn_sales;
+
+
 -- 6. What is the average revenue for member transactions and non-member transactions?
 
+WITH txn_revenue AS (
+    SELECT
+        txn_id,
+        member,
+        SUM(qty*price) AS revenue
+    FROM sales
+    GROUP BY txn_id, member
+)
 
+SELECT 
+    CASE 
+        WHEN member = 1 THEN 'members'
+        ELSE 'non-members'
+    END AS member,
+    ROUND(AVG(revenue),2) AS avg_revenue
+FROM txn_revenue
+GROUP BY member;
 
 /*
 Product Analysis
