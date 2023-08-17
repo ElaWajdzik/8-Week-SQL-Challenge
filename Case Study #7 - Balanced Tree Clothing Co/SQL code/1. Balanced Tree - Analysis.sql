@@ -3,7 +3,7 @@
 ------------
 
 --Author: Ela Wajdzik
---Date: 15.08.2023
+--Date: 15.08.2023 (update 17.08.2023)
 --Tool used: Visual Studio Code & xampp
 
 
@@ -16,20 +16,32 @@ High Level Sales Analysis
 -- 1. What was the total quantity sold for all products?
 
 SELECT
-    SUM(qty) AS total_quantity
-FROM sales;
+    pd.product_name,
+    SUM(s.qty) AS total_quantity
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.product_name
+ORDER BY total_quantity DESC;
 
 -- 2. What is the total generated revenue for all products before discounts?
 
 SELECT
-    SUM(qty*price) AS revenue_without_discounts
-FROM sales;
+    pd.product_name,
+    SUM(s.qty*s.price) AS revenue
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.product_name
+ORDER BY revenue DESC;
 
 -- 3. What was the total discount amount for all products?
 
 SELECT
-    SUM(discount) AS total_discount
-FROM sales;
+    pd.product_name,
+    ROUND(SUM(s.qty*s.price*s.discount/100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.product_name
+ORDER BY total_discount DESC;
 
 /*
 Transaction Analysis
@@ -55,6 +67,41 @@ FROM (
 -- 3. What are the 25th, 50th and 75th percentile values for the revenue per transaction?
 
 
+WITH txn_sales AS (
+SELECT
+    txn_id,
+    SUM(qty*price) AS revenue
+FROM sales
+GROUP BY txn_id
+),
+percentiles AS (
+    SELECT
+        revenue,
+        PERCENT_RANK() OVER (ORDER BY revenue) AS percent_rank
+    FROM txn_sales
+),
+25th_percentile AS (
+SELECT
+    MIN(revenue) AS 25th_perc
+FROM percentiles
+WHERE percent_rank >= 0.25
+),
+50th_percentile AS (
+SELECT
+    MIN(revenue) AS 50th_perc
+FROM percentiles
+WHERE percent_rank >= 0.5
+),
+75th_percentile AS (
+SELECT
+    MIN(revenue) AS 75th_perc
+FROM percentiles
+WHERE percent_rank >= 0.75
+)
+
+SELECT 
+    *
+FROM 25th_percentile, 50th_percentile, 75th_percentile;
 
 -- 4. What is the average discount value per transaction?
 
@@ -113,14 +160,34 @@ GROUP BY member;
 
 /*
 Product Analysis
-What are the top 3 products by total revenue before discount?
-What is the total quantity, revenue and discount for each segment?
-What is the top selling product for each segment?
-What is the total quantity, revenue and discount for each category?
-What is the top selling product for each category?
-What is the percentage split of revenue by product for each segment?
-What is the percentage split of revenue by segment for each category?
-What is the percentage split of total revenue by category?
-What is the total transaction “penetration” for each product? (hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)
-What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
 */
+
+-- 1. What are the top 3 products by total revenue before discount?
+
+SELECT
+    pd.product_name,
+    SUM(s.qty*s.price) AS revenue
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.product_name
+ORDER BY revenue DESC LIMIT 3;
+
+-- 2. What is the total quantity, revenue and discount for each segment?
+
+SELECT
+    pd.segment_name,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.segment_name;
+
+-- 3. What is the top selling product for each segment?
+-- 4. What is the total quantity, revenue and discount for each category?
+-- 5. What is the top selling product for each category?
+-- 6. What is the percentage split of revenue by product for each segment?
+-- 7. What is the percentage split of revenue by segment for each category?
+-- 8. What is the percentage split of total revenue by category?
+-- 9. What is the total transaction “penetration” for each product? (hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)
+-- 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
