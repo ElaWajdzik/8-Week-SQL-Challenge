@@ -184,8 +184,62 @@ WHERE s.prod_id = pd.product_id
 GROUP BY pd.segment_name;
 
 -- 3. What is the top selling product for each segment?
+
+WITH product_sales AS (
+SELECT
+    pd.segment_name,
+    pd.product_name,
+    DENSE_RANK() OVER (PARTITION BY pd.segment_name ORDER BY SUM(s.qty) DESC) AS selling_ranking,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.segment_name, pd.product_name
+)
+SELECT
+    product_name,
+    segment_name,
+    total_quantity,
+    revenue,
+    total_discount
+FROM product_sales
+WHERE selling_ranking = 1;
+
 -- 4. What is the total quantity, revenue and discount for each category?
+
+SELECT
+    pd.category_name,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name;
+
 -- 5. What is the top selling product for each category?
+
+WITH product_sales AS (
+SELECT
+    pd.category_name,
+    pd.product_name,
+    DENSE_RANK() OVER (PARTITION BY pd.category_name ORDER BY SUM(s.qty) DESC) AS selling_ranking,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name, pd.product_name
+)
+SELECT
+    product_name,
+    category_name,
+    total_quantity,
+    revenue,
+    total_discount
+FROM product_sales
+WHERE selling_ranking = 1;
+
 -- 6. What is the percentage split of revenue by product for each segment?
 -- 7. What is the percentage split of revenue by segment for each category?
 -- 8. What is the percentage split of total revenue by category?
