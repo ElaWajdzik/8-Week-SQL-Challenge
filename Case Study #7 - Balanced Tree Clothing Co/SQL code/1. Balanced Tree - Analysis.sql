@@ -241,7 +241,39 @@ FROM product_sales
 WHERE selling_ranking = 1;
 
 -- 6. What is the percentage split of revenue by product for each segment?
+
+SELECT
+    pd.segment_name,
+    pd.product_name,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER (PARTITION BY pd.segment_name)) *100, 1) AS percentage_of_revenue_in_segment
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.segment_name, pd.product_name;
+
 -- 7. What is the percentage split of revenue by segment for each category?
+
+SELECT
+    pd.category_name,
+    pd.segment_name,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER (PARTITION BY pd.category_name)) *100, 1) AS percentage_of_revenue_in_segment
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name, pd.segment_name;
+
 -- 8. What is the percentage split of total revenue by category?
--- 9. What is the total transaction “penetration” for each product? (hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)
+
+SELECT
+    pd.category_name,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER ()) *100, 1) AS percentage_of_revenue_in_segment
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name;
+
+-- 9. What is the total transaction “penetration” for each product? 
+--(hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)
+
+
 -- 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
