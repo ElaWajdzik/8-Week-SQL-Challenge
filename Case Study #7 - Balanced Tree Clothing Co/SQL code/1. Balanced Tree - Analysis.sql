@@ -3,7 +3,7 @@
 ------------
 
 --Author: Ela Wajdzik
---Date: 15.08.2023 (update 17.08.2023)
+--Date: 15.08.2023 (update 20.08.2023)
 --Tool used: Visual Studio Code & xampp
 
 
@@ -276,4 +276,62 @@ GROUP BY pd.category_name;
 --(hint: penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions)
 
 
+SELECT
+    s.prod_id,
+    pd.product_name,
+    ROUND(COUNT(*)/(
+        SELECT 
+            COUNT(DISTINCT txn_id)
+        FROM sales) *100,2) AS penetration
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY s.prod_id;
+
 -- 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
+
+
+WITH prod_sales AS (
+SELECT
+    txn_id,
+    SUM(CASE WHEN prod_id = 'c4a632' THEN 1 ELSE 0 END) AS prod_c4a632,
+    SUM(CASE WHEN prod_id = 'e83aa3' THEN 1 ELSE 0 END) AS prod_e83aa3,
+    SUM(CASE WHEN prod_id = 'e31d39' THEN 1 ELSE 0 END) AS prod_e31d39,
+    SUM(CASE WHEN prod_id = 'd5e9a6' THEN 1 ELSE 0 END) AS prod_d5e9a6,
+    SUM(CASE WHEN prod_id = '72f5d4' THEN 1 ELSE 0 END) AS prod_72f5d4,
+    SUM(CASE WHEN prod_id = '9ec847' THEN 1 ELSE 0 END) AS prod_9ec847,
+    SUM(CASE WHEN prod_id = '5d267b' THEN 1 ELSE 0 END) AS prod_5d267b,
+    SUM(CASE WHEN prod_id = 'c8d436' THEN 1 ELSE 0 END) AS prod_c8d436,
+    SUM(CASE WHEN prod_id = '2a2353' THEN 1 ELSE 0 END) AS prod_2a2353,
+    SUM(CASE WHEN prod_id = 'f084eb' THEN 1 ELSE 0 END) AS prod_f084eb,
+    SUM(CASE WHEN prod_id = 'b9a74d' THEN 1 ELSE 0 END) AS prod_b9a74d,
+    SUM(CASE WHEN prod_id = '2feb6b' THEN 1 ELSE 0 END) AS prod_2feb6b
+FROM sales
+GROUP BY txn_id
+),
+set_of_products AS (
+SELECT
+    txn_id,
+    CONCAT_WS(',',prod_c4a632, prod_e83aa3, prod_e31d39, prod_d5e9a6, prod_72f5d4, prod_9ec847, prod_5d267b, prod_c8d436, prod_2a2353, prod_f084eb, prod_b9a74d, prod_2feb6b) AS set_products
+FROM prod_sales
+)
+SELECT
+    *
+FROM set_of_products;
+
+
+WITH products_list_sales AS (
+SELECT
+    txn_id,
+    GROUP_CONCAT(prod_id ORDER BY prod_id ASC) AS products_list
+FROM sales
+GROUP BY txn_id
+)
+SELECT 
+    products_list,
+    COUNT(txn_id) AS number_of_txn,
+    (LENGTH(products_list) - LENGTH(REPLACE(products_list,',','')) +1) AS number_of_prod
+FROM products_list_sales
+GROUP BY products_list
+ORDER BY number_of_txn DESC;
+
+
