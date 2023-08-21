@@ -19,13 +19,8 @@ For this case study there is a total of 4 datasets for this case study - however
 - ``product_hierarchy``
 - ``product_prices``
 
+
 ***
-
-
-
-
-
-
 ***
 
 ## Question and Solution
@@ -35,15 +30,84 @@ I was using MySQL to solve the problem, if you are interested, the complete SQL 
 **In advance, thank you for reading.** If you have any comments on my work, please let me know. My emali address is ela.wajdzik@gmail.com.
 
 ***
-### 1. Enterprise Relationship Diagram
+###  A. High Level Sales Analysis
 
-Using the following [DDL](https://dbdiagram.io/home) schema details to create an ERD for all the Clique Bait datasets.
+#### 1. What was the total quantity sold for all products?
 
-Relationship diagram for the Clique Bait dataset that I created in DDL:
+```sql
+SELECT
+    SUM(qty) AS total_quantity
+FROM sales;
+```
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/0453a89f-4e70-4f63-aa90-849818475013" width="600">
+##### Result:
+
+... cs7_a_1
+
+There were 45216 products sold.
+
+#### 2. What is the total generated revenue for all products before discounts?
+
+```sql
+SELECT
+    SUM(qty*price) AS revenue
+FROM sales;
+```
+
+##### Result:
+
+...cs7_a_2
+
+The total revenue was $1 289 453 
+
+#### 3. What was the total discount amount for all products?
+
+```sql
+SELECT
+    ROUND(SUM(qty*price*discount/100),2) AS total_discount
+FROM sales;
+```
+
+##### Result:
+
+...cs7_a_3
+
+The total discount amount was $156 229.14
 
 ***
+###  B. Transaction Analysis
+
+#### 1. How many unique transactions were there?
+
+```sql
+SELECT
+    COUNT(DISTINCT txn_id) AS number_of_transactions
+FROM sales;
+```
+
+##### Result:
+
+...cs7_b_1
+
+There were 2500 unique transactions.
+
+#### 2. What is the average unique products purchased in each transaction?
+
+```sql
+SELECT
+    ROUND(AVG(number_of_different_products),0) AS average_unique_products
+FROM (
+    SELECT
+        txn_id,
+        COUNT(DISTINCT prod_id) AS number_of_different_products
+    FROM sales
+    GROUP BY txn_id) AS txn_sales;
+```
+##### Result:
+
+...cs7_b_2
+
+The average number of unique products in each transaction was equal to 6.
 
 
 ***

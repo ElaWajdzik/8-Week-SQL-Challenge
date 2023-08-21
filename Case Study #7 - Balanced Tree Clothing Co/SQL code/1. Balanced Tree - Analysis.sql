@@ -16,6 +16,11 @@ High Level Sales Analysis
 -- 1. What was the total quantity sold for all products?
 
 SELECT
+    SUM(qty) AS total_quantity
+FROM sales;
+
+-- the quantity sold for each product
+SELECT
     pd.product_name,
     SUM(s.qty) AS total_quantity
 FROM sales AS s, product_details AS pd
@@ -26,6 +31,11 @@ ORDER BY total_quantity DESC;
 -- 2. What is the total generated revenue for all products before discounts?
 
 SELECT
+    SUM(qty*price) AS revenue
+FROM sales;
+
+-- revenue for each product
+SELECT
     pd.product_name,
     SUM(s.qty*s.price) AS revenue
 FROM sales AS s, product_details AS pd
@@ -35,6 +45,7 @@ ORDER BY revenue DESC;
 
 -- 3. What was the total discount amount for all products?
 
+-- 
 SELECT
     pd.product_name,
     ROUND(SUM(s.qty*s.price*s.discount/100),2) AS total_discount
@@ -289,6 +300,15 @@ GROUP BY s.prod_id;
 
 -- 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
 
+-- NOTE
+-- jest 220 możliwych trójek (kombinacja 3 elementów z 12)
+-- 12!/(3!*(12-3)!) = 220
+
+
+
+
+
+
 
 WITH prod_sales AS (
 SELECT
@@ -334,4 +354,25 @@ FROM products_list_sales
 GROUP BY products_list
 ORDER BY number_of_txn DESC;
 
+
+
+-----
+
+WITH products_list_sales AS (
+SELECT
+    txn_id,
+    GROUP_CONCAT(prod_id ORDER BY prod_id ASC) AS products_list
+FROM sales
+GROUP BY txn_id
+)
+SELECT 
+    txn_id,
+    products_list
+FROM products_list_sales;
+
+-- I added additional id
+SELECT
+    id,
+    product_id
+FROm product_details;
 
