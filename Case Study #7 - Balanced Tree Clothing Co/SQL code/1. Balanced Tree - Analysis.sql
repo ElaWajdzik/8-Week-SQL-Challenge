@@ -3,14 +3,14 @@
 ------------
 
 --Author: Ela Wajdzik
---Date: 15.08.2023 (update 20.08.2023)
+--Date: 15.08.2023 (update 22.08.2023)
 --Tool used: Visual Studio Code & xampp
 
 
 USE balanced_tree;
 
 /*
-High Level Sales Analysis
+A. High Level Sales Analysis
 */
 
 -- 1. What was the total quantity sold for all products?
@@ -45,7 +45,11 @@ ORDER BY revenue DESC;
 
 -- 3. What was the total discount amount for all products?
 
--- 
+SELECT
+    ROUND(SUM(qty*price*discount/100),2) AS total_discount
+FROM sales;
+
+-- the discount amount for each product
 SELECT
     pd.product_name,
     ROUND(SUM(s.qty*s.price*s.discount/100),2) AS total_discount
@@ -55,7 +59,7 @@ GROUP BY pd.product_name
 ORDER BY total_discount DESC;
 
 /*
-Transaction Analysis
+B. Transaction Analysis
 */
 
 -- 1. How many unique transactions were there?
@@ -300,79 +304,33 @@ GROUP BY s.prod_id;
 
 -- 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
 
--- NOTE
--- jest 220 możliwych trójek (kombinacja 3 elementów z 12)
+-- NOTE! It is 220 combinations of three products (3 products from 12)
 -- 12!/(3!*(12-3)!) = 220
 
-
-
-
-
-
-
-WITH prod_sales AS (
-SELECT
-    txn_id,
-    SUM(CASE WHEN prod_id = 'c4a632' THEN 1 ELSE 0 END) AS prod_c4a632,
-    SUM(CASE WHEN prod_id = 'e83aa3' THEN 1 ELSE 0 END) AS prod_e83aa3,
-    SUM(CASE WHEN prod_id = 'e31d39' THEN 1 ELSE 0 END) AS prod_e31d39,
-    SUM(CASE WHEN prod_id = 'd5e9a6' THEN 1 ELSE 0 END) AS prod_d5e9a6,
-    SUM(CASE WHEN prod_id = '72f5d4' THEN 1 ELSE 0 END) AS prod_72f5d4,
-    SUM(CASE WHEN prod_id = '9ec847' THEN 1 ELSE 0 END) AS prod_9ec847,
-    SUM(CASE WHEN prod_id = '5d267b' THEN 1 ELSE 0 END) AS prod_5d267b,
-    SUM(CASE WHEN prod_id = 'c8d436' THEN 1 ELSE 0 END) AS prod_c8d436,
-    SUM(CASE WHEN prod_id = '2a2353' THEN 1 ELSE 0 END) AS prod_2a2353,
-    SUM(CASE WHEN prod_id = 'f084eb' THEN 1 ELSE 0 END) AS prod_f084eb,
-    SUM(CASE WHEN prod_id = 'b9a74d' THEN 1 ELSE 0 END) AS prod_b9a74d,
-    SUM(CASE WHEN prod_id = '2feb6b' THEN 1 ELSE 0 END) AS prod_2feb6b
-FROM sales
-GROUP BY txn_id
+WITH txn_products AS (
+    SELECT
+        s.txn_id,
+        s.prod_id,
+        pd.product_name AS product
+    FROM new_sales AS s, product_details AS pd
+    WHERE s.prod_id = pd.product_id
 ),
-set_of_products AS (
-SELECT
-    txn_id,
-    CONCAT_WS(',',prod_c4a632, prod_e83aa3, prod_e31d39, prod_d5e9a6, prod_72f5d4, prod_9ec847, prod_5d267b, prod_c8d436, prod_2a2353, prod_f084eb, prod_b9a74d, prod_2feb6b) AS set_products
-FROM prod_sales
+combination_3_products AS (
+    SELECT
+        tp1.product AS product_1,
+        tp2.product AS product_2,
+        tp3.product AS product_3,
+        COUNT(*) AS number_of_transactions,
+        RANK () OVER (ORDER BY COUNT(*) DESC) AS rank
+    FROM txn_products AS tp1
+    JOIN txn_products AS tp2 
+    ON tp1.txn_id = tp2.txn_id AND tp1.product != tp2.product AND tp1.product < tp2.product
+    JOIN txn_products AS tp3
+    ON tp1.txn_id = tp3.txn_id AND tp1.product != tp3.product AND tp1.product < tp3.product
+    AND tp2.product != tp3.product AND tp2.product < tp3.product
+    GROUP BY tp1.product, tp2.product, tp3.product
+    ORDER BY number_of_transactions DESC
 )
-SELECT
-    *
-FROM set_of_products;
-
-
-WITH products_list_sales AS (
-SELECT
-    txn_id,
-    GROUP_CONCAT(prod_id ORDER BY prod_id ASC) AS products_list
-FROM sales
-GROUP BY txn_id
-)
-SELECT 
-    products_list,
-    COUNT(txn_id) AS number_of_txn,
-    (LENGTH(products_list) - LENGTH(REPLACE(products_list,',','')) +1) AS number_of_prod
-FROM products_list_sales
-GROUP BY products_list
-ORDER BY number_of_txn DESC;
-
-
-
------
-
-WITH products_list_sales AS (
-SELECT
-    txn_id,
-    GROUP_CONCAT(prod_id ORDER BY prod_id ASC) AS products_list
-FROM sales
-GROUP BY txn_id
-)
-SELECT 
-    txn_id,
-    products_list
-FROM products_list_sales;
-
--- I added additional id
-SELECT
-    id,
-    product_id
-FROm product_details;
-
+SELECT *
+FROM combination_3_products
+WHERE rank = 1;
