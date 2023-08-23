@@ -68,6 +68,8 @@ SELECT
 FROM sales;
 ```
 
+To calculate the total discount, I used information about quantity (``qty``), price (``price``) and percentage discount (``discount``). I multiplied all three metrics and divided by 100 because ``discount`` in the table is an integer, not a percent.
+
 ##### Result:
 
 ...cs7_a_3
@@ -109,6 +111,130 @@ FROM (
 
 The average number of unique products in each transaction was equal to 6.
 
+
+#### 3. What are the 25th, 50th and 75th percentile values for the revenue per transaction?
+
+```sql
+WITH txn_sales AS (
+SELECT
+    txn_id,
+    SUM(qty*price) AS revenue
+FROM sales
+GROUP BY txn_id
+),
+percentiles AS (
+    SELECT
+        revenue,
+        PERCENT_RANK() OVER (ORDER BY revenue) AS percent_rank
+    FROM txn_sales
+),
+25th_percentile AS (
+SELECT
+    MIN(revenue) AS 25th_perc
+FROM percentiles
+WHERE percent_rank >= 0.25
+),
+50th_percentile AS (
+SELECT
+    MIN(revenue) AS 50th_perc
+FROM percentiles
+WHERE percent_rank >= 0.5
+),
+75th_percentile AS (
+SELECT
+    MIN(revenue) AS 75th_perc
+FROM percentiles
+WHERE percent_rank >= 0.75
+)
+SELECT 
+    *
+FROM 25th_percentile, 50th_percentile, 75th_percentile;
+```
+
+To calculate the percentile I need to use the function **PERCENT_RANK()** and after that I choose the value of revenue according to the 25th, 50th and 75th percentiles.
+
+##### Result:
+
+...cs7_b_3
+
+
+#### 4. What is the average discount value per transaction?
+
+```sql
+SELECT
+    ROUND(AVG(discount),2) AS avg_discount
+FROM (
+    SELECT
+        txn_id,
+        SUM(qty*price*discount/100) AS discount
+    FROM sales
+    GROUP BY txn_id) AS txn_sales;
+```
+
+##### Result:
+
+...cs7_b_4
+
+The average discount for each transaction was $62.49.
+
+
+#### 5. What is the percentage split of all transactions for members vs non-members?
+
+```sql
+WITH txn_sales AS (
+    SELECT
+        member,
+        COUNT(DISTINCT txn_id) AS number_of_transactions
+    FROM sales
+    GROUP BY member
+)
+SELECT 
+    CASE 
+        WHEN member = 1 THEN 'members'
+        ELSE 'non-members'
+    END AS member,
+    number_of_transactions,
+    ROUND(number_of_transactions/(SUM(SUM(number_of_transactions)) OVER ())*100,1) AS proc_of_transactions
+FROM txn_sales
+GROUP BY member;
+```
+
+##### Steps:
+- First, I created the temporary table ``txn_sales`` which contains the number of unique transactions for members and non-members.
+- In the result I changed the value in column ``memeber`` from **1** and **0** to **members** and **non-members**. I calculated the percentage of all transactions for each group of clients.
+
+##### Result:
+
+... cs7_b_5
+
+#### 6. What is the average revenue for member transactions and non-member transactions?
+
+```sql
+WITH txn_revenue AS (
+    SELECT
+        txn_id,
+        member,
+        SUM(qty*price) AS revenue
+    FROM sales
+    GROUP BY txn_id, member
+)
+SELECT 
+    CASE 
+        WHEN member = 1 THEN 'members'
+        ELSE 'non-members'
+    END AS member,
+    ROUND(AVG(revenue),2) AS avg_revenue
+FROM txn_revenue
+GROUP BY member;
+```
+
+##### Result:
+
+...cs7_b_6
+
+The average revenue for transactions for members was $516.27 and for non-members was $515.04. The difference between those two values was only $1.23.
+
+***
 
 ***
 

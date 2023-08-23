@@ -113,7 +113,6 @@ SELECT
 FROM percentiles
 WHERE percent_rank >= 0.75
 )
-
 SELECT 
     *
 FROM 25th_percentile, 50th_percentile, 75th_percentile;
@@ -121,7 +120,7 @@ FROM 25th_percentile, 50th_percentile, 75th_percentile;
 -- 4. What is the average discount value per transaction?
 
 SELECT
-    ROUND(AVG(discount),1) AS avg_discount
+    ROUND(AVG(discount),2) AS avg_discount
 FROM (
     SELECT
         txn_id,
@@ -138,20 +137,15 @@ WITH txn_sales AS (
     FROM sales
     GROUP BY member
 )
-
 SELECT 
     CASE 
         WHEN member = 1 THEN 'members'
         ELSE 'non-members'
     END AS member,
     number_of_transactions,
-    ROUND(number_of_transactions/
-    (
-        SELECT SUM(number_of_transactions)
-        FROM txn_sales
-    )*100,1) AS proc_of_transactions
-FROM txn_sales;
-
+    ROUND(number_of_transactions/(SUM(SUM(number_of_transactions)) OVER ())*100,1) AS proc_of_transactions
+FROM txn_sales
+GROUP BY member;
 
 -- 6. What is the average revenue for member transactions and non-member transactions?
 
@@ -163,7 +157,6 @@ WITH txn_revenue AS (
     FROM sales
     GROUP BY txn_id, member
 )
-
 SELECT 
     CASE 
         WHEN member = 1 THEN 'members'
@@ -312,7 +305,7 @@ WITH txn_products AS (
         s.txn_id,
         s.prod_id,
         pd.product_name AS product
-    FROM new_sales AS s, product_details AS pd
+    FROM sales AS s, product_details AS pd
     WHERE s.prod_id = pd.product_id
 ),
 combination_3_products AS (
