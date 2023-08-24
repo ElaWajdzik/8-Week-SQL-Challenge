@@ -362,7 +362,13 @@ WHERE c1.category_name = c2.category_name AND c1.category_name IS NOT NULL);
 #### Questions 
 
 ##### 1. Which product had the most views, cart adds and purchases?
+
+Oyster had the most views (1568).
+Lobster had the highest number of items added to the cart (968) and purchases (754).
+
 ##### 2. Which product was most likely to be abandoned?
+
+Russian caviar had the biggest number of abandoned.
 
 <img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/fc29abf4-f430-49eb-9853-764ffacc738d" width="600">
 
@@ -424,3 +430,10 @@ The data about products also show small differences (the biggest CR was 77.9% an
 <img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d25e224a-4829-4c4a-8222-1386548b4d5b" width="350">
 
 ***
+
+**Thanks for reading.** Please let me know what you think about my work. My emali address is ela.wajdzik@gmail.com
+
+I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information. 
+
+
+**Have a nice day!**

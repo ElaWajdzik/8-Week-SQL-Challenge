@@ -235,6 +235,139 @@ GROUP BY member;
 The average revenue for transactions for members was $516.27 and for non-members was $515.04. The difference between those two values was only $1.23.
 
 ***
+###  C. Product Analysis
+
+#### 1. What are the top 3 products by total revenue before discount?
+
+
+```sql
+SELECT
+    pd.product_name,
+    SUM(s.qty*s.price) AS revenue,
+    ROUND(SUM(s.qty*s.price)/(SUM(SUM(s.qty*s.price)) OVER ())*100,1) AS proc_of_revenue
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.product_name
+ORDER BY revenue DESC LIMIT 3;
+```
+
+##### Result:
+
+...cs7_c_1
+
+The top 3 products by revenue were **Blue Polo Shirt - Mens** (revenue around $218k which is 16,9% of total revenue), **Grey Fashion Jacket - Womens** (revenue around $209k which is 16,2% of total revenue) and **White Tee Shirt - Mens** (revenue around $152k which is 11,8% of total revenue).
+
+#### 2. What is the total quantity, revenue and discount for each segment?
+
+
+```sql
+SELECT
+    pd.segment_name,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.segment_name;
+```
+
+##### Result:
+
+...cs7_c_2
+
+#### 3. What is the top selling product for each segment?
+
+NOTE. Top selling products can be calculated by revenue or by quantity sold.
+
+Top selling products by quantity sold.
+```sql
+WITH product_sales AS (
+SELECT
+    pd.segment_name,
+    pd.product_name,
+    DENSE_RANK() OVER (PARTITION BY pd.segment_name ORDER BY SUM(s.qty) DESC) AS selling_ranking,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.segment_name, pd.product_name
+)
+SELECT
+    segment_name,
+    product_name,
+    total_quantity,
+    revenue
+FROM product_sales
+WHERE selling_ranking = 1;
+```
+
+##### Result:
+
+by quantity sold
+...cs7_c_3a
+
+
+by revenue
+...cs7_c_3b
+
+In 3 of 4 segments, the same product generated the most revenue and the most sales. Only in the segment **Jeans** the products were different, **Navy Oversized Jeans - Womens** generated the biggest number of sales (3856) and **Black Straight Jeans - Womens** generated the biggest revenue (around $120k).
+
+#### 4. What is the total quantity, revenue and discount for each category?
+
+
+```sql
+SELECT
+    pd.category_name,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name;
+```
+
+##### Result:
+
+...cs7_c_4
+
+#### 5. What is the top selling product for each category?
+
+Like in question 3 we can calculate the top products by revenue or by quantity sold.
+
+Top selling products by quantity sold.
+```sql
+WITH product_sales AS (
+SELECT
+    pd.category_name,
+    pd.product_name,
+    DENSE_RANK() OVER (PARTITION BY pd.category_name ORDER BY SUM(s.qty) DESC) AS selling_ranking,
+    SUM(s.qty) AS total_quantity,
+    SUM(s.qty *s.price) AS revenue
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name, pd.product_name
+)
+SELECT
+    category_name,
+    product_name,
+    total_quantity,
+    revenue
+FROM product_sales
+WHERE selling_ranking = 1;
+```
+
+##### Result:
+
+by quantity sold
+...cs7_c_5a
+
+
+by revenue
+...cs7_c_5a
+
+The result is exactly the same.
+
+
 
 ***
 

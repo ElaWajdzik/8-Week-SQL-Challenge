@@ -167,14 +167,15 @@ FROM txn_revenue
 GROUP BY member;
 
 /*
-Product Analysis
+C. Product Analysis
 */
 
 -- 1. What are the top 3 products by total revenue before discount?
 
 SELECT
     pd.product_name,
-    SUM(s.qty*s.price) AS revenue
+    SUM(s.qty*s.price) AS revenue,
+    ROUND(SUM(s.qty*s.price)/(SUM(SUM(s.qty*s.price)) OVER ())*100,1) AS proc_of_revenue
 FROM sales AS s, product_details AS pd
 WHERE s.prod_id = pd.product_id
 GROUP BY pd.product_name
@@ -199,18 +200,16 @@ SELECT
     pd.product_name,
     DENSE_RANK() OVER (PARTITION BY pd.segment_name ORDER BY SUM(s.qty) DESC) AS selling_ranking,
     SUM(s.qty) AS total_quantity,
-    SUM(s.qty *s.price) AS revenue,
-    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+    SUM(s.qty *s.price) AS revenue
 FROM sales AS s, product_details AS pd
 WHERE s.prod_id = pd.product_id
 GROUP BY pd.segment_name, pd.product_name
 )
 SELECT
-    product_name,
     segment_name,
+    product_name,
     total_quantity,
-    revenue,
-    total_discount
+    revenue
 FROM product_sales
 WHERE selling_ranking = 1;
 
@@ -233,18 +232,16 @@ SELECT
     pd.product_name,
     DENSE_RANK() OVER (PARTITION BY pd.category_name ORDER BY SUM(s.qty) DESC) AS selling_ranking,
     SUM(s.qty) AS total_quantity,
-    SUM(s.qty *s.price) AS revenue,
-    ROUND(SUM(s.qty * s.price * s.discount /100),2) AS total_discount
+    SUM(s.qty *s.price) AS revenue
 FROM sales AS s, product_details AS pd
 WHERE s.prod_id = pd.product_id
 GROUP BY pd.category_name, pd.product_name
 )
 SELECT
-    product_name,
     category_name,
+    product_name,
     total_quantity,
-    revenue,
-    total_discount
+    revenue
 FROM product_sales
 WHERE selling_ranking = 1;
 
