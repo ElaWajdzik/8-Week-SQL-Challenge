@@ -42,7 +42,7 @@ FROM sales;
 
 ##### Result:
 
-... cs7_a_1
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e79e0f60-3d09-4b3e-aa8a-5e576d9e85e6" width="150">
 
 There were 45216 products sold.
 
@@ -56,7 +56,7 @@ FROM sales;
 
 ##### Result:
 
-...cs7_a_2
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/40c732f3-0d8d-445c-b0fc-6516b9698267" width="150">
 
 The total revenue was $1 289 453 
 
@@ -72,7 +72,7 @@ To calculate the total discount, I used information about quantity (``qty``), pr
 
 ##### Result:
 
-...cs7_a_3
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/0073e10c-d0c7-4001-bb1e-e8262c48094d" width="150">
 
 The total discount amount was $156 229.14
 
@@ -89,7 +89,7 @@ FROM sales;
 
 ##### Result:
 
-...cs7_b_1
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/5396d605-0c4a-4226-8940-563b9df0ae44" width="200">
 
 There were 2500 unique transactions.
 
@@ -107,7 +107,7 @@ FROM (
 ```
 ##### Result:
 
-...cs7_b_2
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/e3449b73-6bc5-4c2a-b03b-0e73d0e12331" width="200">
 
 The average number of unique products in each transaction was equal to 6.
 
@@ -155,8 +155,7 @@ To calculate the percentile I need to use the function **PERCENT_RANK()** and af
 
 ##### Result:
 
-...cs7_b_3
-
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/892baca0-94d1-4ab9-96fa-3e6b3da1f649" width="400">
 
 #### 4. What is the average discount value per transaction?
 
@@ -173,7 +172,7 @@ FROM (
 
 ##### Result:
 
-...cs7_b_4
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a6a7eeb1-c816-45b1-bff9-f836a7f843dd" width="400">
 
 The average discount for each transaction was $62.49.
 
@@ -205,7 +204,7 @@ GROUP BY member;
 
 ##### Result:
 
-... cs7_b_5
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/c7079c5a-27c2-4859-a2b7-06d91ab5cb0c" width="400">
 
 #### 6. What is the average revenue for member transactions and non-member transactions?
 
@@ -230,12 +229,7 @@ GROUP BY member;
 
 ##### Result:
 
-...cs7_b_6
-
-
-<img src="" width="400">
-
-<img src="" width="400">
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a73cfa64-3cf0-4039-99fc-754e46831f86" width="400">
 
 The average revenue for transactions for members was $516.27 and for non-members was $515.04. The difference between those two values was only $1.23.
 
