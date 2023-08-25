@@ -262,7 +262,7 @@ SELECT
     pd.category_name,
     pd.segment_name,
     SUM(s.qty *s.price) AS revenue,
-    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER (PARTITION BY pd.category_name)) *100, 1) AS percentage_of_revenue_in_segment
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER (PARTITION BY pd.category_name)) *100, 1) AS percentage_of_revenue_in_category
 FROM sales AS s, product_details AS pd
 WHERE s.prod_id = pd.product_id
 GROUP BY pd.category_name, pd.segment_name;
@@ -272,7 +272,7 @@ GROUP BY pd.category_name, pd.segment_name;
 SELECT
     pd.category_name,
     SUM(s.qty *s.price) AS revenue,
-    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER ()) *100, 1) AS percentage_of_revenue_in_segment
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER ()) *100, 1) AS percentage_of_revenue_in_category
 FROM sales AS s, product_details AS pd
 WHERE s.prod_id = pd.product_id
 GROUP BY pd.category_name;

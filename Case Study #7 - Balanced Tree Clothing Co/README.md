@@ -367,6 +367,128 @@ by revenue
 
 The result is exactly the same.
 
+#### 6. What is the percentage split of revenue by product for each segment?
+
+```sql
+SELECT
+    pd.segment_name,
+    pd.product_name,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER (PARTITION BY pd.segment_name)) *100, 1) AS percentage_of_revenue_in_segment
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.segment_name, pd.product_name;
+```
+
+The column ``percentage_of_revenue_in_segment`` includes information about the percentage of revenue for each segment. It means that the sum of products in one segment is equal to 100%, and the total sum of the column will be more than 100% because we have more than one segment.
+
+##### Result:
+
+...cs7_c_6
+
+#### 7. What is the percentage split of revenue by segment for each category?
+
+```sql
+SELECT
+    pd.category_name,
+    pd.segment_name,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER (PARTITION BY pd.category_name)) *100, 1) AS percentage_of_revenue_in_category
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name, pd.segment_name;
+```
+
+Like in question 6, the column ``percentage_of_revenue_in_category`` contains information about the percentage of revenue for each category. If in the data we have more than one segment, the total sum of this column will be greater than 100.
+
+##### Result:
+
+...cs7_c_7
+
+#### 8. What is the percentage split of total revenue by category?
+
+```sql
+SELECT
+    pd.category_name,
+    SUM(s.qty *s.price) AS revenue,
+    ROUND(SUM(s.qty *s.price)/(SUM(SUM(s.qty *s.price)) OVER ()) *100, 1) AS percentage_of_revenue_in_category
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY pd.category_name;
+```
+
+##### Result:
+
+...cs7_c_8
+
+#### 9. What is the total transaction “penetration” for each product? 
+
+NOTE. Penetration = number of transactions where at least 1 quantity of a product was purchased divided by total number of transactions
+
+```sql
+SELECT
+    s.prod_id,
+    pd.product_name,
+    ROUND(COUNT(*)/(
+        SELECT 
+            COUNT(DISTINCT txn_id)
+        FROM sales) *100,2) AS penetration
+FROM sales AS s, product_details AS pd
+WHERE s.prod_id = pd.product_id
+GROUP BY s.prod_id;
+```
+
+##### Result:
+
+...cs7_c_9
+
+For every product, the penetration value is close to 50%.
+
+#### 10. What is the most common combination of at least 1 quantity of any 3 products in a 1 single transaction?
+
+In this question, we want to find the most common three products bought in one transaction. In the data, we have 12 unique products and we want to find a combination of three of them. It is 220 different three product combinations because it is 12 combinations of 3.
+
+$$ \binom{12}{3} = {12! \over 3!(12-3)!} = {12 * 11 * 10 \over 3!} = 220$$
+
+To calculate the number of three-product commbinations that exist in every transaction, I joined three times the same table, which includes only ``pruduct_name`` and ``txn_id`` to generate every three-product commbination for every transaction.
+
+
+```sql
+WITH txn_products AS (
+    SELECT
+        s.txn_id,
+        s.prod_id,
+        pd.product_name AS product
+    FROM sales AS s, product_details AS pd
+    WHERE s.prod_id = pd.product_id
+),
+combination_3_products AS (
+    SELECT
+        tp1.product AS product_1,
+        tp2.product AS product_2,
+        tp3.product AS product_3,
+        COUNT(*) AS number_of_transactions,
+        RANK () OVER (ORDER BY COUNT(*) DESC) AS rank
+    FROM txn_products AS tp1
+    JOIN txn_products AS tp2 
+    ON tp1.txn_id = tp2.txn_id AND tp1.product != tp2.product AND tp1.product < tp2.product
+    JOIN txn_products AS tp3
+    ON tp1.txn_id = tp3.txn_id AND tp1.product != tp3.product AND tp1.product < tp3.product
+    AND tp2.product != tp3.product AND tp2.product < tp3.product
+    GROUP BY tp1.product, tp2.product, tp3.product
+    ORDER BY number_of_transactions DESC
+)
+SELECT *
+FROM combination_3_products
+WHERE rank = 1;
+```
+
+##### Result:
+
+
+...cs_c_10
+
+The SQL query took a lot of time to calculate the result.
 
 
 ***
