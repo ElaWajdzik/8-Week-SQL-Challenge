@@ -25,7 +25,7 @@ For this case study there is a total of 4 datasets for this case study - however
 
 ## Question and Solution
 
-I was using MySQL to solve the problem, if you are interested, the complete SQL code is available [here]().
+I was using MySQL to solve the problem, if you are interested, the complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/d39707b2e04603d080f995c0621037bfe57ecbd2/Case%20Study%20%237%20-%20Balanced%20Tree%20Clothing%20Co/SQL%20code).
 
 **In advance, thank you for reading.** If you have any comments on my work, please let me know. My emali address is ela.wajdzik@gmail.com.
 
@@ -172,7 +172,7 @@ FROM (
 
 ##### Result:
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a6a7eeb1-c816-45b1-bff9-f836a7f843dd" width="400">
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a6a7eeb1-c816-45b1-bff9-f836a7f843dd" width="150">
 
 The average discount for each transaction was $62.49.
 
@@ -204,7 +204,7 @@ GROUP BY member;
 
 ##### Result:
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/c7079c5a-27c2-4859-a2b7-06d91ab5cb0c" width="400">
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/c7079c5a-27c2-4859-a2b7-06d91ab5cb0c" width="500">
 
 #### 6. What is the average revenue for member transactions and non-member transactions?
 
@@ -229,7 +229,7 @@ GROUP BY member;
 
 ##### Result:
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a73cfa64-3cf0-4039-99fc-754e46831f86" width="400">
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/a73cfa64-3cf0-4039-99fc-754e46831f86" width="300">
 
 The average revenue for transactions for members was $516.27 and for non-members was $515.04. The difference between those two values was only $1.23.
 
@@ -486,7 +486,7 @@ WHERE rank = 1;
 
 ##### Result:
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/2d257f5e-cbcc-4bc1-a767-3de14cd4f29e" width="600">
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/2d257f5e-cbcc-4bc1-a767-3de14cd4f29e" width="700">
 
 The most common combination of 3 products in a transaction was bought 352 times, and it contains:
 - Grey Fashion Jacket - Womens
