@@ -1,7 +1,7 @@
 I practice my SQL skills with the #8WeekSQLChallenge prepared by Danny Ma. Thank you Danny for the excellent case study.
 If you are also looking for materials to improve your SQL skills you can find it [here](https://8weeksqlchallenge.com/) and try it yourself.
 
-# Case Study #6: 👕 Balanced Tree Clothing Co.
+# Case Study #7: 👕 Balanced Tree Clothing Co.
 <img src="https://8weeksqlchallenge.com/images/case-study-designs/7.png" alt="Balanced Tree Clothing Compant" height="400">
 
 ## Introduction
@@ -232,6 +232,11 @@ GROUP BY member;
 
 ...cs7_b_6
 
+
+<img src="" width="400">
+
+<img src="" width="400">
+
 The average revenue for transactions for members was $516.27 and for non-members was $515.04. The difference between those two values was only $1.23.
 
 ***
@@ -252,8 +257,7 @@ ORDER BY revenue DESC LIMIT 3;
 ```
 
 ##### Result:
-
-...cs7_c_1
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/b4ee722d-4ebf-4361-840b-d73b7ce16c80" width="500">
 
 The top 3 products by revenue were **Blue Polo Shirt - Mens** (revenue around $218k which is 16,9% of total revenue), **Grey Fashion Jacket - Womens** (revenue around $209k which is 16,2% of total revenue) and **White Tee Shirt - Mens** (revenue around $152k which is 11,8% of total revenue).
 
@@ -273,7 +277,7 @@ GROUP BY pd.segment_name;
 
 ##### Result:
 
-...cs7_c_2
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/738071e3-0146-44c7-9e0d-67996ced9436" width="600">
 
 #### 3. What is the top selling product for each segment?
 
@@ -304,11 +308,12 @@ WHERE selling_ranking = 1;
 ##### Result:
 
 by quantity sold
-...cs7_c_3a
 
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/597c0f4c-3f2d-4dbb-80ee-f0129c130859" width="600">
 
 by revenue
-...cs7_c_3b
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/d8c25372-49c1-498e-85b1-7d6e87e6bb5d" width="600">
 
 In 3 of 4 segments, the same product generated the most revenue and the most sales. Only in the segment **Jeans** the products were different, **Navy Oversized Jeans - Womens** generated the biggest number of sales (3856) and **Black Straight Jeans - Womens** generated the biggest revenue (around $120k).
 
@@ -328,7 +333,7 @@ GROUP BY pd.category_name;
 
 ##### Result:
 
-...cs7_c_4
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/7043db2c-3cb5-460f-8ccf-0621a9100535" width="500">
 
 #### 5. What is the top selling product for each category?
 
@@ -359,11 +364,13 @@ WHERE selling_ranking = 1;
 ##### Result:
 
 by quantity sold
-...cs7_c_5a
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6f2502d6-3fdd-4d56-9e60-8715f3ae2160" width="600">
 
 
 by revenue
-...cs7_c_5a
+
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6f2502d6-3fdd-4d56-9e60-8715f3ae2160" width="600">
 
 The result is exactly the same.
 
@@ -384,7 +391,7 @@ The column ``percentage_of_revenue_in_segment`` includes information about the p
 
 ##### Result:
 
-...cs7_c_6
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/6ae570cf-40b4-4fcd-9fad-32d5d0e970e2" width="600">
 
 #### 7. What is the percentage split of revenue by segment for each category?
 
@@ -403,7 +410,7 @@ Like in question 6, the column ``percentage_of_revenue_in_category`` contains in
 
 ##### Result:
 
-...cs7_c_7
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/4b62264a-de3c-43df-bf5c-39cbaab09dae" width="600">
 
 #### 8. What is the percentage split of total revenue by category?
 
@@ -419,7 +426,7 @@ GROUP BY pd.category_name;
 
 ##### Result:
 
-...cs7_c_8
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/9a537786-3ed2-4967-8f6a-c598ec23c6f0" width="500">
 
 #### 9. What is the total transaction “penetration” for each product? 
 
@@ -440,7 +447,7 @@ GROUP BY s.prod_id;
 
 ##### Result:
 
-...cs7_c_9
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/4b1a5d2b-5b06-4171-85c5-06a92dcecec7" width="400">
 
 For every product, the penetration value is close to 50%.
 
@@ -485,11 +492,16 @@ WHERE rank = 1;
 
 ##### Result:
 
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/2d257f5e-cbcc-4bc1-a767-3de14cd4f29e" width="600">
 
-...cs_c_10
+The most common combination of 3 products in a transaction was bought 352 times, and it contains:
+- Grey Fashion Jacket - Womens
+- Teal Button Up Shirt - Mens
+- White Tee Shirt - Mens
 
 The SQL query took a lot of time to calculate the result.
 
+<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/b7ca4942-ad79-498d-93a8-ed405bf411d2" width="100">
 
 ***
 
