@@ -1,6 +1,13 @@
------------------------------------------
---Case Study #1 - Danny's Diner - dataset
----------Ela Wajdzik | 9.09.2024 --------
+--------------------------------
+--CASE STUDY #1: DANNY'S DINER--
+--------------------------------
+
+--Author: Ela Wajdzik
+--Date: 9.09.2024
+--Tool used: Microsoft SQL Server
+
+
+--create tables with data
 
 CREATE SCHEMA dannys_diner;
 --SET search_path = dannys_diner;
@@ -54,19 +61,48 @@ VALUES
   ('A', '2021-01-07'),
   ('B', '2021-01-09');
 
--- relationships
--- members.customer_id = sales.customer_id (1 to many)
--- menu.product_id = sales.product_id (1 to many)
+--create relationships between tables and add constraints
+
+--members.customer_id = sales.customer_id (1 to many)
+--menu.product_id = sales.product_id (1 to many)
 
 ALTER TABLE members
 ALTER COLUMN customer_id VARCHAR(1) NOT NULL;
 
 ALTER TABLE members
-ADD CONSTRAINT pk_members_customer_id PRIMARY KEY (customer_id);
+ADD CONSTRAINT members_customer_id_pk PRIMARY KEY (customer_id);
 
 ALTER TABLE menu
 ALTER COLUMN product_id INT NOT NULL;
 
 ALTER TABLE menu
-ADD CONSTRAINT pk_menu_product_id PRIMARY KEY (product_id);
+ADD CONSTRAINT menu_product_id_pk PRIMARY KEY (product_id);
 
+ALTER TABLE sales
+ADD CONSTRAINT sales_product_id_fk 
+FOREIGN KEY(product_id) REFERENCES menu(product_id);
+
+--we can't create a foreign key constraint between members.customer_id and sales.customer_id because not every customer is also a member
+
+------------------------
+--CASE STUDY QUESTIONS--
+------------------------
+
+--1. What is the total amount each customer spent at the restaurant?
+
+SELECT
+	s.customer_id,
+  COUNT(s.customer_id) AS number_orders, --    is not necesery to cout how many orders do each customer
+	SUM(m.price) AS total_amount
+FROM sales s
+LEFT JOIN menu m
+	ON s.product_id = m.product_id
+GROUP BY s.customer_id;
+
+--2. How many days has each customer visited the restaurant?
+
+SELECT 
+	customer_id,
+	COUNT(DISTINCT order_date) AS number_of_days
+FROM sales
+GROUP BY customer_id;
