@@ -106,3 +106,63 @@ SELECT
 	COUNT(DISTINCT order_date) AS number_of_days
 FROM sales
 GROUP BY customer_id;
+
+--3. What was the first item from the menu purchased by each customer?
+
+WITH sales_with_ranking AS (
+	SELECT
+		s.*,
+		m.product_name,																--add the name of the product
+		DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY order_date) AS ranking	--product ranking order
+	FROM sales s
+	LEFT JOIN menu m
+	ON m.product_id = s.product_id)
+
+SELECT
+	customer_id,
+	product_name
+FROM sales_with_ranking
+WHERE ranking = 1					--select only the first order
+GROUP BY customer_id, product_name;	--grup by the same product
+
+--If I work with PostgreSQL, I will make use of the construct called SELECT DISTINCT ON () and ORDER BY order_date ASC.
+
+--4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+SELECT 
+	m.product_name,
+	COUNT(*) AS number_of_orders  --counts every order from every client
+FROM sales s
+LEFT JOIN menu m
+	ON m.product_id = s.product_id
+GROUP BY m.product_name;
+
+--5. Which item was the most popular for each customer?
+
+WITH sales_with_popularity_by_client AS (
+	SELECT 
+		s.customer_id,
+		m.product_name,
+		COUNT(*) AS number_of_orders,														--counts every product bought by every client
+		DENSE_RANK() OVER (PARTITION BY s.customer_id ORDER BY COUNT(*) DESC) AS ranking	--the most popular product ranking by each client
+	FROM sales s
+	LEFT JOIN menu m
+		ON m.product_id=s.product_id
+	GROUP BY s.customer_id, m.product_name)
+
+SELECT
+	customer_id,
+	product_name,
+	number_of_orders	--this information is not necessary
+FROM sales_with_popularity_by_client
+WHERE ranking = 1;
+
+
+
+
+
+--6. Which item was purchased first by the customer after they became a member?
+--7. Which item was purchased just before the customer became a member?
+--8. What is the total items and amount spent for each member before they became a member?
+--9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+--10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
