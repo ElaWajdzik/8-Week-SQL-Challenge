@@ -92,7 +92,7 @@ FOREIGN KEY(product_id) REFERENCES menu(product_id);
 
 SELECT
 	s.customer_id,
-  COUNT(s.customer_id) AS number_orders, --    is not necesery to cout how many orders do each customer
+  COUNT(s.customer_id) AS number_orders, 	--is not necesery to cout how many orders do each customer
 	SUM(m.price) AS total_amount
 FROM sales s
 LEFT JOIN menu m
@@ -112,7 +112,7 @@ GROUP BY customer_id;
 WITH sales_with_ranking AS (
 	SELECT
 		s.*,
-		m.product_name,																--add the name of the product
+		m.product_name,									--add the name of the product
 		DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY order_date) AS ranking	--product ranking order
 	FROM sales s
 	LEFT JOIN menu m
@@ -122,7 +122,7 @@ SELECT
 	customer_id,
 	product_name
 FROM sales_with_ranking
-WHERE ranking = 1					--select only the first order
+WHERE ranking = 1			--select only the first order
 GROUP BY customer_id, product_name;	--grup by the same product
 
 --If I work with PostgreSQL, I will make use of the construct called SELECT DISTINCT ON () and ORDER BY order_date ASC.
@@ -143,7 +143,7 @@ WITH sales_with_popularity_by_client AS (
 	SELECT 
 		s.customer_id,
 		m.product_name,
-		COUNT(*) AS number_of_orders,														--counts every product bought by every client
+		COUNT(*) AS number_of_orders,								--counts every product bought by every client
 		DENSE_RANK() OVER (PARTITION BY s.customer_id ORDER BY COUNT(*) DESC) AS ranking	--the most popular product ranking by each client
 	FROM sales s
 	LEFT JOIN menu m
@@ -153,7 +153,7 @@ WITH sales_with_popularity_by_client AS (
 SELECT
 	customer_id,
 	product_name,
-	number_of_orders	--this information is not necessary
+	number_of_orders		--this information is not necessary
 FROM sales_with_popularity_by_client
 WHERE ranking = 1;
 
