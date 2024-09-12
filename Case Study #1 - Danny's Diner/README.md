@@ -29,6 +29,28 @@ You can inspect the entity relationship diagram and example data below.
 <img width="404" alt="graf1" src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/f8120a7a-13d9-49e9-92f4-2077ec3041a9">
 
 
+Additionally, in the code, I created constraints related to primary and foreign keys. The information about the constraints comes from the relationship diagram.
+
+````sql
+ALTER TABLE members
+ALTER COLUMN customer_id VARCHAR(1) NOT NULL;
+
+ALTER TABLE members
+ADD CONSTRAINT members_customer_id_pk PRIMARY KEY (customer_id);
+
+ALTER TABLE menu
+ALTER COLUMN product_id INT NOT NULL;
+
+ALTER TABLE menu
+ADD CONSTRAINT menu_product_id_pk PRIMARY KEY (product_id);
+
+ALTER TABLE sales
+ADD CONSTRAINT sales_product_id_fk 
+FOREIGN KEY(product_id) REFERENCES menu(product_id);
+
+--I can't create a foreign key constraint between members.customer_id and sales.customer_id because not every customer is also a member
+````
+
 ## Case Study Questions
 Each of the following case study questions can be answered using a single SQL statement:
 
@@ -45,37 +67,37 @@ Each of the following case study questions can be answered using a single SQL st
 
 ***
 ***
+
 ## Solution
 
-Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/997d4dd5b006d9b8b1f945e9f64e9e4e0f1baa91/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20code).
+The complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/tree/main/Case%20Study%20%231%20-%20Danny's%20Diner/SQL%20code).
 
-**In advance, thank you for reading.** If you have any comments on my work, please let me know. My emali address is ela.wajdzik@gmail.com.
+**Thank you in advance for reading.** If you have any comments on my work, please let me know. My email address is ela.wajdzik@gmail.com.
 
-Also, I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information.
+Additionally, I am open to new work opportunities. If you are looking for someone with my skills (or know of someone who is), I would be grateful for any information.
 
 ***
 
 ### 1. What is the total amount each customer spent at the restaurant?
 
 ````sql
-SELECT 
-    sales.customer_id,
-    COUNT(sales.customer_id) AS number_orders,
-    SUM(menu.price) AS amount_spent
-FROM dannys_diner.sales AS sales
-LEFT JOIN dannys_diner.menu AS menu
-ON sales.product_id = menu.product_id
-GROUP BY customer_id
-ORDER BY customer_id;
+SELECT
+	s.customer_id,
+    COUNT(s.customer_id) AS number_orders, 	--is not necessary to count how many orders do each customer
+	SUM(m.price) AS total_amount
+FROM sales s
+LEFT JOIN menu m
+	ON s.product_id = m.product_id
+GROUP BY s.customer_id;
 ````
 
 #### Steps:
-- Use **SUM** and **GROUP BY** to find out the ```amount_spent``` for each customer.
-- Use **COUNT** and **GROUP BY** to find out the ```number_orders``` for each customer.
-- Use **JOIN** to merge two tables, ```sales``` and ```menu```. The ```customer_id``` comes from the ```sales``` table and the ```price``` comes from the ```menu```.
+- Merge the ```sales``` and ```menu``` tables using **JOIN**, where ```customer_id``` comes from the ```sales``` table and ```price``` comes from the ```menu``` table.
+- Find out the ```total_amount``` for each customer using **SUM** and **GROUP BY**.
+- Find out the ```number_orders``` for each customer using **COUNT** and **GROUP BY**.
 
 #### Result:
-| customer_id | number_orders | amount_spent |
+| customer_id | number_orders | total_amount |
 | ----------- | ------------- | ------------ |
 | A           | 6             | 76           |
 | B           | 6             | 74           |
@@ -92,18 +114,17 @@ ORDER BY customer_id;
 
 ````sql
 SELECT 
-    sales.customer_id,
-    COUNT(DISTINCT sales.order_date) AS number_of_visits
-FROM dannys_diner.sales AS sales
-GROUP BY sales.customer_id;
+	customer_id,
+	COUNT(DISTINCT order_date) AS number_of_days
+FROM sales
+GROUP BY customer_id;
 ````
 
 #### Steps:
-- Use **COUNT DISTINCT** to count the number of different days of a visit. 
-
+- Use **COUNT(DISTINCT ```order_date```)** to count the number of distinct days of visits. 
 
 #### Result:
-| customer_id | number_of_visits |
+| customer_id | number_of_days   |
 | ----------- | -----------------|
 | A           | 4                |
 | B           | 6                |
@@ -118,31 +139,28 @@ GROUP BY sales.customer_id;
 ### 3. What was the first item from the menu purchased by each customer?
 
 ````sql
-WITH product_rank AS(
-    SELECT
-        customer_id,
-        order_date,
-        DENSE_RANK() OVER(
-            PARTITION BY customer_id
-            ORDER BY order_date
-        ) AS popular_rank,
-        menu.product_name
-    FROM dannys_diner.sales
-    JOIN dannys_diner.menu
-    ON sales.product_id = menu.product_id
-    GROUP BY sales.product_id, sales.order_date
-)
+WITH sales_with_ranking AS (
+	SELECT
+		s.*,
+		m.product_name,									--add the name of the product
+		DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY order_date) AS ranking	--product ranking order
+	FROM sales s
+	LEFT JOIN menu m
+	ON m.product_id = s.product_id)
 
 SELECT
-    customer_id,
-    product_name
-FROM product_rank
-WHERE popular_rank=1;
+	customer_id,
+	product_name
+FROM sales_with_ranking
+WHERE ranking = 1			--select only the first order
+GROUP BY customer_id, product_name;	--group by the same products
 ````
 
+If I work with PostgreSQL, I will make use of the construct called **SELECT DISTINCT ON ()** and **ORDER BY order_date ASC**. 
+
 #### Steps:
-- Create a temporary table to calculate the ranking of orders. Clause **WITH**
-- Create the ranking of orders using the clause **DENSE_RANK**. 
+- Create a common table expression (CTE) to calculate the ranking of orders using the **WITH** clause.
+- Calculate the ranking of orders using the **DENSE_RANK** function. 
 
 #### Result:
 | customer_id | product_name |
@@ -152,7 +170,7 @@ WHERE popular_rank=1;
 | B           | curry        |
 | C           | ramen        |
 
-- Customer **A** in his/her first purchase bought two dishes, sushi and curry.
+- Customer **A** bought two dishes, sushi and curry, on their first purchase.
 - Customer **B** first purchased curry.
 - Customer **C** first purchased ramen.
 
@@ -161,19 +179,18 @@ WHERE popular_rank=1;
 ### 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 ````sql
-SELECT
-  menu.product_name,
-  COUNT(sales.product_id) AS number_of_orders
-FROM dannys_diner.sales
-LEFT JOIN dannys_diner.menu
-ON sales.product_id = menu.product_id
-GROUP BY sales.product_id
-ORDER BY number_of_orders DESC;
+SELECT 
+	m.product_name,
+	COUNT(*) AS number_of_orders  --counts every order from every client
+FROM sales s
+LEFT JOIN menu m
+	ON m.product_id = s.product_id
+GROUP BY m.product_name;
 ````
 
 #### Steps:
 - Use **COUNT** to calculate the number of orders for each dish.
-- Order the results in descending order using **ORDER BY** with parameter **DESC** to find which item was the most frequently purchased.
+- Order the results in descending order using **ORDER BY** with the **DESC** parameter to determine which item was purchased most frequently.
 
 #### Result:
 | product_name | number_of_orders |
@@ -182,88 +199,76 @@ ORDER BY number_of_orders DESC;
 | curry        | 4                |
 | sushi        | 3                |
 
-- The most frequently purchased item was ramen. The customers at Danny's Dinner bought it 8 times (two times more than curry).
+- The most frequently purchased item was ramen. The customers at Danny's Diner bought it 8 times, which is twice as many as curry.
 
 ***
 
 ### 5. Which item was the most popular for each customer?
 
 ````sql
-WITH popular_order AS (
-    SELECT 
-	    sales.customer_id,
-        menu.product_name,
-	    COUNT(sales.product_id) AS number_of_orders,
-        DENSE_RANK() OVER (
-            PARTITION BY customer_id
-            ORDER BY number_of_orders DESC
-        ) AS popular_rank
-    FROM dannys_diner.sales
-    LEFT JOIN dannys_diner.menu
-    ON sales.product_id = menu.product_id
-    GROUP BY 
-        sales.product_id, 
-        sales.customer_id
-)        
+WITH sales_with_popularity_by_client AS (
+	SELECT 
+		s.customer_id,
+		m.product_name,
+		COUNT(*) AS number_of_orders,								--counts every product bought by every client
+		DENSE_RANK() OVER (PARTITION BY s.customer_id ORDER BY COUNT(*) DESC) AS ranking	--the most popular product ranking by each client
+	FROM sales s
+	LEFT JOIN menu m
+		ON m.product_id=s.product_id
+	GROUP BY s.customer_id, m.product_name)
 
-SELECT 
-    customer_id,
-    product_name
-FROM popular_order
-WHERE popular_rank=1
-ORDER BY customer_id;
+SELECT
+	customer_id,
+	product_name,
+	number_of_orders		--this information is not necessary
+FROM sales_with_popularity_by_client
+WHERE ranking = 1;
 ````
 
 #### Steps:
-- Create a temporary table (using **WITH**) to create a ranking of popularity (using **DENSE_RANK**).
-- Print only part of the temporary table **WHERE** ranking of popularity is equal to 1.
+- Create a temporary table (using **WITH**) to generate a ranking of popularity (using **DENSE_RANK**).
+- Select only the rows from the temporary table **WHERE** the ranking of popularity is equal to 1.
 
 #### Result:
-| customer_id | product_name |
-|-------------|--------------|
-| A           | ramen        |
-| B           | curry        |
-| B           | ramen        |
-| B           | sushi        |
-| C           | ramen        |
+| customer_id | product_name | number_of_orders |
+|-------------|--------------|------------------|
+| A           | ramen        | 3                |
+| B           | curry        | 2                |
+| B           | ramen        | 2                |
+| B           | sushi        | 2                |
+| C           | ramen        | 3                |
 
-- The most popular item for every customer was ramen.
-- In addition, customer **B** liked every item (ramen, sushi and curry).
+- The most popular item for each customer was ramen.
+- Additionally, customer **B** liked every item (ramen, sushi, and curry).
 
 ***
 
 ### 6. Which item was purchased first by the customer after they became a member?
 
 ````sql
-WITH member_orders AS(
-    SELECT 
-        sales.customer_id,
-        sales.product_id,
-        sales.order_date,
-        members.join_date,
-        DENSE_RANK() OVER(
-            PARTITION BY customer_id
-            ORDER BY order_date
-        ) AS rank_after_join
-    FROM dannys_diner.members
-    JOIN dannys_diner.sales
-    ON members.customer_id=sales.customer_id
-    WHERE sales.order_date >= members.join_date
-)
+WITH members_sales_with_ranking AS (
+	SELECT 
+		s.customer_id,
+		s.order_date,
+		s.product_id,
+		DENSE_RANK() OVER (PARTITION BY s.customer_id ORDER BY s.order_date ASC) AS ranking		--order of the first products bought by members 
+	FROM sales s
+	INNER JOIN members m
+	ON s.customer_id = m.customer_id
+	WHERE s.order_date >= m.join_date)
 
-SELECT 
-    customer_id,
-    menu.product_name
-FROM member_orders
-JOIN dannys_diner.menu
-ON member_orders.product_id = menu.product_id
-WHERE member_orders.rank_after_join = 1
-ORDER BY customer_id;
+SELECT
+	s.customer_id,
+	m.product_name
+FROM members_sales_with_ranking s
+LEFT JOIN menu m
+	ON m.product_id = s.product_id
+WHERE s.ranking = 1		--select only the first order placed after becoming a member
 ````
 
 #### Steps:
-- Like in question 5, create a temporary table (using **WITH**) to create a ranking of orders (using **DENSE_RANK**).
-- Pick the first order for every member after joining, using the ranking of orders, and select only the first value (clause **WHERE**).
+- As in question 5, create a temporary table (using **WITH**) to generate a ranking of orders (using **DENSE_RANK**).
+- Select the first order for each member after joining, using the ranking of orders, and filter to include only the top-ranked value (using the **WHERE** clause).
 
 
 #### Result:
@@ -272,42 +277,36 @@ ORDER BY customer_id;
 | A           | curry        |
 | B           | sushi        |
 
-- After customer **A** became a member, he/she purchased first curry.
-- After customer **B** became a member, he/she purchased first sushi.
+- After customer **A** became a member, they first purchased curry.
+- After customer **B** became a member, they first  purchased sushi.
 
 ***
 
 ### 7. Which item was purchased just before the customer became a member?
 
 ````sql
-WITH member_orders_before AS(
-    SELECT 
-        sales.customer_id,
-        sales.product_id,
-        sales.order_date,
-        members.join_date,
-        DENSE_RANK() OVER(
-            PARTITION BY customer_id
-            ORDER BY order_date DESC
-        ) AS rank_before_join
-    FROM dannys_diner.members
-    JOIN dannys_diner.sales
-    ON members.customer_id=sales.customer_id
-    WHERE sales.order_date < members.join_date
-)
+WITH sales_before_membership_with_ranking AS (
+	SELECT 
+		s.customer_id,
+		s.order_date,
+		s.product_id,
+		DENSE_RANK() OVER (PARTITION BY s.customer_id ORDER BY s.order_date DESC) AS ranking		--order of the last products bought after becoming a member 
+	FROM sales s
+	INNER JOIN members m
+		ON s.customer_id = m.customer_id
+	WHERE s.order_date < m.join_date)
 
 SELECT 
-    customer_id,
-    menu.product_name
-FROM member_orders_before
-JOIN dannys_diner.menu
-ON member_orders_before.product_id = menu.product_id
-WHERE member_orders_before.rank_before_join = 1
-ORDER BY customer_id;
+	s.customer_id,
+	m.product_name
+FROM sales_before_membership_with_ranking s
+LEFT JOIN menu m
+	ON m.product_id = s.product_id
+WHERE s.ranking = 1;
 ````
 
 #### Steps:
-- Use a similar function like in question 6. the biggest change is to use **DENSE_RANK** in descending order.
+- Use a similar function as in question 6. The main change is to use **DENSE_RANK** in descending order.
 
 #### Result:
 | customer_id | product_name |
@@ -316,10 +315,10 @@ ORDER BY customer_id;
 | A           | curry        |
 | B           | sushi        |
 
-- Customer **A** in the order before starting to be a member bought two kinds of items - sushi and carry.
-- Customer **B** in the order before starting to be a member bought sushi.
+- Customer **A** in the order placed before becoming a member, bought two types of items - sushi and curry.
+- Customer **B** in the order placed before becoming a member, bought sushi.
 
-According to results from questions 6 and 7, customers **A** and **B** bought the same product just before becoming members and just after becoming members.
+According to the results from questions 6 and 7, customers **A** and **B** bought the same product just before and just after becoming members.
 
 ***
 
@@ -327,59 +326,67 @@ According to results from questions 6 and 7, customers **A** and **B** bought th
 
 ````sql
 SELECT 
-    sales.customer_id,
-    COUNT(sales.product_id) AS number_of_item,
-    COUNT(DISTINCT sales.product_id) AS number_of_diffrent_item,
-    SUM(menu.price) AS total_spent
-FROM dannys_diner.members
-JOIN dannys_diner.sales
-    ON members.customer_id=sales.customer_id
-JOIN dannys_diner.menu
-    ON sales.product_id=menu.product_id
-WHERE sales.order_date < members.join_date
-GROUP BY sales.customer_id;
+	s.customer_id,
+	COUNT(*) AS number_of_item,		--count the number of items
+	SUM(mn.price) AS spent_amount		--sum of the prices
+FROM sales s
+INNER JOIN members m
+	ON s.customer_id = m.customer_id
+INNER JOIN menu mn
+	ON mn.product_id = s.product_id
+
+WHERE s.order_date < m.join_date		--filter the orders bought before becoming a member
+GROUP BY s.customer_id;
 ````
 
 #### Steps:
-- Use calculatet functions **COUNT**, **COUNT DISTINCT** and **SUM**.
-- Join all three tables to create a result.
+- Use aggregate functions **COUNT** and **SUM**.
+- Join all three tables to create the result.
 
 #### Result:
-| customer_id | number_of_item | number_of_diffrent_item | total_spent |
-|-------------|----------------|-------------------------|-------------|
-| A           | 2              | 2                       | 25          |
-| B           | 3              | 2                       | 40          |
+| customer_id | number_of_item | spent_amount |
+|-------------|----------------|--------------|
+| A           | 2              | 25           |
+| B           | 3              | 40           |
 
-- Customer **A** before becoming a member, spent $25 at Danny Diner's and bought 2 items.
-- Customer **B** before becoming a member, spent $40 at Danny Diner's and bought 3 items (2 different items).
+- Customer **A**, before becoming a member, spent $25 at Danny's Diner and bought 2 items.
+- Customer **B**, before becoming a member, spent $40 at Danny's Diner and bought 3 items (2 different type of items).
 
 ***
 
 ### 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 
 ````sql
-SELECT
-    sales.customer_id,
-    SUM(IF(menu.product_name='sushi',2,1)*menu.price * 10) AS points 
-FROM dannys_diner.sales
-JOIN dannys_diner.menu
-    ON sales.product_id = menu.product_id
-GROUP BY customer_id;
+SELECT 
+	s.customer_id,
+	SUM(CASE s.product_id
+			WHEN 1 THEN mn.price * 2 * 10	--double points for sushi orders
+			ELSE mn.price * 10			--calculate the points 1$ = 10 points
+		END) AS number_of_points
+FROM sales s
+INNER JOIN members m
+	ON s.customer_id = m.customer_id
+INNER JOIN menu mn
+	ON mn.product_id = s.product_id
+
+WHERE s.order_date >= m.join_date
+GROUP BY s.customer_id;
 ````
 
 #### Steps:
-- Use the function **IF** to act on the 2x points multiplier for sushi. According to the value of ``product_name`` I calculated 1 or 2 (if ``product_name`` is equal to sushi, then 2 in other cases, multiplication doesn't exist, which means it equals 1).
+- In this problem, I assume that points can only be collected by members, and only for orders placed after joining.
+- Use the function **CASE** to check if ordered items if the ordered item was ```sushi``` (```product_id = 1```) and then multiplied by 2 number of points. The number of points is calculated like ```price``` * 10.
 
 #### Result:
-| customer_id | points |
-|-------------|--------|
-| A           | 860    |
-| B           | 940    |
-| C           | 360    |
+| customer_id | number_of_points |
+|-------------|------------------|
+| A           | 510              |
+| B           | 440              |
 
-- Customer **A** colected 860 points, customer **B** colected 940 points and customer **C** colected 360 points.
 
-It is interesting how they can get for these points.
+- Customer **A** collected 510 points, and customer **B** collected 440 points.
+
+It is interesting to see what they can get with these points.
 
 
 ***
@@ -387,34 +394,38 @@ It is interesting how they can get for these points.
 ### 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
 ````sql
-SELECT
-    sales.customer_id,
-    SUM(IF((sales.order_date>= members.join_date AND sales.order_date< members.join_date +7) OR sales.product_id=1,2,1) *
-    menu.price * 10) AS points
-FROM dannys_diner.sales
-JOIN dannys_diner.members
-    ON sales.customer_id = members.customer_id
-JOIN dannys_diner.menu
-    ON sales.product_id = menu.product_id
-WHERE order_date < '2021-02-01'
-GROUP BY sales.customer_id;
+SELECT 
+	s.customer_id,
+	SUM(CASE
+			WHEN DATEDIFF(DAY, m.join_date, s.order_date) < 7 THEN mn.price * 2		--double points for all items purchased after joining the program
+			ELSE mn.price
+		END) * 10 AS number_of_points
+FROM sales s
+INNER JOIN members m
+	ON s.customer_id = m.customer_id
+INNER JOIN menu mn
+	ON mn.product_id = s.product_id
+
+WHERE s.order_date >= m.join_date	--filter the orders placed after becoming a member
+AND s.order_date < '2021-02-01'		--filter the orders at the end of January
+GROUP BY s.customer_id;
 ````
 
 #### Steps:
-- It is important not to increase the multiplier for sushi during the first week of membership to 4.
-- Use the functions **SUM** and **IF** to calculate the number of points. Function **IF** has two conditions. (1) orders come from the first week of becoming a member, or (2) the order product was sushi. If it was one of those two conditions the multiplayer was equal to 2, in the other case it was 1.
-- Limit the data on orders to the end of January.
+- It is important not to increase the multiplier for sushi to 4 during the first week of membership.
+- Use the **SUM** and **CASE** functions to calculate the number of points earned in the first 7 days after becoming a member, and after that. In the first week, $1 is equal to 20 points; after that, $1 is equal to 10 points.
+- Limit the data to orders placed by the end of January.
 
 
 #### Result:
 
 | customer_id | points |
 |-------------|--------|
-| A           | 1370   |
-| B           | 820    |
+| A           | 1020   |
+| B           | 320    |
 
-- Customer **A** collected 1370 points.
-- Customer **B** collected 820 points. If we look closer at the data, we can find out that this customer didn't collect any extra points because she/he became a member.
+- Customer **A** collected 1020 points.
+- Customer **B** collected 320 points.
 
 
 ***
@@ -436,24 +447,27 @@ Recreate the following table output using the available data
 
 ````sql
 SELECT
-    sales.customer_id,
-    sales.order_date,
-    menu.product_name,
-    menu.price,
-    IF (members.join_date <= sales.order_date,'Y','N') AS member
-FROM dannys_diner.sales
-JOIN dannys_diner.menu
-    ON sales.product_id = menu.product_id
-LEFT JOIN dannys_diner.members
-    ON sales.customer_id = members.customer_id;
+	s.customer_id,
+	s.order_date,
+	mn.product_name,
+	mn.price,
+	CASE	
+		WHEN m.join_date <= s.order_date THEN 'Y'	--an additional column with the value 'Y' if the order comes from a customer who is a member, and 'N' if not
+		ELSE 'N'
+	END AS member
+FROM sales s
+INNER JOIN menu mn
+	ON mn.product_id = s.product_id
+LEFT JOIN members m
+	ON m.customer_id = s.customer_id;
 ````
 
 #### Steps:
-- Join all three tables to create the expected table. From the table ``sales`` I need dates about ``customer_id`` and ``order_date``. From the table ``menu`` I need dates about  ``product_name`` and ``price``. The date from the table ``members`` was needed to calculate the value of column ``member``.
+- Join all three tables to create the expected table. From the ``sales`` table, I need date about ``customer_id`` and ``order_date``. From the ``menu`` table I need date about  ``product_name`` and ``price``. The date from the ``members`` table I need to calculate the value of ``member`` column.
 
 #### Result:
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/5f1ac300-4778-440c-a4bc-9237252f7d6f" height="450">
+<img src="https://github.com/user-attachments/assets/e171832d-c92a-450c-a41c-c33a2a48e863" height="450">
 
 ***
 
@@ -462,44 +476,41 @@ Create a table like before in **Join All The Things** but add the ``ranking``. T
 
 
 ````sql
-WITH temporary_member AS (
-SELECT
-    sales.customer_id,
-    sales.order_date,
-    menu.product_name,
-    menu.price,
-    IF (members.join_date <= sales.order_date,'Y','N') AS member
-FROM dannys_diner.sales
-JOIN dannys_diner.menu
-    ON sales.product_id = menu.product_id
-LEFT JOIN dannys_diner.members
-    ON sales.customer_id = members.customer_id
-)
+WITH full_table AS (
+	SELECT
+		s.customer_id,
+		s.order_date,
+		mn.product_name,
+		mn.price,
+		CASE 
+			WHEN m.join_date <= s.order_date THEN 'Y'
+			ELSE 'N'
+		END AS member
+	FROM sales s
+	INNER JOIN menu mn
+		ON mn.product_id = s.product_id
+	LEFT JOIN members m
+		ON m.customer_id = s.customer_id)
 
-SELECT *,
-    CASE 
-        WHEN member = 'N' THEN  NULL
-        ELSE RANK() OVER(
-        PARTITION BY customer_id, member
-        ORDER BY order_date)
-    END AS ranking
-FROM temporary_member;
+SELECT 
+	*,
+	CASE 
+		WHEN member = 'N' THEN null
+		ELSE RANK() OVER (PARTITION BY customer_id, member ORDER BY order_date ASC)		--an additional column with the ranking of orders, but only for orders made by a member
+	END AS ranking
+FROM full_table;
 ````
 
 #### Steps:
-- Create the table like before but using the clause **WITH**.
-- In the second step, add the ``ranking`` only for the data that involves the member's purchase.
+- Create the table as before, but using a Common Table Expresion (CTE) with **WITH**.
+- In the second step, add the ``ranking`` column, with ranking applied only to data involving the member purchases.
 
 #### Result:
 
-<img src="https://github.com/ElaWajdzik/8-Week-SQL-Challenge/assets/26794982/46c9153c-ebca-4753-9b59-4ae71db0b9de" height="450">
+
+<img src="https://github.com/user-attachments/assets/8a40df2c-521c-442b-aa89-96698c4382bd" height="450">
 
 
 ***
 
-**Thanks for reading.** Please let me know what you think about my work. My emali address is ela.wajdzik@gmail.com
-
-I am open to new work opportunities, so if you are looking for someone (or know that someone is looking for) with my skills, I will be glad for information. 
-
-
-**Have a nice day!**
+**Thanks for reading.** Please let me know what you think about my work. My email address is ela.wajdzik@gmail.com.
