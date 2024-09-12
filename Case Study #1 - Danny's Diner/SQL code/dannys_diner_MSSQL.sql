@@ -92,7 +92,7 @@ FOREIGN KEY(product_id) REFERENCES menu(product_id);
 
 SELECT
 	s.customer_id,
-  COUNT(s.customer_id) AS number_orders, 	--is not necesery to cout how many orders do each customer
+  COUNT(s.customer_id) AS number_orders, 	--is not necessary to count how many orders do each customer
 	SUM(m.price) AS total_amount
 FROM sales s
 LEFT JOIN menu m
@@ -123,7 +123,7 @@ SELECT
 	product_name
 FROM sales_with_ranking
 WHERE ranking = 1			--select only the first order
-GROUP BY customer_id, product_name;	--grup by the same product
+GROUP BY customer_id, product_name;	--group by the same products
 
 --If I work with PostgreSQL, I will make use of the construct called SELECT DISTINCT ON () and ORDER BY order_date ASC.
 
