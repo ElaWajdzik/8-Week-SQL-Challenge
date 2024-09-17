@@ -67,7 +67,7 @@ SELECT
         FROM subscriptions
     )*100,0) AS pct_of_customers_churn_after_trial
 FROM customers_plan
-WHERE plan_path LIKE '%0,4%';
+WHERE plan_path LIKE '%0,4%'
 
 
 -- 6. What is the number and percentage of customer plans after their initial free trial?
