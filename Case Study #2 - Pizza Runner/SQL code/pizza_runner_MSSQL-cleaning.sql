@@ -3,7 +3,7 @@
 -------------------------------
 
 --Author: Ela Wajdzik
---Date: 17.09.2024
+--Date: 17.09.2024 (update 18.09.2024)
 --Tool used: Microsoft SQL Server
 
 
@@ -14,7 +14,7 @@ CREATE SCHEMA pizza_runner;
 
 DROP TABLE IF EXISTS runners;
 CREATE TABLE runners (
-  "runner_id" INTEGER,
+  "runner_id" INT,
   "registration_date" DATE
 );
 
@@ -29,9 +29,9 @@ VALUES
 
 DROP TABLE IF EXISTS customer_orders;
 CREATE TABLE customer_orders (
-  "order_id" INTEGER,
-  "customer_id" INTEGER,
-  "pizza_id" INTEGER,
+  "order_id" INT,
+  "customer_id" INT,
+  "pizza_id" INT,
   "exclusions" VARCHAR(4),
   "extras" VARCHAR(4),
   "order_time" DATETIME2 --the type TIMESTAMP is not correct in MS SQL Server
@@ -58,8 +58,8 @@ VALUES
 
 DROP TABLE IF EXISTS runner_orders;
 CREATE TABLE runner_orders (
-  "order_id" INTEGER,
-  "runner_id" INTEGER,
+  "order_id" INT,
+  "runner_id" INT,
   "pickup_time" VARCHAR(19),
   "distance" VARCHAR(7),
   "duration" VARCHAR(10),
@@ -83,7 +83,7 @@ VALUES
 
 DROP TABLE IF EXISTS pizza_names;
 CREATE TABLE pizza_names (
-  "pizza_id" INTEGER,
+  "pizza_id" INT,
   "pizza_name" VARCHAR(20)
 );
 
@@ -96,7 +96,7 @@ VALUES
 
 DROP TABLE IF EXISTS pizza_recipes;
 CREATE TABLE pizza_recipes (
-  "pizza_id" INTEGER,
+  "pizza_id" INT,
   "toppings" VARCHAR(40)
 );
 
@@ -109,8 +109,8 @@ VALUES
 
 DROP TABLE IF EXISTS pizza_toppings;
 CREATE TABLE pizza_toppings (
-  "topping_id" INTEGER,
-  "topping_name" TEXT
+  "topping_id" INT,
+  "topping_name" VARCHAR(50)
 );
 
 INSERT INTO pizza_toppings
@@ -208,15 +208,6 @@ DROP COLUMN duration, distance;
 
 -- SELECT * FROM runner_orders;
 
--- Table 4: pizza_names
---		Add a primary key
-
-ALTER TABLE pizza_names
-ALTER COLUMN pizza_id INT NOT NULL;
-
-ALTER TABLE pizza_names
-ADD CONSTRAINT pizza_names_pk PRIMARY KEY(pizza_id);
-
 -- Table 6: pizza_toppings
 --		Add a primary key
 
@@ -226,6 +217,44 @@ ALTER COLUMN topping_id INT NOT NULL;
 ALTER TABLE pizza_toppings
 ADD CONSTRAINT pizza_toppings_pk PRIMARY KEY(topping_id);
 
+-- Table 4: pizza_names
+--		Add a primary key
+
+ALTER TABLE pizza_names
+ALTER COLUMN pizza_id INT NOT NULL;
+
+ALTER TABLE pizza_names
+ADD CONSTRAINT pizza_names_pk PRIMARY KEY(pizza_id);
+
+-- Table 5: pizza_recipes
+--		Rename the table pizza_recipes to pizza_recipes_temp
+--		Create a new table pizza_recipies which containts id (pk), pizza_id and topping_id.
+--		Insert values to the new table using informacion from the old one.
+--		Add a foreign key (pizza_toppings)
+--		Add a foreign key (pizza_names)
+
+EXEC sp_rename 'pizza_recipes', 'pizza_recipes_temp';
+
+DROP TABLE IF EXISTS pizza_recipes;
+CREATE TABLE pizza_recipes (
+	id INT IDENTITY PRIMARY KEY NOT NULL,
+	pizza_id INT,
+	topping_id INT NOT NULL
+);
+
+INSERT INTO pizza_recipes(pizza_id, topping_id)
+SELECT 
+	pizza_id, 
+	TRIM(value) AS topping_id
+FROM pizza_recipes_temp
+	CROSS APPLY STRING_SPLIT(toppings, ',');
+
+ALTER TABLE pizza_recipes
+ADD CONSTRAINT pizza_recepies_topping_id_fk FOREIGN KEY (topping_id) REFERENCES pizza_toppings(topping_id);
+
+ALTER TABLE pizza_recipes
+ADD CONSTRAINT pizza_recepies_pizza_id_fk FOREIGN KEY (pizza_id) REFERENCES pizza_names(pizza_id);
+
 -- Table 7: change_type - a new table
 --		Create a new table
 --		Add a primary key
@@ -233,7 +262,7 @@ ADD CONSTRAINT pizza_toppings_pk PRIMARY KEY(topping_id);
 
 DROP TABLE IF EXISTS change_type;
 CREATE TABLE change_type (
-  change_type_id INTEGER PRIMARY KEY,
+  change_type_id INT PRIMARY KEY,
   change_name VARCHAR(16) NOT NULL
 );
 
@@ -247,6 +276,8 @@ VALUES
 -- Table 8: change_orders - a new table
 --		Create a new table
 --		Add a primary key
+--		Add a foreign key (change_type)
+--		Add a foreign key (topping_id)
 
 DROP TABLE IF EXISTS change_orders;
 CREATE TABLE change_orders (
@@ -263,7 +294,7 @@ CREATE TABLE change_orders (
 --		Update columns extras and exclusions
 
 ALTER TABLE customer_orders
-ADD customer_order_id INT IDENTITY NOT NULL;
+ADD customer_order_id INT IDENTITY PRIMARY KEY NOT NULL;
 
 UPDATE customer_orders
 SET exclusions = 	CASE exclusions
@@ -278,6 +309,12 @@ SET extras = CASE extras
 				WHEN 'null' THEN NULL
 				ELSE extras
 			END;
+
+ALTER TABLE customer_orders
+ADD CONSTRAINT customer_orders_pizza_id_fk FOREIGN KEY (pizza_id) REFERENCES pizza_names(pizza_id);
+
+ALTER TABLE customer_orders
+ADD CONSTRAINT customer_orders_order_id_fk FOREIGN KEY (order_id) REFERENCES runner_orders(order_id);
 
 -- Insert data into table 8: change_orders
 
@@ -297,33 +334,14 @@ SELECT
 FROM customer_orders
 	CROSS APPLY STRING_SPLIT(exclusions, ',');
 
+ALTER TABLE change_orders 
+ADD CONSTRAINT change_orders_customer_order_id_fk FOREIGN KEY (customer_order_id) REFERENCES customer_orders(customer_order_id);
 
 -- Drop the columns exclusions and extras from table 2: customer_orders
 
 ALTER TABLE customer_orders
 DROP COLUMN exclusions, extras;
 
--- Table 5: pizza_recipes
+-- Drop the table pizza_recipes_temp
 
-
-EXEC sp_rename 'pizza_recipes', 'pizza_recipes_temp';
-
-CREATE TABLE pizza_recipes (
-	id INT IDENTITY NOT NULL,
-	pizza_id INT,
-	topping_id INT
-);
-
-INSERT INTO pizza_recipes(pizza_id, topping_id)
-SELECT 
-	pizza_id, 
-	TRIM(value) AS topping_id
-FROM pizza_recipes_temp
-	CROSS APPLY STRING_SPLIT(toppings, ',');
-
-SELECT *
-FROM pizza_recipes
-
-
-
-
+DROP TABLE pizza_recipes_temp;
