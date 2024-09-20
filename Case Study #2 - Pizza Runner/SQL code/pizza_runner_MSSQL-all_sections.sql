@@ -3,7 +3,7 @@
 --------------------
 
 --Author: Ela Wajdzik
---Date: 18.09.2024
+--Date: 18.09.2024 (update 20.09.2024)
 --Tool used: Microsoft SQL Server
 
 
@@ -210,7 +210,6 @@ SELECT
 	CAST( SUM(CASE WHEN cancellation IS NULL THEN 1 ELSE 0 END)* 100.0 / COUNT(*) AS NUMERIC(4,0)) AS perc_of_successful_delivery
 FROM runner_orders
 GROUP BY runner_id;
-
 
 ------------------------------
 --C. Ingredient Optimisation--
@@ -530,4 +529,33 @@ SET @v_revenue =
 
 PRINT @v_revenue - @v_cost
 
+
+----------------------
+--E. Bonus Questions--
+----------------------
+
+-- If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement 
+-- to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
+
+/*
+SELECT *
+FROM pizza_names;
+*/
+
+INSERT INTO pizza_names(pizza_id, pizza_name)
+VALUES (3, 'Supreme');
+
+/*
+SELECT *
+FROM pizza_recipes;
+
+SELECT *
+FROM pizza_toppings;
+*/
+
+INSERT INTO pizza_recipes(pizza_id, topping_id)
+SELECT 
+	3,
+	topping_id
+FROM pizza_toppings;
 
