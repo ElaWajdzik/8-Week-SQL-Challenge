@@ -52,10 +52,10 @@ The complete SQL syntax canbe found in the file [pizza_runner_MSSQL-cleaning](ht
 The existing data model has several issues that need to be addressed before performing any analysis. First, I remodeled the database from its old structure to a new one. The new model includes two additional tables: ```change_orders``` and ```change_types```. These tables contain information about ingredient changes and also help clean up data types in the existing tables.
 
 Old Relationship Diagram
-![the old relationship diagram!](/assets/images/san-juan-mountains.jpg "The old relationship diagram")
+![Pizza Runner](https://github.com/user-attachments/assets/d946f0d3-b188-42a6-b0cd-f6f888e1e6d2 "The old relationship diagram")
 
 New Relationship Diagram After Remodeling
-![the new relationship diagram!](/assets/images/san-juan-mountains.jpg "The new relationship diagram")
+![New Relationship Diagram - pizza_runners](https://github.com/user-attachments/assets/cb63fa9f-a670-406d-89d0-f890aad68097 "The new relationship diagram")
 
 ### 🔨 ```runner_orders```
 
@@ -91,7 +91,7 @@ DROP COLUMN duration, distance;
 ````
 
 After these stepes, the table changes from the old vesrion (left table) to the new version (right table).
-![The table runners_orders!](/assets/images/san-juan-mountains.jpg "The table runners_orders")
+![8WC - week2 - runner_orders](https://github.com/user-attachments/assets/3005dc23-2252-4643-94af-38fd09d59b1d "The table runners_orders")
 
 ### 🔨 ```pizza_recipes```
 
@@ -120,7 +120,7 @@ FROM pizza_recipes_temp
 ````
 
 After these steps, the table changes from the old version (left table) to the new version (right table).
-![The table runners_orders!](/assets/images/san-juan-mountains.jpg "The table runners_orders")
+![8WC - week 2 - pizza_recipes](https://github.com/user-attachments/assets/186ddf50-9a80-424b-8b20-ad912e3ef835 "The table runners_orders")
 
 ### 🔨 ```customer_orders```
 
@@ -177,5 +177,5 @@ FROM customer_orders
 ````
 
 After these steps, the table changes from the old version (left table) to three new tables (right tables).
-![The table runners_orders!](/assets/images/san-juan-mountains.jpg "The table runners_orders")
+![8WC - week 2 - customer_orders](https://github.com/user-attachments/assets/77b8a282-3a77-44dd-8069-f5704227b131 "The table runners_orders")
 
