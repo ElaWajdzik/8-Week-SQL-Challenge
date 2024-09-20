@@ -176,32 +176,32 @@ ALTER TABLE runner_orders
 ADD CONSTRAINT runner_orders_runner_id_fk FOREIGN KEY (runner_id) REFERENCES runners(runner_id);
 
 ALTER TABLE runner_orders
-ADD distance_km NUMERIC(4,1),
+ADD 	distance_km NUMERIC(4,1),
 	duration_min NUMERIC(3,0);
 
 UPDATE runner_orders
 SET distance_km = CAST(
-						CASE distance
-							WHEN 'null' THEN NULL
-							ELSE TRIM('km' FROM distance)
-						END 
-						AS NUMERIC(4,1));
+			CASE distance
+				WHEN 'null' THEN NULL
+				ELSE TRIM('km' FROM distance)
+			END 
+			AS NUMERIC(4,1));
 
 UPDATE runner_orders
 SET duration_min = CAST(
-						TRIM('minutes' FROM 
-							CASE duration WHEN 'null' THEN NULL ELSE duration END) 
-						AS NUMERIC(3,0));
+			TRIM('minutes' FROM 
+				CASE duration WHEN 'null' THEN NULL ELSE duration END) 
+			AS NUMERIC(3,0));
 
 UPDATE runner_orders
 SET pickup_time = CASE pickup_time WHEN 'null' THEN NULL ELSE pickup_time END;
 
 UPDATE runner_orders
 SET cancellation =	CASE cancellation
-						WHEN 'null' THEN NULL
-						WHEN '' THEN NULL
-						ELSE cancellation
-					END;
+				WHEN 'null' THEN NULL
+				WHEN '' THEN NULL
+				ELSE cancellation
+			END;
 
 ALTER TABLE runner_orders
 DROP COLUMN duration, distance;
@@ -262,8 +262,8 @@ ADD CONSTRAINT pizza_recepies_pizza_id_fk FOREIGN KEY (pizza_id) REFERENCES pizz
 
 DROP TABLE IF EXISTS change_type;
 CREATE TABLE change_type (
-  change_type_id INT PRIMARY KEY,
-  change_name VARCHAR(16) NOT NULL
+	change_type_id INT PRIMARY KEY,
+	change_name VARCHAR(16) NOT NULL
 );
 
 INSERT INTO change_type
@@ -298,17 +298,17 @@ ADD customer_order_id INT IDENTITY PRIMARY KEY NOT NULL;
 
 UPDATE customer_orders
 SET exclusions = 	CASE exclusions
-						WHEN 'null' THEN NULL
-						WHEN '' THEN NULL
-						ELSE exclusions
-					END;
+				WHEN 'null' THEN NULL
+				WHEN '' THEN NULL
+				ELSE exclusions
+			END;
 
 UPDATE customer_orders
-SET extras = CASE extras
-				WHEN '' THEN NULL
-				WHEN 'null' THEN NULL
-				ELSE extras
-			END;
+SET extras = 	CASE extras
+			WHEN '' THEN NULL
+			WHEN 'null' THEN NULL
+			ELSE extras
+		END;
 
 ALTER TABLE customer_orders
 ADD CONSTRAINT customer_orders_pizza_id_fk FOREIGN KEY (pizza_id) REFERENCES pizza_names(pizza_id);
