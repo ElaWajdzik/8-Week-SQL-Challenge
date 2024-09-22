@@ -179,3 +179,190 @@ FROM customer_orders
 After these steps, the table changes from the old version (left table) to three new tables (right tables).
 ![8WC - week 2 - customer_orders](https://github.com/user-attachments/assets/77b8a282-3a77-44dd-8069-f5704227b131 "The table runners_orders")
 
+***
+
+## A. Pizza Metrics
+
+This section contains basic questions and answers about orders.
+Complete SQL code is available [here](https://github.com/ElaWajdzik/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/SQL%20code/pizza_runner_MSSQL-all_sections.sql)
+
+***
+
+### 1. How many pizzas were ordered?
+
+````sql
+SELECT COUNT(*) AS number_of_ordered_pizzas
+FROM customer_orders;
+````
+
+#### Result:
+| number_of_ordered_pizzas | 
+| ------------------------ | 
+| 14                       |
+
+Customers ordered 14 pizzas. . This corresponds to the number of rows in the ```customer_orders``` table.
+
+### 2. How many unique customer orders were made?
+
+````sql
+SELECT COUNT(DISTINCT order_id) AS number_of_orders
+FROM customer_orders;
+````
+
+#### Result:
+| number_of_orders | 
+| ---------------- | 
+| 10               | 
+
+Customers made 10 unique orders. This is determined by counting the distinct ```order_id``` values in the ```customer_orders``` table.
+
+### 3. How many successful orders were delivered by each runner?
+
+````sql
+SELECT 
+	runner_id,
+	COUNT(*) AS number_of_orders
+FROM runner_orders
+WHERE cancellation IS NULL
+GROUP BY runner_id;
+````
+
+#### Result:
+| runner_id | number_of_orders |
+| --------- | ---------------- |
+| 1         | 4                |
+| 2         | 3                |
+| 3         | 1                |
+
+Three runners delivered orders, and they completed 8 successful deliveries in total.
+
+### 4. How many of each type of pizza was delivered?
+
+````sql
+SELECT 
+	pn.pizza_name,
+	COUNT(*) AS number_of_orders
+FROM customer_orders co
+INNER JOIN runner_orders ro
+ON ro.order_id = co.order_id
+INNER JOIN pizza_names pn
+ON pn.pizza_id = co.pizza_id
+
+WHERE ro.cancellation IS NULL
+GROUP BY pn.pizza_name;
+````
+
+#### Steps:
+- Join the ```customer_orders``` table with the ```runer_orders``` and ```pizza_names``` tables. The data from the ```customer_orders``` table provides information about the number of pizzas ordered.  To filter only the delivered orders, use the ```runner_orders``` and apply the condition ```WHERE ro.cancellation IS NULL```. To show the pizza names instead of their numeric IDs, join with the ```pizza_names``` table.
+- Group the resulting data by pizza type and count the number of each type ordered.
+
+#### Result:
+| pizza_name | number_of_orders |
+| ---------- | ---------------- |
+| Meatlovers | 9                |
+| Vegetarian | 3                |
+
+The Meatlovers pizza (9 orders) was more popular than the Vegetarian pizza (3 orders).
+
+### 5. How many Vegetarian and Meatlovers were ordered by each customer?
+
+````sql
+SELECT 
+	co.customer_id,
+	pn.pizza_name,
+	COUNT(*) AS number_of_orders
+FROM customer_orders co
+--INNER JOIN runner_orders ro
+--ON ro.order_id = co.order_id
+INNER JOIN pizza_names pn
+ON pn.pizza_id = co.pizza_id
+
+--WHERE ro.cancellation IS NULL
+GROUP BY co.customer_id, pn.pizza_name;
+````
+
+
+### 6. What was the maximum number of pizzas delivered in a single order?
+
+````sql
+SELECT 
+	TOP(1)
+	co.order_id,
+	COUNT(*) AS number_of_pizzas_in_order
+FROM customer_orders co
+INNER JOIN runner_orders ro
+ON co.order_id = ro.order_id
+
+WHERE ro.cancellation IS NULL
+GROUP BY co.order_id
+ORDER BY COUNT(*) DESC;
+````
+
+### 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+
+````sql
+WITH pizza_with_changes AS (
+	SELECT 
+		DISTINCT customer_order_id,
+		1 AS had_change
+	FROM change_orders)
+
+SELECT 
+	co.customer_id,
+	CASE had_change WHEN 1 THEN 1 ELSE 0 END AS had_change,
+	COUNT(*) AS number_of_pizzas
+FROM customer_orders co
+INNER JOIN runner_orders ro
+ON co.order_id = ro.order_id
+LEFT JOIN pizza_with_changes pc
+ON pc.customer_order_id = co.customer_order_id
+
+WHERE ro.cancellation IS NULL
+GROUP BY co.customer_id,
+	CASE had_change WHEN 1 THEN 1 ELSE 0 END;
+````
+
+### 8. How many pizzas were delivered that had both exclusions and extras?
+
+````sql
+WITH pizza_with_exclusions_and_extras AS (
+	SELECT DISTINCT customer_order_id
+	FROM change_orders
+	WHERE change_type_id = 1
+
+	INTERSECT
+
+	SELECT DISTINCT customer_order_id
+	FROM change_orders
+	WHERE change_type_id = 2)
+
+SELECT COUNT(*) AS number_of_pizzas
+FROM customer_orders co
+INNER JOIN runner_orders ro
+ON ro.order_id = co.order_id
+INNER JOIN pizza_with_exclusions_and_extras p
+ON p.customer_order_id = co.customer_order_id
+
+WHERE ro.cancellation IS NULL;
+````
+
+
+### 9. What was the total volume of pizzas ordered for each hour of the day?
+
+````sql
+SELECT
+	DATEPART(hour, order_time) AS order_hour,
+	COUNT(*) AS number_of_pizzas
+FROM customer_orders
+GROUP BY DATEPART(hour, order_time);
+````
+
+### 10. What was the volume of orders for each day of the week?
+
+````sql
+SELECT 
+	DATEPART(WEEKDAY, order_time) AS weekday,
+	COUNT(DISTINCT order_id) AS number_of_orders
+FROM customer_orders
+GROUP BY DATEPART(WEEKDAY, order_time);
+````
