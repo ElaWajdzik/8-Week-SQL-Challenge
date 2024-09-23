@@ -149,25 +149,45 @@ GROUP BY CEILING(DATEPART(dayofyear, registration_date) / 7.0);
 
 -- 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 
+WITH runner_pickup_times AS (
+	SELECT 
+		ro.order_id,
+		ro.runner_id,
+		DATEDIFF(minute, co.order_time, ro.pickup_time) AS pickup_time
+	FROM runner_orders ro
+	LEFT JOIN customer_orders co
+	ON co.order_id = ro.order_id
+
+	WHERE ro.cancellation IS NULL
+	GROUP BY 	ro.order_id, ro.runner_id, ro.pickup_time, co.order_time)
+
 SELECT
 	runner_id,
-	CAST (CEILING(AVG(duration_min)) AS NUMERIC(3,0)) AS avg_duration_min
-FROM runner_orders
-WHERE cancellation IS NULL
+	AVG(pickup_time) AS avg_pickup_time
+FROM  runner_pickup_times
 GROUP BY runner_id;
 
 -- 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
-SELECT 
-	co.order_id,
-	COUNT(*) AS number_of_pizzas,
-	DATEDIFF(minute, MIN(co.order_time), MIN(ro.pickup_time)) AS prepare_time_min
-FROM customer_orders co
-INNER JOIN runner_orders ro
-ON ro.order_id = co.order_id
+WITH orders_with_prepare_times AS (
+	SELECT 
+		co.order_id,
+		COUNT(*) AS number_of_pizzas,
+		DATEDIFF(minute, MIN(co.order_time), MIN(ro.pickup_time)) AS prepare_time_min
+	FROM customer_orders co
+	INNER JOIN runner_orders ro
+	ON ro.order_id = co.order_id
 
-WHERE ro.cancellation IS NULL
-GROUP BY co.order_id;
+	WHERE ro.cancellation IS NULL
+	GROUP BY co.order_id)
+
+SELECT 
+	number_of_pizzas AS number_of_pizzas_in_order,
+	AVG(prepare_time_min) AS avg_prepare_time_min,
+	MIN(prepare_time_min) AS min_prepare_time_min,	-- it is not necessary 
+	MAX(prepare_time_min) AS max_prepare_time_min	-- it is not necessary 
+FROM orders_with_prepare_times
+GROUP BY number_of_pizzas;
 
 -- 4. What was the average distance travelled for each customer?
 
