@@ -632,6 +632,7 @@ INNER JOIN pizza_toppings pt
 ON pt.topping_id = pr.topping_id
 GROUP BY pn.pizza_name;
 ````
+![Zrzut ekranu 2024-09-23 153655](https://github.com/user-attachments/assets/7f172604-fd39-4008-b88d-fd231bdc500e)
 
 ### 2. What was the most commonly added extra?
 
@@ -649,7 +650,7 @@ WHERE ct.change_name = 'extra'
 GROUP BY pt.topping_name
 ORDER BY COUNT(*) DESC;
 ````
-
+![Zrzut ekranu 2024-09-23 153823](https://github.com/user-attachments/assets/57b73660-1b22-47b8-b329-60f6c23e7d86)
 
 Customers of Pizza Runner seem to like adding becon to their pizza. Creating a new kind of pizza with backon could be a good move for the business.
 
@@ -669,8 +670,7 @@ WHERE ct.change_name = 'exclusion'
 GROUP BY pt.topping_name
 ORDER BY COUNT(*) DESC;
 ````
-
-
+![Zrzut ekranu 2024-09-23 154144](https://github.com/user-attachments/assets/15ea1fe3-4357-4ba0-9649-e10ac389c225)
 
 The most commonly excluded ingredient was cheese. This suggests that some customers may be vegan, so adding vegan options to the menu could be a good idea.
 
@@ -718,10 +718,10 @@ ON co.customer_order_id = ext.customer_order_id;
 - Create the final list in the expected format using a ```CONCAT()``` function: ```CONCAT(pn.pizza_name, ' - ' + exc.list_of_exclusions, ' - ' + ext.list_of_extras)```.
 
 #### Result:
-
+![Zrzut ekranu 2024-09-23 154407](https://github.com/user-attachments/assets/6bdaea05-8eae-4d72-bc11-328ed685a049)
 
 ### 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
--			For example: "Meatlovers: 2xBacon, Beef, ... , Salami"
+- For example: "Meatlovers: 2xBacon, Beef, ... , Salami"
 
 ````sql
 WITH all_ingredients AS (
@@ -762,11 +762,11 @@ all_count_ingredients AS (
 SELECT 
 	customer_order_id,
 	pizza_name,
-	STRING_AGG(CASE number 
-					WHEN 1 THEN topping_name
-					ELSE CAST(number AS VARCHAR(3)) + 'x' + topping_name
-				END, ', ') 
-			WITHIN GROUP (ORDER BY topping_name ASC) AS list_of_ingredient
+	STRING_AGG(	CASE number 
+				WHEN 1 THEN topping_name
+				ELSE CAST(number AS VARCHAR(3)) + 'x' + topping_name
+			END, ', ')
+		WITHIN GROUP (ORDER BY topping_name ASC) AS list_of_ingredient
 FROM all_count_ingredients
 GROUP BY customer_order_id, pizza_name;
 ````
@@ -777,6 +777,7 @@ GROUP BY customer_order_id, pizza_name;
 - Generate a list of topping names for each ordered pizza using the ```STRING_AGG()``` function and ```CASE``` to add the information about multiples (e.g., "2x" for toppings used twice).
 
 #### Result:
+![Zrzut ekranu 2024-09-23 162852](https://github.com/user-attachments/assets/d69a0f57-3046-4dba-bcdd-50942fbd0364)
 
 
 ### 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
@@ -828,5 +829,6 @@ ORDER BY SUM(number) DESC;
 - Group all ingriedients by the name of topping and sort them by usage frequency. 
 
 #### Result:
+![Zrzut ekranu 2024-09-23 165448](https://github.com/user-attachments/assets/37d269a5-b2b7-4dae-9058-bb254eaf3eee)
 
 The most common ingrediont is bacon. Customers of Pizza Runner seem to like becon on their pizza (it was also the most popular extra added). Creating a new kind of pizza with backon could be a good move for the business.
