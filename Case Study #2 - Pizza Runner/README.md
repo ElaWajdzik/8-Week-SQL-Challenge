@@ -532,7 +532,7 @@ GROUP BY number_of_pizzas;
 In calculation ```DATEDIFF(minute, MIN(co.order_time), MIN(ro.pickup_time))``` I used the aggregation function ```MIN()```, but the ideal approach would be use the aggregation function ```ANY_VALUE()```. Unfortunately, ```ANY_VALUE()``` is not supported in Microsoft SQL Server (although it works in Oracle and Postgres).
 
 #### Result:
-
+![Zrzut ekranu 2024-09-23 140754](https://github.com/user-attachments/assets/91abd117-4d68-4bfb-a2f3-a0670e547cc7)
 
 Base on the collected data, we can speculate that each pizza in an order adds around 10 minutes of preparation time. An order with one pizza takes approximately 10 minutes, with two pizzas around 20 minutes, and so on.
 
@@ -559,6 +559,7 @@ GROUP BY customer_id;
 ````
 
 #### Result:
+![Zrzut ekranu 2024-09-23 144010](https://github.com/user-attachments/assets/de62c09e-eb9d-4490-8857-f9ea73b1d991)
 
 All customers live approximately 20 km from the Pizza Runner headquarters.
 
@@ -591,7 +592,7 @@ WHERE cancellation IS NULL;
 ````
 
 #### Result:
-
+![Zrzut ekranu 2024-09-23 150354](https://github.com/user-attachments/assets/630e0948-a673-4d86-bbb0-da209f58569c)
 
 It appears that Runner 2 is using a faster vehicle than the rest of the runners. We can assume that the average speed of delivery is around 40 kilometers per hour.
 
@@ -606,6 +607,6 @@ GROUP BY runner_id;
 ````
 
 #### Result:
-
+![Zrzut ekranu 2024-09-23 150613](https://github.com/user-attachments/assets/2f8eda6b-7511-4e6a-ae71-0abd2d9eb05b)
 
 The first runner (runner_id = 1) has the highest success rate in delivering food.
