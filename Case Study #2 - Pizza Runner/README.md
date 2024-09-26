@@ -179,6 +179,12 @@ FROM customer_orders
 After these steps, the table changes from the old version (left table) to three new tables (right tables).
 ![8WC - week 2 - customer_orders](https://github.com/user-attachments/assets/77b8a282-3a77-44dd-8069-f5704227b131 "The table runners_orders")
 
+Update 26.09.2024
+In the ```customer_orders``` table, the ```customer_id``` and ```order_time``` columns contain duplicate information. Therefore, it would be beneficial to consider splitting the data into two tables. One table would include the columns ```customer_order_id```, ```order_id```, and ```pizza_id```, while the second one would include ```order_id```, ```customer_id```, and ```order_time```.
+
+This approach would follow the principles of database normalization, which helps reduce redundancy and ensures data integrity in relational databases.
+
+
 ***
 
 ## A. Pizza Metrics
@@ -922,8 +928,7 @@ VALUES
 ````
 
 #### Relationship Diagram:
-
-
+![Copy of Copy of Pizza Runner (11)](https://github.com/user-attachments/assets/1941e823-da78-455d-8166-2ef23ba56392)
 
 ### 4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
 * ``customer_id``
@@ -968,6 +973,7 @@ WHERE ro.cancellation IS NULL;
 ````
 
 #### Result:
+![Zrzut ekranu 2024-09-26 231753](https://github.com/user-attachments/assets/bd70e1e0-c28e-41dd-b8fb-1aba510069ce)
 
 ### 5. If a Meatlovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
 
@@ -977,7 +983,8 @@ DECLARE @v_revenue NUMERIC(6,2);
 
 SET @v_cost =
 	(SELECT 
-		CAST(SUM(distance_km) * 0.30 AS NUMERIC(6,2)) AS delivery_cost
+		CAST(SUM(distance_km) * 0.30 AS NUMERIC(6,2)) AS delivery_cost![Uploading Zrzut ekranu 2024-09-26 231753.png…]()
+
 	FROM runner_orders ro
 	WHERE ro.cancellation IS NULL);
 
