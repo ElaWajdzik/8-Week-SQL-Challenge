@@ -207,8 +207,62 @@ ON ap.customer_id = sd.customer_id
 
 
 -- 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+
+WITH customers_with_annual_plan AS (
+	SELECT 
+		customer_id,
+		MIN(start_date) AS start_annual_plan
+	FROM subscriptions
+	WHERE plan_id = 3
+	GROUP BY customer_id),
+
+customers_start_date AS(
+	SELECT 
+		customer_id,
+		MIN(start_date) AS start_trial
+	FROM subscriptions
+	WHERE plan_id = 0
+	GROUP BY customer_id
+	),
+
+customer_with_split_groups AS (
+	SELECT 
+		ap.customer_id,
+		DATEDIFF(day, sd.start_trial, ap.start_annual_plan) AS days_to_annual_plan,
+		FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) AS group_id,
+		CASE FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0)
+			WHEN 0 THEN (FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) * 30)
+			ELSE (FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) * 30) + 1 
+		END AS start_group,
+		(FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) + 1) * 30 AS end_group
+	FROM customers_with_annual_plan ap
+	LEFT JOIN customers_start_date sd
+	ON ap.customer_id = sd.customer_id)
+
+SELECT 
+	CONCAT(MIN(start_group), ' - ', MIN(end_group)) AS group_name_days,
+	COUNT(*) AS number_of_customers
+FROM customer_with_split_groups
+GROUP BY group_id;
+
 -- 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
+-- How many customer downgraded from plan_id=2 to plan_id=1
 
+WITH plan_change_histories AS (
+SELECT 
+	customer_id,
+	STRING_AGG (plan_id, ',') WITHIN GROUP (ORDER BY start_date ASC) AS plan_change_history
+FROM subscriptions
+WHERE YEAR(start_date) < 2021
+GROUP BY customer_id
+)
+
+SELECT 
+	CHARINDEX('2,1', plan_change_history) AS downgraded_from_2_to_1,
+	COUNT(*) As number_of_customers
+FROM plan_change_histories
+WHERE CHARINDEX('2,1', plan_change_history) != 0
+GROUP BY CHARINDEX('2,1', plan_change_history);
 
 
