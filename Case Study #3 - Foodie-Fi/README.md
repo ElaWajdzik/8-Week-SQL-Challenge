@@ -164,6 +164,9 @@ ORDER BY start_of_month; -- use the alias for the column: DATETRUNC(month, start
 ````
 
 #### Result:
+![Zrzut ekranu 2024-10-02 120444](https://github.com/user-attachments/assets/4fab25c9-a06a-483d-bfe7-5b1fd53460a9)
+
+![Zrzut ekranu 2024-10-02 121235](https://github.com/user-attachments/assets/b63cf1df-926d-4d9c-8823-20a29877a547)
 
 
 The average number of new customers per month is around 80. The number of new customers starting a trial plan is consistent each month. The largest difference between two months was 26 (with 94 in March and 68 in February), but for the rest of the months, the numbers were quite similar, ranging between 75 and 89.
@@ -185,6 +188,7 @@ GROUP BY YEAR(s.start_date), p.plan_name;
 
 #### Result:
 
+![Zrzut ekranu 2024-10-02 122458](https://github.com/user-attachments/assets/a1fe31e5-4d6d-4ed4-a27a-62af1a7c87b6)
 
 No one started a trial after 2020, which could mean that the plan no longer exists or that the product has stopped attracting new customers. One out of three subscriptions after 2020 was churned, which may indicate that the product is no longer attractive to customers.
 
@@ -216,6 +220,8 @@ PRINT 'Percentage of customers who have churned: ' + CAST(CAST(@n_customer_churn
 
 #### Result:
 
+![Zrzut ekranu 2024-10-02 134851](https://github.com/user-attachments/assets/947a4c83-ab78-4d27-a0b7-9b8db8a1df88)
+
 
 Almost one in every three customers has churned (30.7%). It would be beneficial to monitor this value over time to determine if this is a baseline churn rate for this business or if it may indicate potential issues.
 
@@ -243,6 +249,8 @@ ORDER BY number_of_customers DESC;
 ````
 
 #### Result:
+![Zrzut ekranu 2024-10-02 154513](https://github.com/user-attachments/assets/d062d5a9-8523-4725-b893-02b9cd90ced5)
+
 
 9% of all customers churned immediately after the trial. It would be beneficial to monitor this value over time.
 
@@ -269,11 +277,12 @@ GROUP BY p.plan_name;
 ````
 
 #### Results:
+![Zrzut ekranu 2024-10-02 154612](https://github.com/user-attachments/assets/0a3ae517-a92e-4af5-8825-7a4608a444fe)
 
 
 The largest fraction (87%) of customers decided to purchase monthly subscriptions after the trial, with 55% opting for the Basic Monthly plan and 32% for the Pro Monthly plan.
 
-### 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
+### 7. What is the customer count and percentage breakdown of all plan_name values at 2020-12-31?
 
 ````sql
 WITH plan_change_histories AS (
@@ -297,6 +306,8 @@ GROUP BY p.plan_name;
 ````
 
 #### Result:
+![Zrzut ekranu 2024-10-02 154655](https://github.com/user-attachments/assets/7d98df55-e462-4f59-b75e-c4589d79b614)
+
 
 By the end of 2020, 55% of customers were on a monthly plan, and 19.5% were on an annual plan. This means that three out of four of the total customers had a paid subscription.
 
@@ -420,6 +431,8 @@ CONCAT(
 ````
 
 #### Result:
+![Zrzut ekranu 2024-10-02 154736](https://github.com/user-attachments/assets/fdfc0be5-f5b0-4b5e-90ae-0230e0f8f5e8)
+
 
 Most of the customers (95%) who upgraded to the annual plan did so within 210 days (7 months) of starting the trial. One in five customers with an annual plan upgraded in the first 30 days.
 
