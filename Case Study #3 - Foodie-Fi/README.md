@@ -360,5 +360,88 @@ On average, customers need three months to upgrade to the annual plan (exactly 1
 
 ### 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc).
 
+````sql
+WITH customers_with_annual_plan AS ( -- for each customer on annual plan, select the start date of this plan
+	SELECT 
+		customer_id,
+		MIN(start_date) AS start_annual_plan
+	FROM subscriptions
+	WHERE plan_id = 3
+	GROUP BY customer_id),
+
+customers_start_date AS( -- for each customer, select the start date of the trial
+	SELECT 
+		customer_id,
+		MIN(start_date) AS start_trial
+	FROM subscriptions
+	WHERE plan_id = 0
+	GROUP BY customer_id
+	),
+
+customer_with_split_groups AS (
+	SELECT 
+		ap.customer_id,
+		DATEDIFF(day, sd.start_trial, ap.start_annual_plan) AS days_to_annual_plan,
+		FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) AS group_id 
+	FROM customers_with_annual_plan ap
+	LEFT JOIN customers_start_date sd  -- use a left join because we need information only for customers who upgraded to the annual plan
+	ON ap.customer_id = sd.customer_id)
+
+SELECT 
+	CONCAT(
+		CASE group_id 
+			WHEN 0 THEN 0
+			ELSE (group_id  * 30) +1
+		END,
+		' - ', 
+		(group_id +1) * 30) AS group_name_days,
+	COUNT(*) AS number_of_customers
+FROM customer_with_split_groups
+GROUP BY group_id;
+````
+
+#### Steps:
+- As in Question 9, I created a temporary table (CTE) ```customers_with_annual_plan``` and ```customers_start_date```.
+- Created a temporary table ```customer_with_split_groups``` based on the data about customers who upgraded to the annual plan. The table includes the following information about each customer:
+	- ```days_to_annual_plan``` - number of days needed to upgrade, 
+	- ```grup_id``` - whole number representing the divided number of days needed to upgrade by 30
+- Grouped the data from ```customer_with_split_groups``` by ```group_id``` and base on ```group_id``` added a name for each grupe.
+
+````sql
+-- group_name_days
+
+CONCAT(
+	CASE group_id 
+		WHEN 0 THEN 0
+		ELSE (group_id  * 30) +1
+	END,
+	' - ', 
+	(group_id +1) * 30)
+````
+
+#### Result:
+
+Most of the customers (95%) who upgraded to the annual plan did so within 210 days (7 months) of starting the trial. One in five customers with an annual plan upgraded in the first 30 days.
 
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+
+```sql
+WITH plan_change_histories AS (
+SELECT 
+	customer_id,
+	STRING_AGG (plan_id, ',') WITHIN GROUP (ORDER BY start_date ASC) AS plan_change_history
+FROM subscriptions
+WHERE YEAR(start_date) < 2021
+GROUP BY customer_id
+)
+
+SELECT 
+	CHARINDEX('2,1', plan_change_history) AS downgraded_from_2_to_1,
+	COUNT(*) As number_of_customers
+FROM plan_change_histories
+WHERE CHARINDEX('2,1', plan_change_history) != 0
+GROUP BY CHARINDEX('2,1', plan_change_history);
+```
+
+#### Result:
+None of the clients of Foodie-Fi downgraded from a Pro Monthly to a Basic Monthly plan in 2020.

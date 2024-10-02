@@ -207,10 +207,9 @@ FROM customers_with_annual_plan ap
 LEFT JOIN customers_start_date sd -- use a left join because we need information only for customers who upgraded to the annual plan
 ON ap.customer_id = sd.customer_id;
 
-
 -- 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 
-WITH customers_with_annual_plan AS (
+WITH customers_with_annual_plan AS ( -- for each customer on annual plan, select the start date of this plan
 	SELECT 
 		customer_id,
 		MIN(start_date) AS start_annual_plan
@@ -218,7 +217,7 @@ WITH customers_with_annual_plan AS (
 	WHERE plan_id = 3
 	GROUP BY customer_id),
 
-customers_start_date AS(
+customers_start_date AS( -- for each customer, select the start date of the trial
 	SELECT 
 		customer_id,
 		MIN(start_date) AS start_trial
@@ -231,18 +230,19 @@ customer_with_split_groups AS (
 	SELECT 
 		ap.customer_id,
 		DATEDIFF(day, sd.start_trial, ap.start_annual_plan) AS days_to_annual_plan,
-		FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) AS group_id,
-		CASE FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0)
-			WHEN 0 THEN (FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) * 30)
-			ELSE (FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) * 30) + 1 
-		END AS start_group,
-		(FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) + 1) * 30 AS end_group
+		FLOOR(DATEDIFF(day, sd.start_trial, ap.start_annual_plan)/30.0) AS group_id 
 	FROM customers_with_annual_plan ap
-	LEFT JOIN customers_start_date sd
+	LEFT JOIN customers_start_date sd  -- use a left join because we need information only for customers who upgraded to the annual plan
 	ON ap.customer_id = sd.customer_id)
 
 SELECT 
-	CONCAT(MIN(start_group), ' - ', MIN(end_group)) AS group_name_days,
+	CONCAT(
+		CASE group_id 
+			WHEN 0 THEN 0
+			ELSE (group_id  * 30) +1
+		END,
+		' - ', 
+		(group_id +1) * 30) AS group_name_days,
 	COUNT(*) AS number_of_customers
 FROM customer_with_split_groups
 GROUP BY group_id;
@@ -266,5 +266,3 @@ SELECT
 FROM plan_change_histories
 WHERE CHARINDEX('2,1', plan_change_history) != 0
 GROUP BY CHARINDEX('2,1', plan_change_history);
-
-
